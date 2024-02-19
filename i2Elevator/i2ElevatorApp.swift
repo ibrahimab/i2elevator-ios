@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct i2ElevatorApp: App {
+    private var size : CGSize = CGSize(width: 400, height: 600)
+    let sharedState = SharedState()
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().environmentObject(sharedState)
+        }.defaultSize(size)
+        WindowGroup(id: "SubTransformationView", for: Int.self) { $index in CardView(cardIndex: index ?? 0).environmentObject(sharedState)
         }
     }
 }

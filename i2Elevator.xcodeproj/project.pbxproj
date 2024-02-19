@@ -12,6 +12,7 @@
 		343B92BB2B83DE35007F78A8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343B92BA2B83DE35007F78A8 /* ContentView.swift */; };
 		343B92BD2B83DE37007F78A8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 343B92BC2B83DE37007F78A8 /* Assets.xcassets */; };
 		343B92C02B83DE37007F78A8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 343B92BF2B83DE37007F78A8 /* Preview Assets.xcassets */; };
+		343B92C92B83DF34007F78A8 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343B92C82B83DF34007F78A8 /* CardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		343B92BC2B83DE37007F78A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		343B92BF2B83DE37007F78A8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		343B92C12B83DE37007F78A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		343B92C82B83DF34007F78A8 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 		343B92B32B83DE35007F78A8 /* i2Elevator */ = {
 			isa = PBXGroup;
 			children = (
+				343B92C72B83DF28007F78A8 /* Views */,
 				343B92B82B83DE35007F78A8 /* i2ElevatorApp.swift */,
 				343B92BA2B83DE35007F78A8 /* ContentView.swift */,
 				343B92BC2B83DE37007F78A8 /* Assets.xcassets */,
@@ -79,6 +82,14 @@
 				343B92BF2B83DE37007F78A8 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		343B92C72B83DF28007F78A8 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				343B92C82B83DF34007F78A8 /* CardView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -155,6 +166,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				343B92BB2B83DE35007F78A8 /* ContentView.swift in Sources */,
+				343B92C92B83DF34007F78A8 /* CardView.swift in Sources */,
 				343B92B92B83DE35007F78A8 /* i2ElevatorApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
