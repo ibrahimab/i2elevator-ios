@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+struct MyData: Codable, Hashable {
+    var intValue: Int
+    var stringValue: String
+}
+
 @main
 struct i2ElevatorApp: App {
     private var size : CGSize = CGSize(width: 400, height: 600)
@@ -15,7 +20,13 @@ struct i2ElevatorApp: App {
         WindowGroup {
             ContentView().environmentObject(sharedState)
         }.defaultSize(size)
-        WindowGroup(id: "SubTransformationView", for: Int.self) { $index in CardView(cardIndex: index ?? 0).environmentObject(sharedState)
-        }
+        WindowGroup(id: "SubTransformationView", for: MyData.self) { data in
+            if let data = data.wrappedValue {
+                CardView(cardIndex: data.intValue, cardType: data.stringValue)
+                    .environmentObject(sharedState)
+            } else {
+                EmptyView()
+            }
+        }.defaultSize(size)
     }
 }

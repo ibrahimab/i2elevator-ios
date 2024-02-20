@@ -9,11 +9,34 @@ import SwiftUI
 import RealityKit
 import RealityKitContent
 
-let subTransformations: [String: (name: String, cards: [String])] = [
-    "st0": (name: "ST0", cards: ["C00", "C01"]),
-    "st1": (name: "ST1", cards: ["C1A", "C1B", "C1C"]),
-    "st2": (name: "ST2", cards: ["C2X", "C2Y", "C2Z"])
-]
+struct IndentedSchemaItem {
+    var indentation: Int
+    var schemaItemName: String
+}
+
+struct Card {
+    var name: String
+    var indentedSchemaItems: [IndentedSchemaItem]
+}
+
+struct SubTransformation {
+    var name: String
+    var cardsIn: [Card]
+    var cardsOut: [Card]
+}
+
+let cai0 = Card(name: "c-in-0", indentedSchemaItems: [IndentedSchemaItem(indentation: 0, schemaItemName: "json-unit"),
+                                                     IndentedSchemaItem(indentation: 1, schemaItemName: "json-invoice-list")])
+
+let cai1 = Card(name: "c-in-1", indentedSchemaItems: [IndentedSchemaItem(indentation: 0, schemaItemName: "json-invoice"),
+                                                     IndentedSchemaItem(indentation: 1, schemaItemName: "json-invoice-items")])
+
+let subTransformations: [String: SubTransformation] = ["st0": SubTransformation(name: "ST0",
+                                                                                cardsIn: [cai0],
+                                                                                cardsOut: [cai0]),
+                                                       "st1": SubTransformation(name: "ST1",
+                                                                                cardsIn: [cai0],
+                                                                                cardsOut: [cai0, cai1])]
 
 class SharedState: ObservableObject {
     @Published var subTransformationId: String? = nil
@@ -25,8 +48,7 @@ struct ContentView: View {
 
     var body: some View {
         if let subTransformationId = sharedState.subTransformationId,
-           let subTransformationName = subTransformations[subTransformationId]?.name,
-           let cards = subTransformations[subTransformationId]?.cards
+           let subTransformationName = subTransformations[subTransformationId]?.name
         {
             VStack {
                 HStack {
@@ -38,17 +60,35 @@ struct ContentView: View {
                     Spacer()
                 }.padding()
                 Spacer()
+                Text("\(subTransformationName)")
                 List {
-                    Section(header: Text("\(subTransformationName) > Card In")) {
-                        ForEach(cards.indices, id: \.self) { index in
-                            HStack {
-                                Text(cards[index]).foregroundColor(Color.primary)
-                                Spacer()
-                                Image(systemName: "chevron.right")
+                    if let cards = subTransformations[subTransformationId]?.cardsIn {
+                        Section(header: Text("Card In")) {
+                            ForEach(cards.indices, id: \.self) { index in
+                                HStack {
+                                    Text(cards[index].name)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                                .contentShape(Rectangle()) // Ensure the entire HStack is tappable
+                                .onTapGesture {
+                                    openWindow(id: "SubTransformationView", value: MyData(intValue: index, stringValue: "in"))
+                                }
                             }
-                            .contentShape(Rectangle()) // Ensure the entire HStack is tappable
-                            .onTapGesture {
-                                openWindow(id: "SubTransformationView", value: index)
+                        }
+                    }
+                    if let cards = subTransformations[subTransformationId]?.cardsOut {
+                        Section(header: Text("Card Out")) {
+                            ForEach(cards.indices, id: \.self) { index in
+                                HStack {
+                                    Text(cards[index].name)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                                .contentShape(Rectangle()) // Ensure the entire HStack is tappable
+                                .onTapGesture {
+                                    openWindow(id: "SubTransformationView", value: MyData(intValue: index, stringValue: "out"))
+                                }
                             }
                         }
                     }
