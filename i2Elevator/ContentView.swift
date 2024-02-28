@@ -53,14 +53,14 @@ struct ContentView: View {
                         if let cards = subTransformations[subTransformationId]?.inputs {
                             Section(header: Text("Card In")) {
                                 ForEach(cards.indices, id: \.self) { index in
-                                    HStack {
-                                        Text(cards[index].name)
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                    }
-                                    .contentShape(Rectangle()) 
-                                    .onTapGesture {
+                                    Button(action: {
                                         openWindow(id: "SubTransformationView", value: MyData(intValue: index, stringValue: "in"))
+                                    }) {
+                                        HStack {
+                                            Text(cards[index].name)
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                        }
                                     }
                                 }
                             }
@@ -68,14 +68,14 @@ struct ContentView: View {
                         if let cards = subTransformations[subTransformationId]?.outputs {
                             Section(header: Text("Card Out")) {
                                 ForEach(cards.indices, id: \.self) { index in
-                                    HStack {
-                                        Text(cards[index].name)
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                    }
-                                    .contentShape(Rectangle()) 
-                                    .onTapGesture {
+                                    Button(action: {
                                         openWindow(id: "SubTransformationView", value: MyData(intValue: index, stringValue: "out"))
+                                    }) {
+                                        HStack {
+                                            Text(cards[index].name)
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                        }
                                     }
                                 }
                             }
@@ -101,15 +101,15 @@ struct ContentView: View {
                         Section(header: Text("\(transformation.name) > Sub Transformations")) {
                             ForEach(transformation.subTransformations.keys.sorted(), id: \.self) { subTransformationId in
                                 if let subTransformation = transformation.subTransformations[subTransformationId] {
-                                    HStack {
-                                        Text(subTransformation.name)
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                    }
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
+                                    Button(action: {
                                         self.menu = .subTransformation
                                         self.sharedState.subTransformationId = subTransformationId
+                                    }) {
+                                        HStack {
+                                            Text(subTransformation.name)
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                        }
                                     }
                                 }
                             }
@@ -121,15 +121,15 @@ struct ContentView: View {
                     Section(header: Text("Transformations")) {
                         ForEach(transformations.keys.sorted(), id: \.self) { transformationId in
                             if let transformation = transformations[transformationId] {
-                                HStack {
-                                    Text(transformation.name)
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                }
-                                .contentShape(Rectangle()) 
-                                .onTapGesture {
+                                Button(action: {
                                     self.sharedState.transformationId = transformationId
                                     self.menu = .transformation
+                                }) {
+                                    HStack {
+                                        Text(transformation.name)
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
                                 }
                             }
                         }
