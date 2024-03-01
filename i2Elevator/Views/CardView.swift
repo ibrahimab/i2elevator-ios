@@ -50,41 +50,90 @@ struct CardView: View {
                                                 }
                                             }
                                         }) {
-                                            HStack {
-                                                Spacer().frame(width: CGFloat((cards[cardIndex].indentedSchemaItems[index].indentation + 1)) * 20.0)
-                                                if cards[cardIndex].indentedSchemaItems[index].type == "leaf" {
-                                                    Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
-                                                } else {
-                                                    Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
-                                                }
-                                                Spacer().frame(width: 20.0)
-                                                Text(transformation.schemaItems[cards[cardIndex].indentedSchemaItems[index].schemaItemId]?.name ?? "").fontWeight((cardType == "out" && sharedState.outputItemId == cards[cardIndex].indentedSchemaItems[index].schemaItemId) ? .bold : .regular)
-                                                Spacer()
-                                                if let targetId = cards[cardIndex].mapRules[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
-                                                   let targetName = transformation.schemaItems[targetId]?.name
-                                                {
-                                                    Text(targetName)
-                                                }
-                                            }
-                                            .onDrag {
-                                                if cardType == "in" {
-                                                    sharedState.inputItemId = cards[cardIndex].indentedSchemaItems[index].schemaItemId
-                                                }
-                                                let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                                                return itemProvider
-                                            }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
-                                                if let inputItemId = sharedState.inputItemId,
-                                                   let userDTO = sharedState.userDTO,
-                                                   cardType == "out"
-                                                {
-                                                    let _outputItemId = cards[cardIndex].indentedSchemaItems[index].schemaItemId
-                                                    let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId]
-                                                    let newUserDTO = updateClient(userDTO: userDTO, value: inputItemId, keyPath: keyPath, operation: "setValue")
-                                                    if let newUserDTO = newUserDTO {
-                                                        sharedState.userDTO = newUserDTO
+                                            if cardType == "in" {
+                                                HStack {
+                                                    Spacer().frame(width: CGFloat((cards[cardIndex].indentedSchemaItems[index].indentation + 1)) * 20.0)
+                                                    if cards[cardIndex].indentedSchemaItems[index].type == "leaf" {
+                                                        Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
+                                                    } else {
+                                                        Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
+                                                    }
+                                                    Spacer().frame(width: 20.0)
+                                                    if let schemaItem = transformation.schemaItems[cards[cardIndex].indentedSchemaItems[index].schemaItemId] {
+                                                        Text("\(schemaItem.name) 1:\(cards[cardIndex].indentedSchemaItems[index].rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == cards[cardIndex].indentedSchemaItems[index].schemaItemId) ? .bold : .regular)
+                                                    }
+                                                    Spacer()
+                                                    if let targetId = cards[cardIndex].mapRules[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
+                                                       let targetName = transformation.schemaItems[targetId]?.name
+                                                    {
+                                                        Text(targetName)
                                                     }
                                                 }
-                                                return true
+                                                .onDrag {
+                                                    if cardType == "in" {
+                                                        sharedState.inputIndentedSchemaItemId = index
+                                                        
+                                                        //cards[cardIndex].indentedSchemaItems[index].schemaItemId
+                                                    }
+                                                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                                    return itemProvider
+                                                }
+                                            } else if let inputIndentedSchemaItemId = sharedState.inputIndentedSchemaItemId,
+                                                      cardType == "out" && cards[cardIndex].indentedSchemaItems[index].rangeMax == cards[cardIndex].indentedSchemaItems[inputIndentedSchemaItemId].rangeMax
+                                            {
+                                                HStack {
+                                                    Spacer().frame(width: CGFloat((cards[cardIndex].indentedSchemaItems[index].indentation + 1)) * 20.0)
+                                                    if cards[cardIndex].indentedSchemaItems[index].type == "leaf" {
+                                                        Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
+                                                    } else {
+                                                        Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
+                                                    }
+                                                    Spacer().frame(width: 20.0)
+                                                    if let schemaItem = transformation.schemaItems[cards[cardIndex].indentedSchemaItems[index].schemaItemId] {
+                                                        Text("\(schemaItem.name) 1:\(cards[cardIndex].indentedSchemaItems[index].rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == cards[cardIndex].indentedSchemaItems[index].schemaItemId) ? .bold : .regular)
+                                                    }
+                                                    Spacer()
+                                                    if let targetId = cards[cardIndex].mapRules[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
+                                                       let targetName = transformation.schemaItems[targetId]?.name
+                                                    {
+                                                        Text(targetName)
+                                                    }
+                                                }
+                                                .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
+                                                    if let inputIndentedSchemaItemId = sharedState.inputIndentedSchemaItemId,
+                                                       let userDTO = sharedState.userDTO,
+                                                       cardType == "out"
+                                                    {
+                                                        let _outputItemId = cards[cardIndex].indentedSchemaItems[index].schemaItemId
+                                                        let inputItemSchemaId = cards[cardIndex].indentedSchemaItems[inputIndentedSchemaItemId].schemaItemId
+                                                        let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId]
+                                                        let newUserDTO = updateClient(userDTO: userDTO, value: inputItemSchemaId, keyPath: keyPath, operation: "setValue")
+                                                        if let newUserDTO = newUserDTO {
+                                                            sharedState.userDTO = newUserDTO
+                                                        }
+                                                    }
+                                                    return true
+                                                }
+                                            } else if cardType == "out"
+                                            {
+                                                HStack {
+                                                    Spacer().frame(width: CGFloat((cards[cardIndex].indentedSchemaItems[index].indentation + 1)) * 20.0)
+                                                    if cards[cardIndex].indentedSchemaItems[index].type == "leaf" {
+                                                        Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
+                                                    } else {
+                                                        Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
+                                                    }
+                                                    Spacer().frame(width: 20.0)
+                                                    if let schemaItem = transformation.schemaItems[cards[cardIndex].indentedSchemaItems[index].schemaItemId] {
+                                                        Text("\(schemaItem.name) 1:\(cards[cardIndex].indentedSchemaItems[index].rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == cards[cardIndex].indentedSchemaItems[index].schemaItemId) ? .bold : .regular)
+                                                    }
+                                                    Spacer()
+                                                    if let targetId = cards[cardIndex].mapRules[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
+                                                       let targetName = transformation.schemaItems[targetId]?.name
+                                                    {
+                                                        Text(targetName)
+                                                    }
+                                                }
                                             }
                                         }
                                     }

@@ -12,7 +12,7 @@ import RealityKitContent
 class SharedState: ObservableObject {
     @Published var transformationId: String? = nil
     @Published var subTransformationId: String? = nil
-    @Published var inputItemId: String? = nil
+    @Published var inputIndentedSchemaItemId: Int? = nil
     @Published var outputItemId: String? = nil
     @Published var userDTO: UserDTO? = nil
 }
