@@ -57,7 +57,7 @@ struct ContentView: View {
                                         openWindow(id: "SubTransformationView", value: MyData(intValue: index, stringValue: "in"))
                                     }) {
                                         HStack {
-                                            Text(cards[index].name)
+                                            Text("Card") //cards[index].name
                                             Spacer()
                                             Image(systemName: "chevron.right")
                                         }
@@ -72,7 +72,7 @@ struct ContentView: View {
                                         openWindow(id: "SubTransformationView", value: MyData(intValue: index, stringValue: "out"))
                                     }) {
                                         HStack {
-                                            Text(cards[index].name)
+                                            Text("Card") //cards[index].name
                                             Spacer()
                                             Image(systemName: "chevron.right")
                                         }
@@ -137,7 +137,6 @@ struct ContentView: View {
                 }.padding()
             }
         }.onAppear {
-            let ll = Bundle(path: "UserDTO")
             if let str = Bundle.main.path(forResource: "UserDTO", ofType: "plist") {
                 let d = NSDictionary(contentsOfFile: str)
                 if let d = d {

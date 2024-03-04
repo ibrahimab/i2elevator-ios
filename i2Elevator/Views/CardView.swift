@@ -26,7 +26,7 @@ struct CardView: View {
                     {
                         VStack {
                             Spacer()
-                            Text("\(cardType) \(cardIndex) \(cards[cardIndex].name)")
+                            Text("\(cardType) \(cardIndex))")
                             List {
                                 /*Section(header: Text("Root")) {
                                  HStack {
@@ -43,10 +43,13 @@ struct CardView: View {
                                             } else if let outputItemId = sharedState.outputItemId,
                                                       let userDTO = sharedState.userDTO
                                             {
-                                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId]
-                                                let newUserDTO = updateClient(userDTO: userDTO, value: cards[cardIndex].indentedSchemaItems[index].schemaItemId, keyPath: keyPath, operation: "setValue")
-                                                if let ret = newUserDTO {
-                                                    sharedState.userDTO = ret
+                                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"]
+                                                if var objectrule = cards[cardIndex].mapRules?[outputItemId]?.objectrule {
+                                                    objectrule.reference = cards[cardIndex].indentedSchemaItems[index].schemaItemId
+                                                    let newUserDTO = updateClient(userDTO: userDTO, value: objectrule, keyPath: keyPath, operation: "setValue")
+                                                    if let ret = newUserDTO {
+                                                        sharedState.userDTO = ret
+                                                    }
                                                 }
                                             }
                                         }) {
@@ -63,8 +66,11 @@ struct CardView: View {
                                                         Text("\(schemaItem.name) 1:\(cards[cardIndex].indentedSchemaItems[index].rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == cards[cardIndex].indentedSchemaItems[index].schemaItemId) ? .bold : .regular)
                                                     }
                                                     Spacer()
-                                                    if let targetId = cards[cardIndex].mapRules[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
-                                                       let targetName = transformation.schemaItems[targetId]?.name
+                                                    if let mapRule = cards[cardIndex].mapRules?[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
+                                                       let objectrule = mapRule.objectrule,
+                                                       let reference = objectrule.reference,
+                                                       objectrule.type == "reference",
+                                                       let targetName = transformation.schemaItems[reference]?.name
                                                     {
                                                         Text(targetName)
                                                     }
@@ -93,10 +99,17 @@ struct CardView: View {
                                                         Text("\(schemaItem.name) 1:\(cards[cardIndex].indentedSchemaItems[index].rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == cards[cardIndex].indentedSchemaItems[index].schemaItemId) ? .bold : .regular)
                                                     }
                                                     Spacer()
-                                                    if let targetId = cards[cardIndex].mapRules[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
-                                                       let targetName = transformation.schemaItems[targetId]?.name
+                                                    if let mapRule = cards[cardIndex].mapRules?[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
+                                                       let objectrule = mapRule.objectrule,
+                                                       let reference = objectrule.reference,
+                                                       objectrule.type == "reference",
+                                                       let targetName = transformation.schemaItems[reference]?.name
                                                     {
                                                         Text(targetName)
+                                                    } else if let mapRule = cards[cardIndex].mapRules?[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
+                                                              let subTransformationId = mapRule.subTransformationId
+                                                    {
+                                                        Text("\(subTransformationId)(...)")
                                                     }
                                                 }
                                                 .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
@@ -105,11 +118,39 @@ struct CardView: View {
                                                        cardType == "out"
                                                     {
                                                         let _outputItemId = cards[cardIndex].indentedSchemaItems[index].schemaItemId
-                                                        let inputItemSchemaId = cards[cardIndex].indentedSchemaItems[inputIndentedSchemaItemId].schemaItemId
-                                                        let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId]
-                                                        let newUserDTO = updateClient(userDTO: userDTO, value: inputItemSchemaId, keyPath: keyPath, operation: "setValue")
-                                                        if let newUserDTO = newUserDTO {
-                                                            sharedState.userDTO = newUserDTO
+                                                        let _inputSchemaItemId = cards[cardIndex].indentedSchemaItems[inputIndentedSchemaItemId].schemaItemId
+                                                        if cards[cardIndex].indentedSchemaItems[index].rangeMax == "1" {
+                                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId, "objectrule"]
+                                                            var objectrule: Expression
+                                                            if var _objectrule = cards[cardIndex].mapRules?[_outputItemId]?.objectrule {
+                                                                _objectrule.reference = cards[cardIndex].indentedSchemaItems[inputIndentedSchemaItemId].schemaItemId
+                                                                _objectrule.type = "reference"
+                                                                objectrule = _objectrule
+                                                            } else {
+                                                                objectrule = Expression(reference: cards[cardIndex].indentedSchemaItems[inputIndentedSchemaItemId].schemaItemId, type: "reference")
+                                                            }
+                                                            let jsonEncoder = JSONEncoder()
+                                                            if let jsonData = try? jsonEncoder.encode(objectrule),
+                                                               let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                                                                let newUserDTO = updateClient(userDTO: userDTO, value: dictionary, keyPath: keyPath, operation: "setValue")
+                                                                if let ret = newUserDTO {
+                                                                    sharedState.userDTO = ret
+                                                                    sharedState.inputIndentedSchemaItemId = nil
+                                                                }
+                                                            }
+                                                        } else if cards[cardIndex].indentedSchemaItems[index].rangeMax == "S" {
+                                                            let rand = randomAlphaNumeric(length: 4)
+                                                            let value: [String: Any] = ["name": "f_\(rand)", "outputs": [["mapRules":[:], "schemaItemId": _outputItemId, "indentedSchemaItems": []]], "inputs": [["schemaItemId": _inputSchemaItemId, "indentedSchemaItems": []]]]
+                                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", "f_\(rand)"]
+                                                            let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
+                                                            let keyPath2: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId, "subTransformationId"]
+                                                            if let newUserDTO = newUserDTO {
+                                                                let newUserDTO2 = updateClient(userDTO: newUserDTO, value: "f_\(rand)", keyPath: keyPath2, operation: "setValue")
+                                                                if let newUserDTO = newUserDTO2 {
+                                                                    sharedState.userDTO = newUserDTO
+                                                                    sharedState.inputIndentedSchemaItemId = nil
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                     return true
@@ -128,11 +169,18 @@ struct CardView: View {
                                                         Text("\(schemaItem.name) 1:\(cards[cardIndex].indentedSchemaItems[index].rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == cards[cardIndex].indentedSchemaItems[index].schemaItemId) ? .bold : .regular)
                                                     }
                                                     Spacer()
-                                                    if let targetId = cards[cardIndex].mapRules[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
-                                                       let targetName = transformation.schemaItems[targetId]?.name
+                                                    if let mapRule = cards[cardIndex].mapRules?[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
+                                                       let objectrule = mapRule.objectrule,
+                                                       let reference = objectrule.reference,
+                                                       objectrule.type == "reference",
+                                                       let targetName = transformation.schemaItems[reference]?.name
                                                     {
                                                         Text(targetName)
-                                                    }
+                                                    } else if let mapRule = cards[cardIndex].mapRules?[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
+                                                             let subTransformationId = mapRule.subTransformationId
+                                                   {
+                                                       Text("\(subTransformationId)(...)")
+                                                   }
                                                 }
                                             }
                                         }

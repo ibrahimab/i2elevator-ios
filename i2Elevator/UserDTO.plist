@@ -44,8 +44,6 @@
 							<key>inputs</key>
 							<array>
 								<dict>
-									<key>name</key>
-									<string>c-in-0</string>
 									<key>indentedSchemaItems</key>
 									<array>
 										<dict>
@@ -76,8 +74,6 @@
 							<key>outputs</key>
 							<array>
 								<dict>
-									<key>name</key>
-									<string>c-out-0</string>
 									<key>indentedSchemaItems</key>
 									<array>
 										<dict>

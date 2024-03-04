@@ -37,10 +37,27 @@ struct SubTransformation: Codable {
 }
 
 struct Card: Codable {
-    var name: String
     var schemaItemId: String?
     var indentedSchemaItems: [IndentedSchemaItem]
-    var mapRules: [String: String]
+    var mapRules: [String: MapRule]?
+}
+
+struct MapRule: Codable {
+    var objectrule: Expression?
+    var subTransformationId: String?
+}
+
+struct Expression: Codable {
+    var parameters: [Expression]?
+    var function: Function?
+    var reference: String?
+    var constant: String?
+    var type: String?
+}
+
+struct Function: Codable  {
+    var name: String
+    var props: [Expression]
 }
 
 struct IndentedSchemaItem: Codable {
