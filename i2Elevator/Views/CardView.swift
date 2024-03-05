@@ -12,6 +12,7 @@ struct CardView: View {
     var cardIndex: Int
     var cardType: String
     @EnvironmentObject var sharedState: SharedState
+    @Environment(\.openWindow) private var openWindow
     var body: some View {
         if let subTransformationId = sharedState.subTransformationId
         {
@@ -39,6 +40,11 @@ struct CardView: View {
                                     ForEach(cards[cardIndex].indentedSchemaItems.indices, id: \.self) { index in
                                         Button(action: {
                                             if cardType == "out" {
+                                                sharedState.cardType = cardType
+                                                sharedState.cardIndex = cardIndex
+                                                if sharedState.outputItemId == nil {
+                                                    openWindow(id: "MapRuleEditor")
+                                                }
                                                 sharedState.outputItemId = cards[cardIndex].indentedSchemaItems[index].schemaItemId
                                             } else if let outputItemId = sharedState.outputItemId,
                                                       let userDTO = sharedState.userDTO
@@ -177,14 +183,13 @@ struct CardView: View {
                                                     {
                                                         Text(targetName)
                                                     } else if let mapRule = cards[cardIndex].mapRules?[cards[cardIndex].indentedSchemaItems[index].schemaItemId],
-                                                             let subTransformationId = mapRule.subTransformationId
-                                                   {
-                                                       Text("\(subTransformationId)(...)")
-                                                   }
+                                                              let subTransformationId = mapRule.subTransformationId
+                                                    {
+                                                        Text("\(subTransformationId)(...)")
+                                                    }
                                                 }
                                             }
-                                        }
-                                    }
+                                        }                                    }
                                 }
                             }
                         }

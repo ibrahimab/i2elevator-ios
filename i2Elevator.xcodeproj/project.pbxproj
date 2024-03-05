@@ -16,6 +16,7 @@
 		344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344802822B8684D5008E5551 /* TopColorGradient.swift */; };
 		344802862B889424008E5551 /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344802852B889424008E5551 /* Update.swift */; };
 		3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */; };
+		347293502B96D92D0033D38F /* MapRuleEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472934F2B96D92D0033D38F /* MapRuleEditor.swift */; };
 		347351B82B8CB4C7005B949A /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347351B72B8CB4C7005B949A /* Models.swift */; };
 		347351BA2B8CC3E1005B949A /* UserDTO.plist in Resources */ = {isa = PBXBuildFile; fileRef = 347351B92B8CC3E1005B949A /* UserDTO.plist */; };
 /* End PBXBuildFile section */
@@ -32,6 +33,7 @@
 		344802822B8684D5008E5551 /* TopColorGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopColorGradient.swift; sourceTree = "<group>"; };
 		344802852B889424008E5551 /* Update.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Update.swift; sourceTree = "<group>"; };
 		3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomAlphaNumeric.swift; sourceTree = "<group>"; };
+		3472934F2B96D92D0033D38F /* MapRuleEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRuleEditor.swift; sourceTree = "<group>"; };
 		347351B72B8CB4C7005B949A /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		347351B92B8CC3E1005B949A /* UserDTO.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = UserDTO.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -101,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				343B92C82B83DF34007F78A8 /* CardView.swift */,
+				3472934F2B96D92D0033D38F /* MapRuleEditor.swift */,
 				344802822B8684D5008E5551 /* TopColorGradient.swift */,
 			);
 			path = Views;
@@ -192,6 +195,7 @@
 				3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */,
 				343B92BB2B83DE35007F78A8 /* ContentView.swift in Sources */,
 				344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */,
+				347293502B96D92D0033D38F /* MapRuleEditor.swift in Sources */,
 				344802862B889424008E5551 /* Update.swift in Sources */,
 				347351B82B8CB4C7005B949A /* Models.swift in Sources */,
 				343B92C92B83DF34007F78A8 /* CardView.swift in Sources */,

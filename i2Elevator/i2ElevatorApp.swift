@@ -14,12 +14,13 @@ struct MyData: Codable, Hashable {
 
 @main
 struct i2ElevatorApp: App {
-    private var size : CGSize = CGSize(width: 400, height: 600)
+    private var portraitSize : CGSize = CGSize(width: 400, height: 600)
+    private var landscapeSize : CGSize = CGSize(width: 600, height: 400)
     let sharedState = SharedState()
     var body: some Scene {
         WindowGroup {
             ContentView().environmentObject(sharedState)
-        }.defaultSize(size)
+        }.defaultSize(portraitSize)
         WindowGroup(id: "SubTransformationView", for: MyData.self) { data in
             if let data = data.wrappedValue {
                 CardView(cardIndex: data.intValue, cardType: data.stringValue)
@@ -27,6 +28,9 @@ struct i2ElevatorApp: App {
             } else {
                 EmptyView()
             }
-        }.defaultSize(size)
+        }.defaultSize(portraitSize)
+        WindowGroup("MapRuleEditor", id: "MapRuleEditor") {
+            MapRuleEditor().environmentObject(sharedState)
+        }.defaultSize(landscapeSize)
     }
 }
