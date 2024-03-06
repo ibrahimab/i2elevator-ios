@@ -23,7 +23,7 @@ struct Transformation: Codable {
 
 struct SchemaItem: Codable {
     var name: String
-    //var children: [String: SchemaItemRelationship]
+    var children: [String: SchemaItemRelationship]
 }
 
 public class SchemaItemRelationship: Codable {
@@ -38,7 +38,7 @@ struct SubTransformation: Codable {
 
 struct Card: Codable {
     var schemaItemId: String?
-    var indentedSchemaItems: [IndentedSchemaItem]
+    //var indentedSchemaItems: [IndentedSchemaItem]
     var mapRules: [String: MapRule]?
 }
 
@@ -60,9 +60,13 @@ struct Function: Codable  {
     var props: [Expression]
 }
 
-struct IndentedSchemaItem: Codable {
+struct IndentedSchemaItem: Identifiable {
     var indentation: Int
     var type: String
     var schemaItemId: String
     var rangeMax: String
+    
+    var id: String {
+        schemaItemId
+    }
 }

@@ -14,7 +14,7 @@ class SharedState: ObservableObject {
     @Published var subTransformationId: String? = nil
     @Published var cardType: String? = nil
     @Published var cardIndex: Int? = nil
-    @Published var inputIndentedSchemaItemId: Int? = nil
+    @Published var indentedInputItem: IndentedSchemaItem? = nil
     @Published var outputItemId: String? = nil
     @Published var userDTO: UserDTO? = nil
 }
