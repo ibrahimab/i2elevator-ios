@@ -29,6 +29,7 @@ struct ContentView: View {
     @EnvironmentObject var sharedState: SharedState
     @Environment(\.openWindow) private var openWindow
     @State private var menu: SelectedMenuItem = .none
+    @State private var searchText: String = ""
     
     var body: some View {
         ZStack {
@@ -45,15 +46,17 @@ struct ContentView: View {
                         Button(action: {
                             self.menu = .transformation
                         }) {
-                            Text("Back").foregroundColor(Color.primary)
+                            Image(systemName: "chevron.left")
                         }
+                        .clipShape(Circle())
                         Spacer()
-                    }.padding()
-                    Spacer()
-                    Text("\(subTransformationName)")
+                        TextField("Search", text: $searchText)
+                    }
+                    .padding(.bottom, 40)
+                    .padding(.horizontal, 20)
                     List {
                         if let cards = subTransformations[subTransformationId]?.inputs {
-                            Section(header: Text("Card In")) {
+                            Section(header: Text("\(subTransformationName) > Card In")) {
                                 ForEach(cards.indices, id: \.self) { index in
                                     Button(action: {
                                         openWindow(id: "SubTransformationView", value: MyData(intValue: index, stringValue: "in"))
@@ -83,7 +86,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                }.padding()
+                }.padding(.vertical, 40)
             } else if self.menu == .transformation,
                       let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
                       let transformationId = sharedState.transformationId,
@@ -94,10 +97,14 @@ struct ContentView: View {
                         Button(action: {
                             self.menu = .none
                         }) {
-                            Text("Back").foregroundColor(Color.primary)
+                            Image(systemName: "chevron.left")
                         }
+                        .clipShape(Circle())
                         Spacer()
-                    }.padding()
+                        TextField("Search", text: $searchText)
+                    }
+                    .padding(.bottom, 40)
+                    .padding(.horizontal, 20)
                     Spacer()
                     List {
                         Section(header: Text("\(transformation.name) > Sub Transformations")) {
@@ -117,26 +124,33 @@ struct ContentView: View {
                             }
                         }
                     }
-                }.padding()
+                }.padding(.vertical, 40)
             } else if let transformations = sharedState.userDTO?.teams?["response"]?.transformations {
-                List {
-                    Section(header: Text("Transformations")) {
-                        ForEach(transformations.keys.sorted(), id: \.self) { transformationId in
-                            if let transformation = transformations[transformationId] {
-                                Button(action: {
-                                    self.sharedState.transformationId = transformationId
-                                    self.menu = .transformation
-                                }) {
-                                    HStack {
-                                        Text(transformation.name)
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
+                VStack {
+                    HStack {
+                        TextField("Search", text: $searchText)
+                    }
+                    .padding(.bottom, 40)
+                    .padding(.horizontal, 40)
+                    List {
+                        Section(header: Text("Transformations")) {
+                            ForEach(transformations.keys.sorted(), id: \.self) { transformationId in
+                                if let transformation = transformations[transformationId] {
+                                    Button(action: {
+                                        self.sharedState.transformationId = transformationId
+                                        self.menu = .transformation
+                                    }) {
+                                        HStack {
+                                            Text(transformation.name)
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }.padding()
+                }.padding(.vertical, 40)
             }
         }.onAppear {
             if let str = Bundle.main.path(forResource: "UserDTO", ofType: "plist") {

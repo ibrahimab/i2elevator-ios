@@ -20,6 +20,7 @@
 		347293522B970A220033D38F /* TransformSchemaEntityTreeToList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347293512B970A220033D38F /* TransformSchemaEntityTreeToList.swift */; };
 		347351B82B8CB4C7005B949A /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347351B72B8CB4C7005B949A /* Models.swift */; };
 		347351BA2B8CC3E1005B949A /* UserDTO.plist in Resources */ = {isa = PBXBuildFile; fileRef = 347351B92B8CC3E1005B949A /* UserDTO.plist */; };
+		347F48282B99C83C00F73DF6 /* FunctionCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347F48272B99C83C00F73DF6 /* FunctionCatalog.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		347293512B970A220033D38F /* TransformSchemaEntityTreeToList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformSchemaEntityTreeToList.swift; sourceTree = "<group>"; };
 		347351B72B8CB4C7005B949A /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		347351B92B8CC3E1005B949A /* UserDTO.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = UserDTO.plist; sourceTree = "<group>"; };
+		347F48272B99C83C00F73DF6 /* FunctionCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionCatalog.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				343B92C82B83DF34007F78A8 /* CardView.swift */,
+				347F48272B99C83C00F73DF6 /* FunctionCatalog.swift */,
 				3472934F2B96D92D0033D38F /* MapRuleEditor.swift */,
 				344802822B8684D5008E5551 /* TopColorGradient.swift */,
 			);
@@ -204,6 +207,7 @@
 				347351B82B8CB4C7005B949A /* Models.swift in Sources */,
 				343B92C92B83DF34007F78A8 /* CardView.swift in Sources */,
 				343B92B92B83DE35007F78A8 /* i2ElevatorApp.swift in Sources */,
+				347F48282B99C83C00F73DF6 /* FunctionCatalog.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

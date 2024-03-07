@@ -12,29 +12,46 @@ struct MapRuleEditor: View {
     var body: some View {
         ZStack {
             TopColorGradient(color: .yellow)
-            if let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
-               let transformationId = sharedState.transformationId,
-               let transformation = transformations[transformationId],
-               let subTransformationId = sharedState.subTransformationId,
-               let outputs = transformation.subTransformations[subTransformationId]?.outputs,
-               let cardIndex = sharedState.cardIndex,
-               let cardType = sharedState.cardType,
-               cardType == "out",
-               let mapRules = outputs[cardIndex].mapRules,
-               let outputItemId = sharedState.outputItemId,
-               let mapRule = mapRules[outputItemId]
-            {
-                if mapRule.objectrule?.type == "reference",
-                   let reference = mapRule.objectrule?.reference,
-                   let schemaItemName = transformation.schemaItems[reference]?.name
-                {
-                    Text("=\(schemaItemName)")
-                        .padding()
-                } else if let subTransformationId = mapRule.subTransformationId
-                {
-                    Text("=\(subTransformationId)(...)")
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        
+                    }) {
+                        Image(systemName: "trash")
+                    }
+                    .clipShape(Circle())
                 }
+                .padding(.bottom, 40)
+                HStack {
+                    if let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                       let transformationId = sharedState.transformationId,
+                       let transformation = transformations[transformationId],
+                       let subTransformationId = sharedState.subTransformationId,
+                       let outputs = transformation.subTransformations[subTransformationId]?.outputs,
+                       let cardIndex = sharedState.cardIndex,
+                       let cardType = sharedState.cardType,
+                       cardType == "out",
+                       let mapRules = outputs[cardIndex].mapRules,
+                       let outputItemId = sharedState.outputItemId,
+                       let mapRule = mapRules[outputItemId]
+                    {
+                        if mapRule.objectrule?.type == "reference",
+                           let reference = mapRule.objectrule?.reference,
+                           let schemaItemName = transformation.schemaItems[reference]?.name
+                        {
+                            Text("=\(schemaItemName)")
+                                .padding()
+                        } else if let subTransformationId = mapRule.subTransformationId
+                        {
+                            Text("=\(subTransformationId)(...)")
+                        }
+                    }
+                }
+                Spacer()
             }
+            .padding(.vertical, 40)
+            .padding(.horizontal, 20)
         }
     }
 }

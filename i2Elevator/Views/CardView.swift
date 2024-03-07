@@ -44,7 +44,7 @@ struct CardView: View {
                     {
                         VStack {
                             Spacer()
-                            Text("\(cardType) \(cardIndex))")
+                            Text("\(cardType) \(cardIndex)")
                             List {
                                 Section(header: Text("Root")) {
                                     HStack {
@@ -66,6 +66,7 @@ struct CardView: View {
                                                 sharedState.cardIndex = cardIndex
                                                 if sharedState.outputItemId == nil {
                                                     openWindow(id: "MapRuleEditor")
+                                                    openWindow(id: "FunctionCatalog")
                                                 }
                                                 sharedState.outputItemId = indentedSchemaItem.schemaItemId
                                             } else if let outputItemId = sharedState.outputItemId,
