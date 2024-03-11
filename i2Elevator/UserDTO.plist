@@ -116,31 +116,6 @@
 								<dict>
 									<key>schemaItemId</key>
 									<string>si0</string>
-									<key>indentedSchemaItems</key>
-									<array>
-										<dict>
-											<key>indentation</key>
-											<integer>0</integer>
-											<key>schemaItemId</key>
-											<string>si0</string>
-											<key>type</key>
-											<string>node</string>
-											<key>rangeMax</key>
-											<string>S</string>
-										</dict>
-										<dict>
-											<key>indentation</key>
-											<integer>1</integer>
-											<key>schemaItemId</key>
-											<string>si1</string>
-											<key>type</key>
-											<string>leaf</string>
-											<key>rangeMax</key>
-											<string>1</string>
-										</dict>
-									</array>
-									<key>mapRules</key>
-									<dict/>
 								</dict>
 							</array>
 							<key>outputs</key>
@@ -148,31 +123,29 @@
 								<dict>
 									<key>schemaItemId</key>
 									<string>si4</string>
-									<key>indentedSchemaItems</key>
-									<array>
-										<dict>
-											<key>indentation</key>
-											<integer>0</integer>
-											<key>schemaItemId</key>
-											<string>si2</string>
-											<key>type</key>
-											<string>node</string>
-											<key>rangeMax</key>
-											<string>S</string>
-										</dict>
-										<dict>
-											<key>indentation</key>
-											<integer>1</integer>
-											<key>schemaItemId</key>
-											<string>si3</string>
-											<key>type</key>
-											<string>leaf</string>
-											<key>rangeMax</key>
-											<string>1</string>
-										</dict>
-									</array>
 									<key>mapRules</key>
-									<dict/>
+									<dict>
+										<key>si6</key>
+										<dict>
+											<key>objectrule</key>
+											<dict>
+												<key>type</key>
+												<string>function</string>
+												<key>function</key>
+												<dict>
+													<key>props</key>
+													<array>
+														<dict>
+															<key>type</key>
+															<string>placeholder</string>
+														</dict>
+													</array>
+													<key>name</key>
+													<string>UPPERCASE</string>
+												</dict>
+											</dict>
+										</dict>
+									</dict>
 								</dict>
 							</array>
 						</dict>
