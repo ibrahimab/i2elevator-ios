@@ -56,7 +56,16 @@ struct MapRuleEditor: View {
                                             .cornerRadius(8)
                                     }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
                                         if let newFunctionName = sharedState.newFunctionName {
-                                            let value: [String: Any] = ["type": "function", "function": ["name": newFunctionName, "props": [["type": "placeholder"]]]]
+                                            var props = [[String: Any]]()
+                                            let dictionaryToAdd = ["type": "placeholder"] // Define the dictionary to add
+                                            var numberOfTimesToAdd: Int = 1
+                                            if newFunctionName == "LOOKUP" {
+                                                numberOfTimesToAdd = 3
+                                            }
+                                            for _ in 1...numberOfTimesToAdd {
+                                                props.append(dictionaryToAdd)
+                                            }
+                                            let value: [String: Any] = ["type": "function", "function": ["name": newFunctionName, "props": props]]
                                             let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + v2.expressionKeypathSegment
                                             let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
                                             sharedState.userDTO = newUserDTO

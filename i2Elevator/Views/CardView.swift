@@ -82,7 +82,9 @@ struct CardView: View {
                                                 }
                                             }
                                         }) {
-                                            if cardType == "in" {
+                                            if cardType == "in",
+                                               indentedSchemaItem.indentation == 0
+                                            {
                                                 HStack {
                                                     Spacer().frame(width: CGFloat(indentedSchemaItem.indentation + 1) * 20.0)
                                                     if indentedSchemaItem.type == "leaf" {
@@ -111,8 +113,32 @@ struct CardView: View {
                                                     let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
                                                     return itemProvider
                                                 }
+                                            } else if cardType == "in" {
+                                                HStack {
+                                                    Spacer().frame(width: CGFloat(indentedSchemaItem.indentation + 1) * 20.0)
+                                                    if indentedSchemaItem.type == "leaf" {
+                                                        Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
+                                                    } else {
+                                                        Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
+                                                    }
+                                                    Spacer().frame(width: 20.0)
+                                                    if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
+                                                        Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == indentedSchemaItem.schemaItemId) ? .bold : .regular)
+                                                    }
+                                                    Spacer()
+                                                    if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
+                                                       let objectrule = mapRule.objectrule,
+                                                       let reference = objectrule.reference,
+                                                       objectrule.type == "reference",
+                                                       let targetName = transformation.schemaItems[reference]?.name
+                                                    {
+                                                        Text(targetName)
+                                                    }
+                                                }
                                             } else if let indentedInputItem = sharedState.indentedInputItem,
-                                                      cardType == "out" && indentedSchemaItem.rangeMax == indentedInputItem.rangeMax
+                                                      cardType == "out",
+                                                      indentedSchemaItem.rangeMax == indentedInputItem.rangeMax,
+                                                      indentedSchemaItem.indentation == 0
                                             {
                                                 HStack {
                                                     Spacer().frame(width: CGFloat((indentedSchemaItem.indentation + 1)) * 20.0)
