@@ -25,7 +25,8 @@ struct MapRuleEditor: View {
                     .clipShape(Circle())
                 }
                 .padding(.bottom, 40)
-                if let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                if let userDTO = sharedState.userDTO,
+                   let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
                    let transformationId = sharedState.transformationId,
                    let transformation = transformations[transformationId],
                    let subTransformationId = sharedState.subTransformationId,
@@ -38,12 +39,11 @@ struct MapRuleEditor: View {
                    let mapRule = mapRules[outputItemId]
                 {
                     let expressionGrid = transformMapRuleToGrid(mapRule: mapRule, schemaItems: transformation.schemaItems, rowInd: &rowInd, transformation: transformation)
-                    ForEach(expressionGrid, id: \.rowInd) { v in
+                    ForEach(expressionGrid, id: \.index) { v in
                         HStack {
                             Spacer().frame(width: CGFloat(v.indentation) * 20.0)
-                            ForEach(v.columns, id: \.index) { v2 in
+                            ForEach(v.columns, id: \.id) { v2 in
                                 if v2.isBtnStyle == true {
-                                    //let b = compareArrays(expressionKeypathSegment, v2.expressionKeypathSegment)
                                     Button(action: {
                                         /*expressionKeypathSegment = v2.expressionKeypathSegment
                                          expressionColumn = v2
@@ -54,6 +54,21 @@ struct MapRuleEditor: View {
                                             .foregroundColor(.white)
                                         //.background(b ? Color.green : Color.blue)
                                             .cornerRadius(8)
+                                    }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
+                                        if let newFunctionName = sharedState.newFunctionName {
+                                            let value: [String: Any] = ["type": "function", "function": ["name": newFunctionName, "props": [["type": "placeholder"]]]]
+                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + v2.expressionKeypathSegment
+                                            let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
+                                            sharedState.userDTO = newUserDTO
+                                            sharedState.newFunctionName = nil
+                                        } else if let schemaItemId = sharedState.indentedInputItem?.schemaItemId {
+                                            let value: [String: Any] = ["type": "reference", "reference": schemaItemId]
+                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + v2.expressionKeypathSegment
+                                            let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
+                                            sharedState.userDTO = newUserDTO
+                                            sharedState.indentedInputItem = nil
+                                        }
+                                        return true
                                     }
                                 } else {
                                     Text(v2.text)

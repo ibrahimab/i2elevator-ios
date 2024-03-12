@@ -38,7 +38,6 @@ struct SubTransformation: Codable {
 
 struct Card: Codable {
     var schemaItemId: String?
-    //var indentedSchemaItems: [IndentedSchemaItem]
     var mapRules: [String: MapRule]?
 }
 
@@ -48,7 +47,7 @@ struct MapRule: Codable {
 }
 
 struct Expression: Codable {
-    var parameters: [Expression]?
+    //var parameters: [Expression]?
     var function: Function?
     var reference: String?
     var constant: String?
@@ -65,7 +64,6 @@ struct IndentedSchemaItem: Identifiable {
     var type: String
     var schemaItemId: String
     var rangeMax: String
-    
     var id: String {
         schemaItemId
     }

@@ -16,17 +16,29 @@ struct FunctionCatalog: View {
                 Button(action: {
                     
                 }) {
-                    Text("Uppercase")
+                    Text("UPPERCASE")
+                }.onDrag {
+                    sharedState.newFunctionName = "UPPERCASE"
+                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                    return itemProvider
                 }
                 Button(action: {
                     
                 }) {
-                    Text("Lowercase")
+                    Text("LOWERCASE")
+                }.onDrag {
+                    sharedState.newFunctionName = "LOWERCASE"
+                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                    return itemProvider
                 }
                 Button(action: {
                     
                 }) {
-                    Text("Lookup")
+                    Text("LOOKUP")
+                }.onDrag {
+                    sharedState.newFunctionName = "LOOKUP"
+                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                    return itemProvider
                 }
             }
             .padding(.vertical, 40)

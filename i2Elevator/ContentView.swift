@@ -17,6 +17,7 @@ class SharedState: ObservableObject {
     @Published var indentedInputItem: IndentedSchemaItem? = nil
     @Published var outputItemId: String? = nil
     @Published var userDTO: UserDTO? = nil
+    @Published var newFunctionName: String? = nil
 }
 
 enum SelectedMenuItem {

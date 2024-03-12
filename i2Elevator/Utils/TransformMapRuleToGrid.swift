@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct ExpressionRow: Identifiable {
-    var id: UUID
-    var rowInd: Int
+    var index: Int 
     var indentation: Int
     var columns: [ExpressionColumn]
+    var id: String {
+        "\(index)"
+    }
 }
 
 struct ExpressionColumn: Identifiable {
-    var id: UUID
     var text: String
     var parentExpression: Expression?
     var expression: Expression?
@@ -23,6 +24,9 @@ struct ExpressionColumn: Identifiable {
     var isBtnStyle: Bool
     var expressionKeypathSegment: [Any]
     var keyToWrite: String?
+    var id: String {
+        "\(index)"
+    }
 }
 
 func transformMapRuleToGrid(mapRule: MapRule, schemaItems: [String: SchemaItem]?, rowInd: inout Int, transformation: Transformation?) -> [ExpressionRow] {
@@ -43,8 +47,8 @@ func transformMapRuleToGrid(mapRule: MapRule, schemaItems: [String: SchemaItem]?
                 i = i + 1
             }
         }
-        let vv2 = ExpressionColumn(id: UUID(), text: "=\(subTransformation.name)(\(jj))", index: 0, isBtnStyle: false, expressionKeypathSegment: [])
-        let zz3 = ExpressionRow(id: UUID(), rowInd: rowInd, indentation: 0, columns: [vv2])
+        let vv2 = ExpressionColumn(text: "=\(subTransformation.name)(\(jj))", index: 0, isBtnStyle: false, expressionKeypathSegment: [])
+        let zz3 = ExpressionRow(index: rowInd, indentation: 0, columns: [vv2])
         return [zz3]
     } else {
         return transformExpressionsToGrid(
@@ -69,13 +73,13 @@ func transformExpressionsToGrid(
     var rows: [ExpressionRow] = []
     if prop?.type == "function", let functionProps = prop?.function {
         var columns: [ExpressionColumn] = [
-            ExpressionColumn(id: UUID(), text: functionProps.name, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: "name"),
-            ExpressionColumn(id: UUID(), text: "(", index: 1, isBtnStyle: false, expressionKeypathSegment: keyPath)
+            ExpressionColumn(text: functionProps.name, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: "name"),
+            ExpressionColumn(text: "(", index: 1, isBtnStyle: false, expressionKeypathSegment: keyPath)
         ]
         if indentation == 0 {
-            columns.insert(ExpressionColumn(id: UUID(), text: "=", index: -1, isBtnStyle: false, expressionKeypathSegment: keyPath), at: 0)
+            columns.insert(ExpressionColumn(text: "=", index: -1, isBtnStyle: false, expressionKeypathSegment: keyPath), at: 0)
         }
-        let zz = ExpressionRow(id: UUID(), rowInd: rowInd, indentation: indentation, columns: columns)
+        let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: columns)
         rowInd = rowInd + 1
         rows.append(zz)
         
@@ -91,45 +95,45 @@ func transformExpressionsToGrid(
             rows.append(contentsOf: zz2)
             rowInd = rowInd + 1
         }
-        let vv2 = ExpressionColumn(id: UUID(), text: ")", index: 2, isBtnStyle: false, expressionKeypathSegment: keyPath)
-        let zz3 = ExpressionRow(id: UUID(), rowInd: rowInd, indentation: indentation, columns: [vv2])
+        let vv2 = ExpressionColumn(text: ")", index: 2, isBtnStyle: false, expressionKeypathSegment: keyPath)
+        let zz3 = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv2])
         rows.append(zz3)
     } else if prop?.type == "reference", let reference = prop?.reference {
         if let displayName = schemaItems?[reference]?.name {
             var columns: [ExpressionColumn] = [
-                ExpressionColumn(id: UUID(), text: "\(displayName)", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: "reference")
+                ExpressionColumn(text: "\(displayName)", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: "reference")
             ]
             
             if indentation == 0 {
-                columns.insert(ExpressionColumn(id: UUID(), text: "=", index: -1, isBtnStyle: false, expressionKeypathSegment: keyPath), at: 0)
+                columns.insert(ExpressionColumn(text: "=", index: -1, isBtnStyle: false, expressionKeypathSegment: keyPath), at: 0)
             }
             
-            let zz = ExpressionRow(id: UUID(), rowInd: rowInd, indentation: indentation, columns: columns)
+            let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: columns)
             rowInd = rowInd + 1
             rows.append(zz)
         }
     } else if prop?.type == "placeholder" {
-        let vv = ExpressionColumn(id: UUID(), text: "placeholder", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
-        let zz = ExpressionRow(id: UUID(), rowInd: rowInd, indentation: indentation, columns: [vv])
+        let vv = ExpressionColumn(text: "placeholder", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
+        let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv])
         rowInd = rowInd + 1
         rows.append(zz)
     } else if prop?.type == "constant" {
-        let vv = ExpressionColumn(id: UUID(), text: prop?.constant ?? "na", parentExpression: parentExpression, expression: prop, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath)
-        let zz = ExpressionRow(id: UUID(), rowInd: rowInd, indentation: indentation, columns: [vv])
+        let vv = ExpressionColumn(text: prop?.constant ?? "na", parentExpression: parentExpression, expression: prop, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath)
+        let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv])
         rowInd = rowInd + 1
         rows.append(zz)
     }
     
     if prop?.type == nil {
-        var vv = ExpressionColumn(id: UUID(), text: "placeholder", parentExpression: parentExpression, expression: nil, index: -1, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
+        var vv = ExpressionColumn(text: "placeholder", parentExpression: parentExpression, expression: nil, index: -1, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
         if parentExpression?.type == "function", parentExpression?.function?.name == "LOOKUP", let l = keyPath.last as? Int, l == 0 {
-            vv = ExpressionColumn(id: UUID(), text: "lookup table", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
+            vv = ExpressionColumn(text: "lookup table", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
         } else if parentExpression?.type == "function", parentExpression?.function?.name == "LOOKUP", let l = keyPath.last as? Int, l == 1 {
-            vv = ExpressionColumn(id: UUID(), text: "output field", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
+            vv = ExpressionColumn(text: "output field", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
         } else if parentExpression?.type == "function", parentExpression?.function?.name == "LOOKUP", let l = keyPath.last as? Int, l == 2 {
-            vv = ExpressionColumn(id: UUID(), text: "input field", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
+            vv = ExpressionColumn(text: "input field", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
         }
-        let zz = ExpressionRow(id: UUID(), rowInd: rowInd, indentation: indentation, columns: [vv])
+        let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv])
         rowInd = rowInd + 1
         rows.append(zz)
     }

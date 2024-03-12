@@ -22,7 +22,6 @@
 		347351BA2B8CC3E1005B949A /* UserDTO.plist in Resources */ = {isa = PBXBuildFile; fileRef = 347351B92B8CC3E1005B949A /* UserDTO.plist */; };
 		347F48282B99C83C00F73DF6 /* FunctionCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347F48272B99C83C00F73DF6 /* FunctionCatalog.swift */; };
 		34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */; };
-		34ADF53F2B9EC7CF0050490E /* CompareArrays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADF53E2B9EC7CF0050490E /* CompareArrays.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,7 +42,6 @@
 		347351B92B8CC3E1005B949A /* UserDTO.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = UserDTO.plist; sourceTree = "<group>"; };
 		347F48272B99C83C00F73DF6 /* FunctionCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionCatalog.swift; sourceTree = "<group>"; };
 		34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformMapRuleToGrid.swift; sourceTree = "<group>"; };
-		34ADF53E2B9EC7CF0050490E /* CompareArrays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareArrays.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,7 +119,6 @@
 		344802842B889414008E5551 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				34ADF53E2B9EC7CF0050490E /* CompareArrays.swift */,
 				3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */,
 				34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */,
 				347293512B970A220033D38F /* TransformSchemaEntityTreeToList.swift */,
@@ -207,7 +204,6 @@
 				34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */,
 				3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */,
 				343B92BB2B83DE35007F78A8 /* ContentView.swift in Sources */,
-				34ADF53F2B9EC7CF0050490E /* CompareArrays.swift in Sources */,
 				344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */,
 				347293502B96D92D0033D38F /* MapRuleEditor.swift in Sources */,
 				344802862B889424008E5551 /* Update.swift in Sources */,

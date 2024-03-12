@@ -216,8 +216,6 @@ struct CardView: View {
                             }
                         }
                     }
-                }.onAppear {
-                    self.updateIndentedSchemaItemList()
                 }
             }
         }
