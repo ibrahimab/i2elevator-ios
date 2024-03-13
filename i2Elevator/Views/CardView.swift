@@ -29,6 +29,60 @@ struct CardView: View {
         }
     }
     
+    @ViewBuilder
+    func inputCardItem(for indentedSchemaItem: IndentedSchemaItem, transformation: Transformation, cards: [Card]) -> some View {
+        HStack {
+            Spacer().frame(width: CGFloat(indentedSchemaItem.indentation + 1) * 20.0)
+            if indentedSchemaItem.type == "leaf" {
+                Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
+            } else {
+                Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
+            }
+            Spacer().frame(width: 20.0)
+            if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
+                Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == indentedSchemaItem.schemaItemId) ? .bold : .regular)
+            }
+            Spacer()
+            if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
+               let objectrule = mapRule.objectrule,
+               let reference = objectrule.reference,
+               objectrule.type == "reference",
+               let targetName = transformation.schemaItems[reference]?.name
+            {
+                Text(targetName)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func outputCardItem(for indentedSchemaItem: IndentedSchemaItem, transformation: Transformation, cards: [Card]) -> some View {
+        HStack {
+            Spacer().frame(width: CGFloat((indentedSchemaItem.indentation + 1)) * 20.0)
+            if indentedSchemaItem.type == "leaf" {
+                Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
+            } else {
+                Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
+            }
+            Spacer().frame(width: 20.0)
+            if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
+                Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == indentedSchemaItem.schemaItemId) ? .bold : .regular)
+            }
+            Spacer()
+            if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
+               let objectrule = mapRule.objectrule,
+               let reference = objectrule.reference,
+               objectrule.type == "reference",
+               let targetName = transformation.schemaItems[reference]?.name
+            {
+                Text(targetName)
+            } else if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
+                      let subTransformationId = mapRule.subTransformationId
+            {
+                Text("\(subTransformationId)(...)")
+            }
+        }
+    }
+
     var body: some View {
         let indentedSchemaItemList = updateIndentedSchemaItemList()
         if let subTransformationId = sharedState.subTransformationId
@@ -69,7 +123,7 @@ struct CardView: View {
                                                     openWindow(id: "FunctionCatalog")
                                                 }
                                                 sharedState.outputItemId = indentedSchemaItem.schemaItemId
-                                            } else if let outputItemId = sharedState.outputItemId,
+                                            } /*else if let outputItemId = sharedState.outputItemId,
                                                       let userDTO = sharedState.userDTO
                                             {
                                                 let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"]
@@ -80,32 +134,12 @@ struct CardView: View {
                                                         sharedState.userDTO = ret
                                                     }
                                                 }
-                                            }
+                                            }*/
                                         }) {
                                             if cardType == "in",
                                                indentedSchemaItem.indentation == 0
                                             {
-                                                HStack {
-                                                    Spacer().frame(width: CGFloat(indentedSchemaItem.indentation + 1) * 20.0)
-                                                    if indentedSchemaItem.type == "leaf" {
-                                                        Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
-                                                    } else {
-                                                        Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
-                                                    }
-                                                    Spacer().frame(width: 20.0)
-                                                    if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
-                                                        Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == indentedSchemaItem.schemaItemId) ? .bold : .regular)
-                                                    }
-                                                    Spacer()
-                                                    if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
-                                                       let objectrule = mapRule.objectrule,
-                                                       let reference = objectrule.reference,
-                                                       objectrule.type == "reference",
-                                                       let targetName = transformation.schemaItems[reference]?.name
-                                                    {
-                                                        Text(targetName)
-                                                    }
-                                                }
+                                                inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                                 .onDrag {
                                                     if cardType == "in" {
                                                         sharedState.indentedInputItem = indentedSchemaItem
@@ -114,57 +148,13 @@ struct CardView: View {
                                                     return itemProvider
                                                 }
                                             } else if cardType == "in" {
-                                                HStack {
-                                                    Spacer().frame(width: CGFloat(indentedSchemaItem.indentation + 1) * 20.0)
-                                                    if indentedSchemaItem.type == "leaf" {
-                                                        Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
-                                                    } else {
-                                                        Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
-                                                    }
-                                                    Spacer().frame(width: 20.0)
-                                                    if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
-                                                        Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == indentedSchemaItem.schemaItemId) ? .bold : .regular)
-                                                    }
-                                                    Spacer()
-                                                    if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
-                                                       let objectrule = mapRule.objectrule,
-                                                       let reference = objectrule.reference,
-                                                       objectrule.type == "reference",
-                                                       let targetName = transformation.schemaItems[reference]?.name
-                                                    {
-                                                        Text(targetName)
-                                                    }
-                                                }
+                                                inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                             } else if let indentedInputItem = sharedState.indentedInputItem,
                                                       cardType == "out",
                                                       indentedSchemaItem.rangeMax == indentedInputItem.rangeMax,
                                                       indentedSchemaItem.indentation == 0
                                             {
-                                                HStack {
-                                                    Spacer().frame(width: CGFloat((indentedSchemaItem.indentation + 1)) * 20.0)
-                                                    if indentedInputItem.type == "leaf" {
-                                                        Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
-                                                    } else {
-                                                        Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
-                                                    }
-                                                    Spacer().frame(width: 20.0)
-                                                    if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
-                                                        Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == indentedSchemaItem.schemaItemId) ? .bold : .regular)
-                                                    }
-                                                    Spacer()
-                                                    if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
-                                                       let objectrule = mapRule.objectrule,
-                                                       let reference = objectrule.reference,
-                                                       objectrule.type == "reference",
-                                                       let targetName = transformation.schemaItems[reference]?.name
-                                                    {
-                                                        Text(targetName)
-                                                    } else if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
-                                                              let subTransformationId = mapRule.subTransformationId
-                                                    {
-                                                        Text("\(subTransformationId)(...)")
-                                                    }
-                                                }
+                                                outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                                 .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
                                                     if let indentedInputItem = sharedState.indentedInputItem,
                                                        let userDTO = sharedState.userDTO,
@@ -210,31 +200,7 @@ struct CardView: View {
                                                 }
                                             } else if cardType == "out"
                                             {
-                                                HStack {
-                                                    Spacer().frame(width: CGFloat((indentedSchemaItem.indentation + 1)) * 20.0)
-                                                    if indentedSchemaItem.type == "leaf" {
-                                                        Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
-                                                    } else {
-                                                        Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
-                                                    }
-                                                    Spacer().frame(width: 20.0)
-                                                    if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
-                                                        Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == indentedSchemaItem.schemaItemId) ? .bold : .regular)
-                                                    }
-                                                    Spacer()
-                                                    if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
-                                                       let objectrule = mapRule.objectrule,
-                                                       let reference = objectrule.reference,
-                                                       objectrule.type == "reference",
-                                                       let targetName = transformation.schemaItems[reference]?.name
-                                                    {
-                                                        Text(targetName)
-                                                    } else if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
-                                                              let subTransformationId = mapRule.subTransformationId
-                                                    {
-                                                        Text("\(subTransformationId)(...)")
-                                                    }
-                                                }
+                                                outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                             }
                                         }
                                     }
