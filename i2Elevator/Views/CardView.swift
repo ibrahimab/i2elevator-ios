@@ -40,7 +40,8 @@ struct CardView: View {
             }
             Spacer().frame(width: 20.0)
             if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
-                Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == indentedSchemaItem.schemaItemId) ? .bold : .regular)
+                Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)")
+                    .foregroundColor(indentedSchemaItem.indentation == 0 ? .white : .gray)
             }
             Spacer()
             if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
@@ -65,7 +66,9 @@ struct CardView: View {
             }
             Spacer().frame(width: 20.0)
             if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
-                Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)").fontWeight((cardType == "out" && sharedState.outputItemId == indentedSchemaItem.schemaItemId) ? .bold : .regular)
+                Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)")
+                    .fontWeight(sharedState.outputItemId == indentedSchemaItem.schemaItemId ? .bold : .regular)
+                    .foregroundColor(indentedSchemaItem.indentation == 0 ? .white : .gray)
             }
             Spacer()
             if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
@@ -75,6 +78,7 @@ struct CardView: View {
                let targetName = transformation.schemaItems[reference]?.name
             {
                 Text(targetName)
+                    .foregroundColor(indentedSchemaItem.indentation == 0 ? .white : .gray)
             } else if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
                       let subTransformationId = mapRule.subTransformationId
             {
