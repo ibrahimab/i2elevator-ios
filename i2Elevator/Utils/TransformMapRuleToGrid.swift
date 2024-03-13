@@ -71,18 +71,16 @@ func transformExpressionsToGrid(
     rowInd: inout Int
 ) -> [ExpressionRow] {
     var rows: [ExpressionRow] = []
+    var columns: [ExpressionColumn] = []
+    if indentation == 0 {
+        columns.append(ExpressionColumn(text: "=", index: -1, isBtnStyle: false, expressionKeypathSegment: keyPath))
+    }
     if prop?.type == "function", let functionProps = prop?.function {
-        var columns: [ExpressionColumn] = [
-            ExpressionColumn(text: functionProps.name, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: "name"),
-            ExpressionColumn(text: "(", index: 1, isBtnStyle: false, expressionKeypathSegment: keyPath)
-        ]
-        if indentation == 0 {
-            columns.insert(ExpressionColumn(text: "=", index: -1, isBtnStyle: false, expressionKeypathSegment: keyPath), at: 0)
-        }
+        columns.append(ExpressionColumn(text: functionProps.name, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: "name"))
+        columns.append(ExpressionColumn(text: "(", index: 1, isBtnStyle: false, expressionKeypathSegment: keyPath))
         let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: columns)
         rowInd = rowInd + 1
         rows.append(zz)
-        
         for (index, element) in functionProps.props.enumerated() {
             let zz2 = transformExpressionsToGrid(
                 prop: element,
@@ -100,30 +98,22 @@ func transformExpressionsToGrid(
         rows.append(zz3)
     } else if prop?.type == "reference", let reference = prop?.reference {
         if let displayName = schemaItems?[reference]?.name {
-            var columns: [ExpressionColumn] = [
-                ExpressionColumn(text: "\(displayName)", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: "reference")
-            ]
-            
-            if indentation == 0 {
-                columns.insert(ExpressionColumn(text: "=", index: -1, isBtnStyle: false, expressionKeypathSegment: keyPath), at: 0)
-            }
-            
+            columns.append(ExpressionColumn(text: "\(displayName)", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: "reference"))
             let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: columns)
             rowInd = rowInd + 1
             rows.append(zz)
         }
     } else if prop?.type == "placeholder" {
-        let vv = ExpressionColumn(text: "placeholder", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
-        let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv])
+        columns.append(ExpressionColumn(text: "placeholder", parentExpression: parentExpression, expression: nil, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil))
+        let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: columns)
         rowInd = rowInd + 1
         rows.append(zz)
     } else if prop?.type == "constant" {
-        let vv = ExpressionColumn(text: prop?.constant ?? "na", parentExpression: parentExpression, expression: prop, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath)
-        let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv])
+        columns.append(ExpressionColumn(text: prop?.constant ?? "na", parentExpression: parentExpression, expression: prop, index: 0, isBtnStyle: true, expressionKeypathSegment: keyPath))
+        let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: columns)
         rowInd = rowInd + 1
         rows.append(zz)
     }
-    
     if prop?.type == nil {
         var vv = ExpressionColumn(text: "placeholder", parentExpression: parentExpression, expression: nil, index: -1, isBtnStyle: true, expressionKeypathSegment: keyPath, keyToWrite: nil)
         if parentExpression?.type == "function", parentExpression?.function?.name == "LOOKUP", let l = keyPath.last as? Int, l == 0 {
@@ -137,6 +127,5 @@ func transformExpressionsToGrid(
         rowInd = rowInd + 1
         rows.append(zz)
     }
-    
     return rows
 }

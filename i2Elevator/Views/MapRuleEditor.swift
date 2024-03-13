@@ -23,6 +23,29 @@ struct MapRuleEditor: View {
                         Image(systemName: "trash")
                     }
                     .clipShape(Circle())
+                    .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
+                        if let userDTO = sharedState.userDTO,
+                           let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                           let transformationId = sharedState.transformationId,
+                           let transformation = transformations[transformationId],
+                           let subTransformationId = sharedState.subTransformationId,
+                           let outputs = transformation.subTransformations[subTransformationId]?.outputs,
+                           let cardIndex = sharedState.cardIndex,
+                           let cardType = sharedState.cardType,
+                           cardType == "out",
+                           let mapRules = outputs[cardIndex].mapRules,
+                           let outputItemId = sharedState.outputItemId,
+                           let expressionKeypathSegment = sharedState.expressionKeypathSegment
+                        {
+                            let value: [String: Any] = ["type": "placeholder"]
+                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + expressionKeypathSegment
+                            let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
+                            sharedState.userDTO = newUserDTO
+                            sharedState.indentedInputItem = nil
+                        }
+                        return true
+                    }
+
                 }
                 .padding(.bottom, 40)
                 if let userDTO = sharedState.userDTO,
@@ -42,22 +65,26 @@ struct MapRuleEditor: View {
                     ForEach(expressionGrid, id: \.index) { v in
                         HStack {
                             Spacer().frame(width: CGFloat(v.indentation) * 20.0)
-                            ForEach(v.columns, id: \.id) { v2 in
-                                if v2.isBtnStyle == true {
+                            ForEach(v.columns, id: \.id) { column in
+                                if column.isBtnStyle == true {
                                     Button(action: {
-                                        /*expressionKeypathSegment = v2.expressionKeypathSegment
-                                         expressionColumn = v2
+                                        /*expressionKeypathSegment = column.expressionKeypathSegment
+                                         expressionColumn = column
                                          inputSchemaItemId = nil*/
                                     }) {
-                                        Text(v2.text)
+                                        Text(column.text)
                                             .padding(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                                             .foregroundColor(.white)
                                         //.background(b ? Color.green : Color.blue)
                                             .cornerRadius(8)
+                                    }.onDrag {
+                                        sharedState.expressionKeypathSegment = column.expressionKeypathSegment
+                                        let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                        return itemProvider
                                     }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
                                         if let newFunctionName = sharedState.newFunctionName {
                                             var props = [[String: Any]]()
-                                            let dictionaryToAdd = ["type": "placeholder"] // Define the dictionary to add
+                                            let dictionaryToAdd = ["type": "placeholder"]
                                             var numberOfTimesToAdd: Int = 1
                                             if newFunctionName == "LOOKUP" {
                                                 numberOfTimesToAdd = 3
@@ -66,13 +93,13 @@ struct MapRuleEditor: View {
                                                 props.append(dictionaryToAdd)
                                             }
                                             let value: [String: Any] = ["type": "function", "function": ["name": newFunctionName, "props": props]]
-                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + v2.expressionKeypathSegment
+                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + column.expressionKeypathSegment
                                             let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
                                             sharedState.userDTO = newUserDTO
                                             sharedState.newFunctionName = nil
                                         } else if let schemaItemId = sharedState.indentedInputItem?.schemaItemId {
                                             let value: [String: Any] = ["type": "reference", "reference": schemaItemId]
-                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + v2.expressionKeypathSegment
+                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + column.expressionKeypathSegment
                                             let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
                                             sharedState.userDTO = newUserDTO
                                             sharedState.indentedInputItem = nil
@@ -80,7 +107,7 @@ struct MapRuleEditor: View {
                                         return true
                                     }
                                 } else {
-                                    Text(v2.text)
+                                    Text(column.text)
                                 }
                             }
                             Spacer()

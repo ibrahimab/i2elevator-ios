@@ -32,8 +32,7 @@ struct i2ElevatorApp: App {
         WindowGroup("MapRuleEditor", id: "MapRuleEditor") {
             MapRuleEditor().environmentObject(sharedState)
         }.defaultSize(landscapeSize)
-        WindowGroup("FunctionCatalog", id: "FunctionCatalog") {
-            FunctionCatalog().environmentObject(sharedState)
+        WindowGroup("FunctionCatalog", id: "FunctionCatalog") {            FunctionCatalog().environmentObject(sharedState)
         }.defaultSize(portraitSize)
     }
 }
