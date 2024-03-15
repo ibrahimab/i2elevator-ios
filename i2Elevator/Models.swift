@@ -47,11 +47,11 @@ struct MapRule: Codable {
 }
 
 struct Expression: Codable {
-    //var parameters: [Expression]?
+    var type: String?
     var function: Function?
     var reference: String?
+    var rangeMax: String?
     var constant: String?
-    var type: String?
 }
 
 struct Function: Codable  {
@@ -67,4 +67,15 @@ struct IndentedSchemaItem: Identifiable {
     var id: String {
         schemaItemId
     }
+}
+
+var functionPropsTypes: [String: [[PropType]]] = [:]
+
+/*["LOOKUP": [[PropType(type: "reference", rangeMax: "S")], [PropType(type: "reference", rangeMax: "1")], [PropType(type: "reference", rangeMax: "1"), PropType(type: "function")], [PropType(type: "constant")]],
+                                             "UPPERCASE": [[PropType(type: "reference", rangeMax: "1"), PropType(type: "function")]],
+                                             "LOWERCASE": [[PropType(type: "reference", rangeMax: "1"), PropType(type: "function")]]]*/
+
+struct PropType: Codable {
+    var type: String
+    var rangeMax: String?
 }

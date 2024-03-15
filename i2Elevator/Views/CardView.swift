@@ -122,10 +122,8 @@ struct CardView: View {
                                             if cardType == "out" {
                                                 sharedState.cardType = cardType
                                                 sharedState.cardIndex = cardIndex
-                                                if sharedState.outputItemId == nil {
-                                                    openWindow(id: "MapRuleEditor")
-                                                    openWindow(id: "FunctionCatalog")
-                                                }
+                                                openWindow(id: "MapRuleEditor")
+                                                openWindow(id: "FunctionCatalog")
                                                 sharedState.outputItemId = indentedSchemaItem.schemaItemId
                                             } /*else if let outputItemId = sharedState.outputItemId,
                                                       let userDTO = sharedState.userDTO
@@ -145,6 +143,7 @@ struct CardView: View {
                                             {
                                                 inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                                 .onDrag {
+                                                    resetDragProperties()
                                                     if cardType == "in" {
                                                         sharedState.indentedInputItem = indentedSchemaItem
                                                     }
@@ -174,7 +173,7 @@ struct CardView: View {
                                                                 _objectrule.type = "reference"
                                                                 objectrule = _objectrule
                                                             } else {
-                                                                objectrule = Expression(reference: indentedInputItem.schemaItemId, type: "reference")
+                                                                objectrule = Expression(type: "reference", reference: indentedInputItem.schemaItemId, rangeMax: indentedSchemaItem.rangeMax)
                                                             }
                                                             let jsonEncoder = JSONEncoder()
                                                             if let jsonData = try? jsonEncoder.encode(objectrule),
@@ -195,11 +194,11 @@ struct CardView: View {
                                                                 let newUserDTO2 = updateClient(userDTO: newUserDTO, value: "f_\(rand)", keyPath: keyPath2, operation: "setValue")
                                                                 if let newUserDTO = newUserDTO2 {
                                                                     sharedState.userDTO = newUserDTO
-                                                                    sharedState.indentedInputItem = nil
                                                                 }
                                                             }
                                                         }
                                                     }
+                                                    sharedState.indentedInputItem = nil
                                                     return true
                                                 }
                                             } else if cardType == "out"

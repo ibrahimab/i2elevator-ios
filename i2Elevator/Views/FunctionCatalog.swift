@@ -18,6 +18,7 @@ struct FunctionCatalog: View {
                 }) {
                     Text("UPPERCASE")
                 }.onDrag {
+                    resetDragProperties()
                     sharedState.newFunctionName = "UPPERCASE"
                     let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
                     return itemProvider
@@ -27,6 +28,7 @@ struct FunctionCatalog: View {
                 }) {
                     Text("LOWERCASE")
                 }.onDrag {
+                    resetDragProperties()
                     sharedState.newFunctionName = "LOWERCASE"
                     let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
                     return itemProvider
@@ -36,6 +38,7 @@ struct FunctionCatalog: View {
                 }) {
                     Text("LOOKUP")
                 }.onDrag {
+                    resetDragProperties()
                     sharedState.newFunctionName = "LOOKUP"
                     let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
                     return itemProvider

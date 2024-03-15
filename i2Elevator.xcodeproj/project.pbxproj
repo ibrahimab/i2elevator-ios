@@ -15,6 +15,8 @@
 		343B92C92B83DF34007F78A8 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343B92C82B83DF34007F78A8 /* CardView.swift */; };
 		344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344802822B8684D5008E5551 /* TopColorGradient.swift */; };
 		344802862B889424008E5551 /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344802852B889424008E5551 /* Update.swift */; };
+		346641402BA4251500D50E1D /* FunctionPropsTypes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3466413F2BA4251500D50E1D /* FunctionPropsTypes.plist */; };
+		346641422BA432D200D50E1D /* ResetDragProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346641412BA432D200D50E1D /* ResetDragProperties.swift */; };
 		3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */; };
 		347293502B96D92D0033D38F /* MapRuleEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472934F2B96D92D0033D38F /* MapRuleEditor.swift */; };
 		347293522B970A220033D38F /* TransformSchemaEntityTreeToList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347293512B970A220033D38F /* TransformSchemaEntityTreeToList.swift */; };
@@ -35,6 +37,8 @@
 		343B92C82B83DF34007F78A8 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		344802822B8684D5008E5551 /* TopColorGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopColorGradient.swift; sourceTree = "<group>"; };
 		344802852B889424008E5551 /* Update.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Update.swift; sourceTree = "<group>"; };
+		3466413F2BA4251500D50E1D /* FunctionPropsTypes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = FunctionPropsTypes.plist; sourceTree = "<group>"; };
+		346641412BA432D200D50E1D /* ResetDragProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResetDragProperties.swift; sourceTree = "<group>"; };
 		3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomAlphaNumeric.swift; sourceTree = "<group>"; };
 		3472934F2B96D92D0033D38F /* MapRuleEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRuleEditor.swift; sourceTree = "<group>"; };
 		347293512B970A220033D38F /* TransformSchemaEntityTreeToList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformSchemaEntityTreeToList.swift; sourceTree = "<group>"; };
@@ -82,6 +86,7 @@
 				343B92B82B83DE35007F78A8 /* i2ElevatorApp.swift */,
 				343B92BA2B83DE35007F78A8 /* ContentView.swift */,
 				347351B92B8CC3E1005B949A /* UserDTO.plist */,
+				3466413F2BA4251500D50E1D /* FunctionPropsTypes.plist */,
 				343B92BC2B83DE37007F78A8 /* Assets.xcassets */,
 				343B92C12B83DE37007F78A8 /* Info.plist */,
 				343B92BE2B83DE37007F78A8 /* Preview Content */,
@@ -120,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */,
+				346641412BA432D200D50E1D /* ResetDragProperties.swift */,
 				34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */,
 				347293512B970A220033D38F /* TransformSchemaEntityTreeToList.swift */,
 				344802852B889424008E5551 /* Update.swift */,
@@ -189,6 +195,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				347351BA2B8CC3E1005B949A /* UserDTO.plist in Resources */,
+				346641402BA4251500D50E1D /* FunctionPropsTypes.plist in Resources */,
 				343B92C02B83DE37007F78A8 /* Preview Assets.xcassets in Resources */,
 				343B92BD2B83DE37007F78A8 /* Assets.xcassets in Resources */,
 			);
@@ -207,6 +214,7 @@
 				344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */,
 				347293502B96D92D0033D38F /* MapRuleEditor.swift in Sources */,
 				344802862B889424008E5551 /* Update.swift in Sources */,
+				346641422BA432D200D50E1D /* ResetDragProperties.swift in Sources */,
 				347293522B970A220033D38F /* TransformSchemaEntityTreeToList.swift in Sources */,
 				347351B82B8CB4C7005B949A /* Models.swift in Sources */,
 				343B92C92B83DF34007F78A8 /* CardView.swift in Sources */,

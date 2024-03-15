@@ -172,6 +172,23 @@ struct ContentView: View {
                     }
                 }
             }
+            if let str = Bundle.main.path(forResource: "FunctionPropsTypes", ofType: "plist") {
+                let d = NSDictionary(contentsOfFile: str)
+                if let d = d {
+                    guard let jsonData = try? JSONSerialization.data(withJSONObject: d, options: [])
+                    else {
+                        // Handle errors
+                        return
+                    }
+                    do {
+                        let jsonDecoder = JSONDecoder()
+                        functionPropsTypes = try jsonDecoder.decode([String: [[PropType]]].self, from: jsonData )
+                    } catch {
+                        // Handle decoding error
+                        print("Decoding error: \(error)")
+                    }
+                }
+            }
         }
     }
 }
