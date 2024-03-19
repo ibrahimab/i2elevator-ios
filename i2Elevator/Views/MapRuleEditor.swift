@@ -207,29 +207,37 @@ struct MapRuleEditor: View {
                         .listRowSeparator(.hidden)
                     }
                 }
-                List {
-                    Section(header: Text("Scratchpad")) {
-                        ForEach(sharedState.schemaItemsOnScratchpad.indices, id: \.self) { index in
-                            let schemaItemOnScratchpad = sharedState.schemaItemsOnScratchpad[index]
-                            HStack {
-                                Spacer().frame(width: 20.0)
+                VStack {
+                    HStack {
+                        Spacer().frame(width: 20.0)
+                        Text("Scratchpad")
+                        Spacer()
+                    }
+                    ForEach(sharedState.schemaItemsOnScratchpad.indices, id: \.self) { index in
+                        let schemaItemOnScratchpad = sharedState.schemaItemsOnScratchpad[index]
+                        HStack {
+                            Button(action: {
+                                
+                            }) {
                                 if schemaItemOnScratchpad.numOfChildren == 0 {
                                     Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
                                 } else {
                                     Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
                                 }
                                 Spacer().frame(width: 20.0)
-                                Button(action: {
-                                    
-                                }) {
-                                    Text("\(schemaItemOnScratchpad.schemaItemId) 1:\(schemaItemOnScratchpad.rangeMax)")
-                                }.onDrag {
-                                    resetDragProperties()
-                                    sharedState.draggedSchemaItem = schemaItemOnScratchpad
-                                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                                    return itemProvider
+                                if let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                                   let transformationId = sharedState.transformationId,
+                                   let schemaItem = transformations[transformationId]?.schemaItems[schemaItemOnScratchpad.schemaItemId]
+                                {
+                                    Text("\(schemaItem.name) 1:\(schemaItemOnScratchpad.rangeMax)")
                                 }
+                            }.onDrag {
+                                resetDragProperties()
+                                sharedState.draggedSchemaItem = schemaItemOnScratchpad
+                                let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                return itemProvider
                             }
+                            Spacer()
                         }
                     }
                 }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in

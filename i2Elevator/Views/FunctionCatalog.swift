@@ -13,35 +13,17 @@ struct FunctionCatalog: View {
         ZStack {
             TopColorGradient(color: .cyan)
             List {
-                Button(action: {
-                    
-                }) {
-                    Text("UPPERCASE")
-                }.onDrag {
-                    resetDragProperties()
-                    sharedState.newFunctionName = "UPPERCASE"
-                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                    return itemProvider
-                }
-                Button(action: {
-                    
-                }) {
-                    Text("LOWERCASE")
-                }.onDrag {
-                    resetDragProperties()
-                    sharedState.newFunctionName = "LOWERCASE"
-                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                    return itemProvider
-                }
-                Button(action: {
-                    
-                }) {
-                    Text("LOOKUP")
-                }.onDrag {
-                    resetDragProperties()
-                    sharedState.newFunctionName = "LOOKUP"
-                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                    return itemProvider
+                ForEach(Array(functionPropsTypes.keys.sorted()), id: \.self) { key in
+                    Button(action: {
+                        
+                    }) {
+                        Text(key)
+                    }.onDrag {
+                        resetDragProperties()
+                        sharedState.newFunctionName = key
+                        let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                        return itemProvider
+                    }
                 }
             }
             .padding(.vertical, 40)

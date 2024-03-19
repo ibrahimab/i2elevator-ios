@@ -69,5 +69,55 @@
 			</dict>
 		</array>
 	</array>
+	<key>FINDONE</key>
+	<array>
+		<array>
+			<dict>
+				<key>type</key>
+				<string>reference</string>
+				<key>rangeMax</key>
+				<string>1</string>
+			</dict>
+		</array>
+	</array>
+	<key>IF</key>
+	<array>
+		<array>
+			<dict>
+				<key>type</key>
+				<string>reference</string>
+				<key>rangeMax</key>
+				<string>1</string>
+			</dict>
+			<dict>
+				<key>type</key>
+				<string>function</string>
+			</dict>
+		</array>
+		<array>
+			<dict>
+				<key>type</key>
+				<string>reference</string>
+				<key>rangeMax</key>
+				<string>1</string>
+			</dict>
+			<dict>
+				<key>type</key>
+				<string>function</string>
+			</dict>
+		</array>
+		<array>
+			<dict>
+				<key>type</key>
+				<string>reference</string>
+				<key>rangeMax</key>
+				<string>1</string>
+			</dict>
+			<dict>
+				<key>type</key>
+				<string>function</string>
+			</dict>
+		</array>
+	</array>
 </dict>
 </plist>
