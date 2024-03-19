@@ -6,6 +6,6 @@
 //
 
 func resetDragProperties() {
-    SharedState().indentedInputItem = nil
+    SharedState().draggedSchemaItem = nil
     SharedState().newFunctionName = nil
 }

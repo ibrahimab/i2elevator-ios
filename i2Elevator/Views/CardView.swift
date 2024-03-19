@@ -33,7 +33,7 @@ struct CardView: View {
     func inputCardItem(for indentedSchemaItem: IndentedSchemaItem, transformation: Transformation, cards: [Card]) -> some View {
         HStack {
             Spacer().frame(width: CGFloat(indentedSchemaItem.indentation + 1) * 20.0)
-            if indentedSchemaItem.type == "leaf" {
+            if indentedSchemaItem.numOfChildren == 0 {
                 Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
             } else {
                 Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
@@ -59,7 +59,7 @@ struct CardView: View {
     func outputCardItem(for indentedSchemaItem: IndentedSchemaItem, transformation: Transformation, cards: [Card]) -> some View {
         HStack {
             Spacer().frame(width: CGFloat((indentedSchemaItem.indentation + 1)) * 20.0)
-            if indentedSchemaItem.type == "leaf" {
+            if indentedSchemaItem.numOfChildren == 0 {
                 Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
             } else {
                 Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
@@ -103,6 +103,21 @@ struct CardView: View {
                         VStack {
                             Spacer()
                             Text("\(cardType) \(cardIndex)")
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    openWindow(id: "MapRuleEditor")
+                                }) {
+                                    Image(systemName: "function")
+                                }
+                                .clipShape(Circle())
+                                Button(action: {
+                                    openWindow(id: "FunctionCatalog")
+                                }) {
+                                    Image(systemName: "list.bullet")
+                                }
+                                .clipShape(Circle())
+                            }
                             List {
                                 Section(header: Text("Root")) {
                                     HStack {
@@ -119,11 +134,13 @@ struct CardView: View {
                                 Section(header: Text("Schema Items")) {
                                     ForEach(indentedSchemaItemList) { indentedSchemaItem in
                                         Button(action: {
-                                            if cardType == "out" {
+                                            if cardType == "out" && indentedSchemaItem.indentation == 0 {
                                                 sharedState.cardType = cardType
                                                 sharedState.cardIndex = cardIndex
-                                                openWindow(id: "MapRuleEditor")
-                                                openWindow(id: "FunctionCatalog")
+                                                if sharedState.outputItemId == nil {
+                                                    openWindow(id: "MapRuleEditor")
+                                                    openWindow(id: "FunctionCatalog")
+                                                }
                                                 sharedState.outputItemId = indentedSchemaItem.schemaItemId
                                             } /*else if let outputItemId = sharedState.outputItemId,
                                                       let userDTO = sharedState.userDTO
@@ -145,21 +162,21 @@ struct CardView: View {
                                                 .onDrag {
                                                     resetDragProperties()
                                                     if cardType == "in" {
-                                                        sharedState.indentedInputItem = indentedSchemaItem
+                                                        sharedState.draggedSchemaItem = DraggedSchemaItem(schemaItemId: indentedSchemaItem.schemaItemId, rangeMax: indentedSchemaItem.rangeMax, numOfChildren: indentedSchemaItem.numOfChildren)
                                                     }
                                                     let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
                                                     return itemProvider
                                                 }
                                             } else if cardType == "in" {
                                                 inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
-                                            } else if let indentedInputItem = sharedState.indentedInputItem,
+                                            } else if let indentedInputItem = sharedState.draggedSchemaItem,
                                                       cardType == "out",
                                                       indentedSchemaItem.rangeMax == indentedInputItem.rangeMax,
                                                       indentedSchemaItem.indentation == 0
                                             {
                                                 outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                                 .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
-                                                    if let indentedInputItem = sharedState.indentedInputItem,
+                                                    if let indentedInputItem = sharedState.draggedSchemaItem,
                                                        let userDTO = sharedState.userDTO,
                                                        cardType == "out"
                                                     {
@@ -181,7 +198,7 @@ struct CardView: View {
                                                                 let newUserDTO = updateClient(userDTO: userDTO, value: dictionary, keyPath: keyPath, operation: "setValue")
                                                                 if let ret = newUserDTO {
                                                                     sharedState.userDTO = ret
-                                                                    sharedState.indentedInputItem = nil
+                                                                    sharedState.draggedSchemaItem = nil
                                                                 }
                                                             }
                                                         } else if indentedSchemaItem.rangeMax == "S" {
@@ -198,7 +215,7 @@ struct CardView: View {
                                                             }
                                                         }
                                                     }
-                                                    sharedState.indentedInputItem = nil
+                                                    sharedState.draggedSchemaItem = nil
                                                     return true
                                                 }
                                             } else if cardType == "out"

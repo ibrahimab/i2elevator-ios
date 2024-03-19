@@ -61,7 +61,7 @@ struct Function: Codable  {
 
 struct IndentedSchemaItem: Identifiable {
     var indentation: Int
-    var type: String
+    var numOfChildren: Int
     var schemaItemId: String
     var rangeMax: String
     var id: String {
@@ -69,11 +69,16 @@ struct IndentedSchemaItem: Identifiable {
     }
 }
 
-var functionPropsTypes: [String: [[PropType]]] = [:]
+struct DraggedSchemaItem: Identifiable {
+    var schemaItemId: String
+    var rangeMax: String
+    var numOfChildren: Int
+    var id: String {
+        schemaItemId
+    }
+}
 
-/*["LOOKUP": [[PropType(type: "reference", rangeMax: "S")], [PropType(type: "reference", rangeMax: "1")], [PropType(type: "reference", rangeMax: "1"), PropType(type: "function")], [PropType(type: "constant")]],
-                                             "UPPERCASE": [[PropType(type: "reference", rangeMax: "1"), PropType(type: "function")]],
-                                             "LOWERCASE": [[PropType(type: "reference", rangeMax: "1"), PropType(type: "function")]]]*/
+var functionPropsTypes: [String: [[PropType]]] = [:]
 
 struct PropType: Codable {
     var type: String

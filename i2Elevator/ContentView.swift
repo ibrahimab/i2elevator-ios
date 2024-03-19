@@ -14,11 +14,12 @@ class SharedState: ObservableObject {
     @Published var subTransformationId: String? = nil
     @Published var cardType: String? = nil
     @Published var cardIndex: Int? = nil
-    @Published var indentedInputItem: IndentedSchemaItem? = nil
+    @Published var draggedSchemaItem: DraggedSchemaItem? = nil
     @Published var outputItemId: String? = nil
     @Published var userDTO: UserDTO? = nil
     @Published var newFunctionName: String? = nil
     @Published var expressionKeypathSegment: [Any]? = nil
+    @Published var schemaItemsOnScratchpad: [DraggedSchemaItem] = []
 }
 
 enum SelectedMenuItem {

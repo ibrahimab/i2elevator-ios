@@ -10,6 +10,7 @@ import UniformTypeIdentifiers
 
 struct MapRuleEditor: View {
     @EnvironmentObject var sharedState: SharedState
+
     var body: some View {
         var rowInd = 0
         ZStack {
@@ -41,7 +42,7 @@ struct MapRuleEditor: View {
                             let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
                             sharedState.userDTO = newUserDTO
                         }
-                        sharedState.indentedInputItem = nil
+                        sharedState.draggedSchemaItem = nil
                         return true
                     }
                 }
@@ -67,11 +68,11 @@ struct MapRuleEditor: View {
                                 if column.isBtnStyle == true {
                                     
                                     // Reference dropped onto a parameter of a function
-                                    if let indentedInputItem = sharedState.indentedInputItem,
+                                    if let draggedSchemaItem = sharedState.draggedSchemaItem,
                                        let functionPropIndex = column.functionPropIndex,
                                        let functionName = column.parentExpression?.function?.name,
                                        functionPropsTypes[functionName]?[functionPropIndex].first(where: { propType in
-                                           let ret = propType.type == "reference" && propType.rangeMax == indentedInputItem.rangeMax
+                                           let ret = propType.type == "reference" && propType.rangeMax == draggedSchemaItem.rangeMax
                                            return ret
                                        }) != nil
                                     {
@@ -88,7 +89,7 @@ struct MapRuleEditor: View {
                                             return itemProvider
                                         }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
                                             var _expression = column.expression
-                                            if let schemaItemId = sharedState.indentedInputItem?.schemaItemId {
+                                            if let schemaItemId = sharedState.draggedSchemaItem?.schemaItemId {
                                                 _expression?.type = "reference"
                                                 _expression?.reference = schemaItemId
                                                 let jsonEncoder = JSONEncoder()
@@ -99,7 +100,7 @@ struct MapRuleEditor: View {
                                                     sharedState.userDTO = newUserDTO
                                                 }
                                             }
-                                            sharedState.indentedInputItem = nil
+                                            sharedState.draggedSchemaItem = nil
                                             return true
                                         }
                                         
@@ -205,6 +206,42 @@ struct MapRuleEditor: View {
                         }
                         .listRowSeparator(.hidden)
                     }
+                }
+                List {
+                    Section(header: Text("Scratchpad")) {
+                        ForEach(sharedState.schemaItemsOnScratchpad.indices, id: \.self) { index in
+                            let schemaItemOnScratchpad = sharedState.schemaItemsOnScratchpad[index]
+                            HStack {
+                                Spacer().frame(width: 20.0)
+                                if schemaItemOnScratchpad.numOfChildren == 0 {
+                                    Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
+                                } else {
+                                    Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
+                                }
+                                Spacer().frame(width: 20.0)
+                                Button(action: {
+                                    
+                                }) {
+                                    Text("\(schemaItemOnScratchpad.schemaItemId) 1:\(schemaItemOnScratchpad.rangeMax)")
+                                }.onDrag {
+                                    resetDragProperties()
+                                    sharedState.draggedSchemaItem = schemaItemOnScratchpad
+                                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                    return itemProvider
+                                }
+                            }
+                        }
+                    }
+                }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
+                    if let draggedSchemaItem = sharedState.draggedSchemaItem {
+                        if sharedState.schemaItemsOnScratchpad.first(where: { schemaItemOnScratchpad in
+                            schemaItemOnScratchpad.schemaItemId == draggedSchemaItem.schemaItemId
+                        }) == nil {
+                            sharedState.schemaItemsOnScratchpad.append(DraggedSchemaItem(schemaItemId: draggedSchemaItem.schemaItemId, rangeMax: draggedSchemaItem.rangeMax, numOfChildren: draggedSchemaItem.numOfChildren))
+                        }
+                    }
+                    sharedState.draggedSchemaItem = nil
+                    return true
                 }
                 Spacer()
             }
