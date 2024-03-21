@@ -78,9 +78,21 @@ struct DraggedSchemaItem: Identifiable {
     }
 }
 
-var functionPropsTypes: [String: [[PropType]]] = [:]
+var functionPropsTypes: [FunctionCategory] = []
+
+struct FunctionCategory: Codable {
+    var name: String
+    var tabItemImage: String
+    var functions: [String: [[PropType]]]
+    var id: String {
+        name
+    }
+}
 
 struct PropType: Codable {
     var type: String
     var rangeMax: String?
+    var id: String {
+        type
+    }
 }

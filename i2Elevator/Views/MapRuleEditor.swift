@@ -25,7 +25,13 @@ struct MapRuleEditor: View {
                     }
                     .clipShape(Circle())
                     .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
-                        if let userDTO = sharedState.userDTO,
+                        if let _draggedSchemaItem = sharedState.draggedSchemaItem,
+                           let i = sharedState.schemaItemsOnScratchpad.firstIndex(where: { draggedSchemaItem in
+                               draggedSchemaItem.schemaItemId == _draggedSchemaItem.schemaItemId
+                           })
+                        {
+                            sharedState.schemaItemsOnScratchpad.remove(at: i)
+                        } else if let userDTO = sharedState.userDTO,
                            let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
                            let transformationId = sharedState.transformationId,
                            let transformation = transformations[transformationId],
@@ -71,7 +77,7 @@ struct MapRuleEditor: View {
                                     if let draggedSchemaItem = sharedState.draggedSchemaItem,
                                        let functionPropIndex = column.functionPropIndex,
                                        let functionName = column.parentExpression?.function?.name,
-                                       functionPropsTypes[functionName]?[functionPropIndex].first(where: { propType in
+                                       functionPropsTypes[sharedState.functionCategoryIndex].functions[functionName]?[functionPropIndex].first(where: { propType in
                                            let ret = propType.type == "reference" && propType.rangeMax == draggedSchemaItem.rangeMax
                                            return ret
                                        }) != nil
@@ -89,9 +95,11 @@ struct MapRuleEditor: View {
                                             return itemProvider
                                         }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
                                             var _expression = column.expression
-                                            if let schemaItemId = sharedState.draggedSchemaItem?.schemaItemId {
+                                            if let schemaItemId = sharedState.draggedSchemaItem?.schemaItemId
+                                            {
                                                 _expression?.type = "reference"
                                                 _expression?.reference = schemaItemId
+                                                _expression?.rangeMax = draggedSchemaItem.rangeMax
                                                 let jsonEncoder = JSONEncoder()
                                                 if let jsonData = try? jsonEncoder.encode(_expression),
                                                    let value = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
@@ -106,13 +114,13 @@ struct MapRuleEditor: View {
                                         
                                         // Function dropped
                                     } else if let newFunctionName = sharedState.newFunctionName,
-                                              let newFunctionType = functionPropsTypes[newFunctionName],
+                                              let newFunctionType =  functionPropsTypes[sharedState.functionCategoryIndex].functions[newFunctionName],
                                               (column.functionPropIndex == nil || {
                                                   if let functionPropIndex = column.functionPropIndex,
-                                                     let functionName = column.parentExpression?.function?.name,
-                                                     functionPropsTypes[functionName]?[functionPropIndex].first(where: { functionType in
+                                                     let functionName = column.parentExpression?.function?.name/*,
+                                                     functionPropsTypes[sharedState.functionCategoryIndex].functions[functionName]?[functionPropIndex].first(where: { functionType in
                                                          return functionType.type == "function"
-                                                     }) != nil
+                                                     }) != nil*/
                                                   {
                                                       return true
                                                   } else {
@@ -136,38 +144,44 @@ struct MapRuleEditor: View {
                                             let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
                                             return itemProvider
                                         }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
-                                            var _expression = column.parentExpression ?? column.expression
+                                            var _expression = column.expression
                                             var newProps: [Expression] = []
-                                            if _expression?.type == "function",
-                                               let prevFunctionName = _expression?.function?.name,
-                                               let prevFunctionType = functionPropsTypes[prevFunctionName],
-                                               let prevFunctionPropCount = _expression?.function?.props.count
+                                            if column.expression?.type == "function",
+                                               let prevFunctionName = column.expression?.function?.name,
+                                               let prevFunctionType = functionPropsTypes[sharedState.functionCategoryIndex].functions[prevFunctionName],
+                                               let prevFunctionPropCount =  column.expression?.function?.props.count
                                             {
                                                 // Copy elements from the original array to the resized array
                                                 for i in 0..<newFunctionType.count {
-                                                    if _expression?.type == "function",
-                                                       i < prevFunctionType.count,
-                                                       i < newFunctionType.count,
+                                                    if i < prevFunctionType.count,
                                                        newFunctionType[i].first(where: { functionPropType in
-                                                           let ret = functionPropType.type == _expression?.function?.props[i].type && functionPropType.rangeMax == _expression?.function?.props[i].rangeMax
+                                                           let ret = functionPropType.type == column.expression?.function?.props[i].type && functionPropType.rangeMax == column.expression?.function?.props[i].rangeMax
                                                            return ret
                                                        }) != nil,
                                                        i < prevFunctionPropCount,
-                                                       let prevFunctionProp = _expression?.function?.props[i]
+                                                       let prevFunctionProp =  column.expression?.function?.props[i]
                                                     {
                                                         newProps.append(prevFunctionProp)
                                                     } else {
                                                         newProps.append(Expression(type: "placeholder"))
                                                     }
                                                 }
-                                                _expression?.function?.props = newProps
                                             } else {
                                                 for _ in 0..<newFunctionType.count {
                                                     newProps.append(Expression(type: "placeholder"))
                                                 }
                                             }
-                                            _expression?.function?.name = newFunctionName
+                                            _expression?.function = Function(name: newFunctionName, props: newProps)
                                             _expression?.type = "function"
+                                            if column.expression?.type == "reference",
+                                               let referenceToAddToScratchpad = column.expression?.reference,
+                                               let schemaItem = userDTO.teams?["response"]?.transformations[transformationId]?.schemaItems[referenceToAddToScratchpad],
+                                               let rangeMaxToAddToScratchpad = column.expression?.rangeMax,
+                                               sharedState.schemaItemsOnScratchpad.first(where: { schemaItemOnScratchpad in
+                                                   schemaItemOnScratchpad.schemaItemId == referenceToAddToScratchpad
+                                            }) == nil {
+                                                sharedState.schemaItemsOnScratchpad.append(DraggedSchemaItem(schemaItemId: referenceToAddToScratchpad, rangeMax: rangeMaxToAddToScratchpad, numOfChildren: schemaItem.children.count))
+                                            }
                                             let jsonEncoder = JSONEncoder()
                                             if let jsonData = try? jsonEncoder.encode(_expression),
                                                let value = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
