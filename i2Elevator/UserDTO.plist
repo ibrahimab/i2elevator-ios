@@ -11,7 +11,7 @@
 				<key>t0</key>
 				<dict>
 					<key>name</key>
-					<string>T0</string>
+					<string>Custom Order</string>
 					<key>schemaItems</key>
 					<dict>
 						<key>si0</key>
@@ -48,14 +48,14 @@
 						<key>si2</key>
 						<dict>
 							<key>name</key>
-							<string>json-invoice-item</string>
+							<string>json-invoice-item-2</string>
 							<key>children</key>
 							<dict/>
 						</dict>
 						<key>si3</key>
 						<dict>
 							<key>name</key>
-							<string>json-invoice-item</string>
+							<string>json-invoice-sub-item</string>
 							<key>children</key>
 							<dict/>
 						</dict>
@@ -93,14 +93,14 @@
 						<key>si6</key>
 						<dict>
 							<key>name</key>
-							<string>xml-invoice-item</string>
+							<string>xml-invoice-item-2</string>
 							<key>children</key>
 							<dict/>
 						</dict>
 						<key>si7</key>
 						<dict>
 							<key>name</key>
-							<string>xml-invoice-item</string>
+							<string>xml-invoice-sub-item</string>
 							<key>children</key>
 							<dict/>
 						</dict>
@@ -154,292 +154,6 @@
 				<key>t1</key>
 				<dict>
 					<key>name</key>
-					<string>T1</string>
-					<key>schemaItems</key>
-					<dict>
-						<key>si0</key>
-						<dict>
-							<key>name</key>
-							<string>json-invoice-list</string>
-							<key>children</key>
-							<dict>
-								<key>si1</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>S</string>
-								</dict>
-								<key>si2</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>1</string>
-								</dict>
-							</dict>
-						</dict>
-						<key>si1</key>
-						<dict>
-							<key>name</key>
-							<string>json-invoice-item</string>
-							<key>children</key>
-							<dict>
-								<key>si3</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>1</string>
-								</dict>
-							</dict>
-						</dict>
-						<key>si2</key>
-						<dict>
-							<key>name</key>
-							<string>json-invoice-item</string>
-							<key>children</key>
-							<dict/>
-						</dict>
-						<key>si3</key>
-						<dict>
-							<key>name</key>
-							<string>json-invoice-item</string>
-							<key>children</key>
-							<dict/>
-						</dict>
-						<key>si4</key>
-						<dict>
-							<key>name</key>
-							<string>xml-invoice-list</string>
-							<key>children</key>
-							<dict>
-								<key>si5</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>S</string>
-								</dict>
-								<key>si6</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>1</string>
-								</dict>
-							</dict>
-						</dict>
-						<key>si5</key>
-						<dict>
-							<key>name</key>
-							<string>xml-invoice-item</string>
-							<key>children</key>
-							<dict>
-								<key>si7</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>1</string>
-								</dict>
-							</dict>
-						</dict>
-						<key>si6</key>
-						<dict>
-							<key>name</key>
-							<string>xml-invoice-item</string>
-							<key>children</key>
-							<dict/>
-						</dict>
-						<key>si7</key>
-						<dict>
-							<key>name</key>
-							<string>xml-invoice-item</string>
-							<key>children</key>
-							<dict/>
-						</dict>
-					</dict>
-					<key>subTransformations</key>
-					<dict>
-						<key>st0</key>
-						<dict>
-							<key>name</key>
-							<string>ST0</string>
-							<key>inputs</key>
-							<array>
-								<dict>
-									<key>schemaItemId</key>
-									<string>si0</string>
-								</dict>
-							</array>
-							<key>outputs</key>
-							<array>
-								<dict>
-									<key>schemaItemId</key>
-									<string>si4</string>
-									<key>mapRules</key>
-									<dict>
-										<key>si6</key>
-										<dict>
-											<key>objectrule</key>
-											<dict>
-												<key>type</key>
-												<string>function</string>
-												<key>function</key>
-												<dict>
-													<key>props</key>
-													<array>
-														<dict>
-															<key>type</key>
-															<string>placeholder</string>
-														</dict>
-													</array>
-													<key>name</key>
-													<string>UPPERCASE</string>
-												</dict>
-											</dict>
-										</dict>
-									</dict>
-								</dict>
-							</array>
-						</dict>
-					</dict>
-				</dict>
-				<key>t2</key>
-				<dict>
-					<key>name</key>
-					<string>Custom Order</string>
-					<key>schemaItems</key>
-					<dict>
-						<key>si0</key>
-						<dict>
-							<key>name</key>
-							<string>json-invoice-list</string>
-							<key>children</key>
-							<dict>
-								<key>si1</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>S</string>
-								</dict>
-								<key>si2</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>1</string>
-								</dict>
-							</dict>
-						</dict>
-						<key>si1</key>
-						<dict>
-							<key>name</key>
-							<string>json-invoice-item</string>
-							<key>children</key>
-							<dict>
-								<key>si3</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>1</string>
-								</dict>
-							</dict>
-						</dict>
-						<key>si2</key>
-						<dict>
-							<key>name</key>
-							<string>json-invoice-item</string>
-							<key>children</key>
-							<dict/>
-						</dict>
-						<key>si3</key>
-						<dict>
-							<key>name</key>
-							<string>json-invoice-item</string>
-							<key>children</key>
-							<dict/>
-						</dict>
-						<key>si4</key>
-						<dict>
-							<key>name</key>
-							<string>xml-invoice-list</string>
-							<key>children</key>
-							<dict>
-								<key>si5</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>S</string>
-								</dict>
-								<key>si6</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>1</string>
-								</dict>
-							</dict>
-						</dict>
-						<key>si5</key>
-						<dict>
-							<key>name</key>
-							<string>xml-invoice-item</string>
-							<key>children</key>
-							<dict>
-								<key>si7</key>
-								<dict>
-									<key>rangeMax</key>
-									<string>1</string>
-								</dict>
-							</dict>
-						</dict>
-						<key>si6</key>
-						<dict>
-							<key>name</key>
-							<string>xml-invoice-item</string>
-							<key>children</key>
-							<dict/>
-						</dict>
-						<key>si7</key>
-						<dict>
-							<key>name</key>
-							<string>xml-invoice-item</string>
-							<key>children</key>
-							<dict/>
-						</dict>
-					</dict>
-					<key>subTransformations</key>
-					<dict>
-						<key>st0</key>
-						<dict>
-							<key>name</key>
-							<string>ST0</string>
-							<key>inputs</key>
-							<array>
-								<dict>
-									<key>schemaItemId</key>
-									<string>si0</string>
-								</dict>
-							</array>
-							<key>outputs</key>
-							<array>
-								<dict>
-									<key>schemaItemId</key>
-									<string>si4</string>
-									<key>mapRules</key>
-									<dict>
-										<key>si6</key>
-										<dict>
-											<key>objectrule</key>
-											<dict>
-												<key>type</key>
-												<string>function</string>
-												<key>function</key>
-												<dict>
-													<key>props</key>
-													<array>
-														<dict>
-															<key>type</key>
-															<string>placeholder</string>
-														</dict>
-													</array>
-													<key>name</key>
-													<string>UPPERCASE</string>
-												</dict>
-											</dict>
-										</dict>
-									</dict>
-								</dict>
-							</array>
-						</dict>
-					</dict>
-				</dict>
-				<key>t3</key>
-				<dict>
-					<key>name</key>
 					<string>Item Saleable</string>
 					<key>schemaItems</key>
 					<dict>
@@ -477,14 +191,14 @@
 						<key>si2</key>
 						<dict>
 							<key>name</key>
-							<string>json-invoice-item</string>
+							<string>json-invoice-item-2</string>
 							<key>children</key>
 							<dict/>
 						</dict>
 						<key>si3</key>
 						<dict>
 							<key>name</key>
-							<string>json-invoice-item</string>
+							<string>json-invoice-sub-item</string>
 							<key>children</key>
 							<dict/>
 						</dict>
@@ -522,14 +236,14 @@
 						<key>si6</key>
 						<dict>
 							<key>name</key>
-							<string>xml-invoice-item</string>
+							<string>xml-invoice-item-2</string>
 							<key>children</key>
 							<dict/>
 						</dict>
 						<key>si7</key>
 						<dict>
 							<key>name</key>
-							<string>xml-invoice-item</string>
+							<string>xml-invoice-sub-item</string>
 							<key>children</key>
 							<dict/>
 						</dict>

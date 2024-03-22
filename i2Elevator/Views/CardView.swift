@@ -20,7 +20,8 @@ struct CardView: View {
            let transformation = transformations[transformationId],
            let subTransformationId = sharedState.subTransformationId,
            let cards = cardType == "in" ? transformation.subTransformations[subTransformationId]?.inputs : transformation.subTransformations[subTransformationId]?.outputs,
-           let userDTO = sharedState.userDTO
+           let userDTO = sharedState.userDTO,
+           cardIndex < cards.count
         {
             let a = transformSchemaEntityTreeToList(schemaItemId: cards[cardIndex].schemaItemId, userDTO: userDTO, transformationId: sharedState.transformationId, indentation: 0)
             return a
@@ -171,7 +172,7 @@ struct CardView: View {
                                                 inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                             } else if let indentedInputItem = sharedState.draggedSchemaItem,
                                                       cardType == "out",
-                                                      indentedSchemaItem.rangeMax == indentedInputItem.rangeMax,
+                                                      (indentedSchemaItem.rangeMax == indentedInputItem.rangeMax || indentedSchemaItem.rangeMax == "S"),
                                                       indentedSchemaItem.indentation == 0
                                             {
                                                 outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
@@ -202,15 +203,37 @@ struct CardView: View {
                                                                 }
                                                             }
                                                         } else if indentedSchemaItem.rangeMax == "S" {
-                                                            let rand = randomAlphaNumeric(length: 4)
-                                                            let value: [String: Any] = ["name": "f_\(rand)", "outputs": [["mapRules":[:], "schemaItemId": _outputItemId, "indentedSchemaItems": []]], "inputs": [["schemaItemId": _inputSchemaItemId, "indentedSchemaItems": []]]]
-                                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", "f_\(rand)"]
-                                                            let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
-                                                            let keyPath2: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId, "subTransformationId"]
-                                                            if let newUserDTO = newUserDTO {
-                                                                let newUserDTO2 = updateClient(userDTO: newUserDTO, value: "f_\(rand)", keyPath: keyPath2, operation: "setValue")
-                                                                if let newUserDTO = newUserDTO2 {
+                                                            var newUserDTO: UserDTO?
+                                                            if let subTransformationId = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId]?.subTransformationId,
+                                                               let inputCount = sharedState.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.count
+                                                            {
+                                                                let i = sharedState.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.firstIndex(where: { input in
+                                                                    input.schemaItemId == _inputSchemaItemId
+                                                                })
+                                                                if let i = i
+                                                                {
+                                                                    //ret2 = updateClient(userDTO: userDTO, keyPath: ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", inputCount], operation: "removeKey")
+                                                                    let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", i]
+                                                                    newUserDTO = updateClient(userDTO: userDTO, value: nil, keyPath: keyPath, operation: "removeKey")
+                                                                } else {
+                                                                    //subTransformation?.inputs.count {
+                                                                    let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", inputCount]
+                                                                    newUserDTO = updateClient(userDTO: userDTO, value: ["schemaItemId": _inputSchemaItemId], keyPath: keyPath, operation: "setValue")
+                                                                }
+                                                                if let newUserDTO = newUserDTO {
                                                                     sharedState.userDTO = newUserDTO
+                                                                }
+                                                            } else {
+                                                                let rand = randomAlphaNumeric(length: 4)
+                                                                let value: [String: Any] = ["name": "f_\(rand)", "outputs": [["mapRules":[:], "schemaItemId": _outputItemId]], "inputs": [["schemaItemId": _inputSchemaItemId]]]
+                                                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", "f_\(rand)"]
+                                                                newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
+                                                                let keyPath2: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId, "subTransformationId"]
+                                                                if let newUserDTO = newUserDTO {
+                                                                    let newUserDTO2 = updateClient(userDTO: newUserDTO, value: "f_\(rand)", keyPath: keyPath2, operation: "setValue")
+                                                                    if let newUserDTO = newUserDTO2 {
+                                                                        sharedState.userDTO = newUserDTO
+                                                                    }
                                                                 }
                                                             }
                                                         }
