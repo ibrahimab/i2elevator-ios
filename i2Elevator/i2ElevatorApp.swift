@@ -12,6 +12,11 @@ struct MyData: Codable, Hashable {
     var stringValue: String
 }
 
+struct CardSettingsData: Codable, Hashable {
+    var intValue: Int
+    var stringValue: String
+}
+
 @main
 struct i2ElevatorApp: App {
     private var portraitSize : CGSize = CGSize(width: 400, height: 600)
@@ -24,6 +29,14 @@ struct i2ElevatorApp: App {
         WindowGroup(id: "SubTransformationView", for: MyData.self) { data in
             if let data = data.wrappedValue {
                 CardView(cardIndex: data.intValue, cardType: data.stringValue)
+                    .environmentObject(sharedState)
+            } else {
+                EmptyView()
+            }
+        }.defaultSize(portraitSize)
+        WindowGroup(id: "CardSettingsView", for: CardSettingsData.self) { data in
+            if let data = data.wrappedValue {
+                CardSettingsView(cardIndex: data.intValue, cardType: data.stringValue)
                     .environmentObject(sharedState)
             } else {
                 EmptyView()

@@ -106,19 +106,26 @@ struct CardView: View {
                             Text("\(cardType) \(cardIndex)")
                             HStack {
                                 Spacer()
-                                Button(action: {
-                                    openWindow(id: "MapRuleEditor")
-                                }) {
-                                    Image(systemName: "function")
+                                if cardType == "out" {
+                                    Button(action: {
+                                        openWindow(id: "MapRuleEditor")
+                                    }) {
+                                        Image(systemName: "function")
+                                    }
+                                    .clipShape(Circle())
+                                    Button(action: {
+                                        openWindow(id: "FunctionCatalog")
+                                    }) {
+                                        Image(systemName: "list.bullet")
+                                    }
+                                    .clipShape(Circle())
                                 }
-                                .clipShape(Circle())
                                 Button(action: {
-                                    openWindow(id: "FunctionCatalog")
+                                    openWindow(id: "CardSettingsView", value: CardSettingsData(intValue: cardIndex, stringValue: cardType))
                                 }) {
-                                    Image(systemName: "list.bullet")
-                                }
-                                .clipShape(Circle())
-                            }
+                                    Image(systemName: "gear")
+                                } .clipShape(Circle())
+                            }.padding(.horizontal, 20)
                             List {
                                 Section(header: Text("Root")) {
                                     HStack {

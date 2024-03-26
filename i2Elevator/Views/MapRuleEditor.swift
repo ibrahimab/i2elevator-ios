@@ -173,14 +173,19 @@ struct MapRuleEditor: View {
                                             }
                                             _expression?.function = Function(name: newFunctionName, props: newProps)
                                             _expression?.type = "function"
-                                            if column.expression?.type == "reference",
-                                               let referenceToAddToScratchpad = column.expression?.reference,
-                                               let schemaItem = userDTO.teams?["response"]?.transformations[transformationId]?.schemaItems[referenceToAddToScratchpad],
-                                               let rangeMaxToAddToScratchpad = column.expression?.rangeMax,
-                                               sharedState.schemaItemsOnScratchpad.first(where: { schemaItemOnScratchpad in
-                                                   schemaItemOnScratchpad.schemaItemId == referenceToAddToScratchpad
-                                            }) == nil {
-                                                sharedState.schemaItemsOnScratchpad.append(DraggedSchemaItem(schemaItemId: referenceToAddToScratchpad, rangeMax: rangeMaxToAddToScratchpad, numOfChildren: schemaItem.children.count))
+                                            if let expression = column.expression {
+                                                let childExpressions = getAllExpressionChildren(of: expression)
+                                                for childExpression in childExpressions {
+                                                    if childExpression.type == "reference",
+                                                       let referenceToAddToScratchpad = childExpression.reference,
+                                                       let schemaItem = userDTO.teams?["response"]?.transformations[transformationId]?.schemaItems[referenceToAddToScratchpad],
+                                                       let rangeMaxToAddToScratchpad = childExpression.rangeMax,
+                                                       sharedState.schemaItemsOnScratchpad.first(where: { schemaItemOnScratchpad in
+                                                           schemaItemOnScratchpad.schemaItemId == referenceToAddToScratchpad
+                                                    }) == nil {
+                                                        sharedState.schemaItemsOnScratchpad.append(DraggedSchemaItem(schemaItemId: referenceToAddToScratchpad, rangeMax: rangeMaxToAddToScratchpad, numOfChildren: schemaItem.children.count))
+                                                    }
+                                                }
                                             }
                                             let jsonEncoder = JSONEncoder()
                                             if let jsonData = try? jsonEncoder.encode(_expression),
