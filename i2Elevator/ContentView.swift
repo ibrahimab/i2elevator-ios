@@ -21,12 +21,16 @@ class SharedState: ObservableObject {
     @Published var expressionKeypathSegment: [Any]? = nil
     @Published var schemaItemsOnScratchpad: [DraggedSchemaItem] = []
     @Published var functionCategoryIndex: Int = 0
+    @Published var schemaItemId: String? = nil
+    @Published var childSchemaItemId: String? = nil
 }
 
 enum SelectedMenuItem {
     case none
     case subTransformation
     case transformation
+    case schemaItemList
+    case schemaItem
 }
 
 struct ContentView: View {
@@ -120,6 +124,160 @@ struct ContentView: View {
                                     }) {
                                         HStack {
                                             Text(subTransformation.name)
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Section(header: Text("")) {
+                            Button(action: {
+                                self.menu = .schemaItemList
+                            }) {
+                                HStack {
+                                    Text("Schema items")
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                            }
+                        }
+                    }
+                }.padding(.vertical, 40)
+            } else if self.menu == .schemaItem,
+                      let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                      let transformationId = sharedState.transformationId,
+                      let transformation = transformations[transformationId],
+                      let schemaItemId = sharedState.schemaItemId,
+                      let childSchemaItemId = sharedState.childSchemaItemId,
+                      let schemaItem = transformation.schemaItems[schemaItemId],
+                      let childSchemaItem = transformation.schemaItems[childSchemaItemId]
+            {
+                VStack {
+                    HStack {
+                        Button(action: {
+                            sharedState.childSchemaItemId = nil
+                        }) {
+                            Image(systemName: "chevron.left")
+                        }
+                        .clipShape(Circle())
+                        Spacer()
+                        TextField("Search", text: $searchText)
+                    }
+                    .padding(.bottom, 40)
+                    .padding(.horizontal, 20)
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            
+                        }) {
+                            Text(schemaItem.children[childSchemaItemId] == nil ? "Remove child schema item from parent" : "Assign item to \(schemaItem.name)")
+                        }
+                    }.padding(.horizontal, 20)
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            
+                        }) {
+                            Text("Delete child schema item")
+                        }
+                    }.padding(.bottom, 40)
+                        .padding(.horizontal, 20)
+                    List {
+                        Section(header: Text(schemaItem.children[childSchemaItemId] != nil ? "Unassigned Schema Item" : "Assigned Schema Item")) {
+                            Text(childSchemaItem.name)
+                        }
+                        if let rangeMax = transformation.schemaItems[schemaItemId]?.children[childSchemaItemId]?.rangeMax {
+                            Section(header: Text("Cardinality")) {
+                                Text(rangeMax)
+                            }
+                        }
+                    }
+                    Spacer()
+                }.padding(.vertical, 40)
+            } else if self.menu == .schemaItem,
+                      let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                      let transformationId = sharedState.transformationId,
+                      let transformation = transformations[transformationId],
+                      let schemaItemId = sharedState.schemaItemId,
+                      let schemaItem = transformation.schemaItems[schemaItemId]
+            {
+                VStack {
+                    HStack {
+                        Button(action: {
+                            self.menu = .schemaItemList
+                        }) {
+                            Image(systemName: "chevron.left")
+                        }
+                        .clipShape(Circle())
+                        Spacer()
+                        TextField("Search", text: $searchText)
+                    }
+                    .padding(.bottom, 40)
+                    .padding(.horizontal, 20)
+                    Spacer()
+                    List {
+            
+                        Section(header: Text("\(transformation.name) > Schema Items")) {
+                            Text(schemaItem.name)
+                        }
+                        Section(header: Text("Chidren")) {
+                            ForEach(transformation.schemaItems.keys.sorted(), id: \.self) { childSchemaItemId in
+                                if let childSchemaItem = transformation.schemaItems[childSchemaItemId] {
+                                    Button(action: {
+                                        self.sharedState.childSchemaItemId = childSchemaItemId
+                                    }) {
+                                        HStack {
+                                            Text(childSchemaItem.name)
+                                                .foregroundColor(schemaItem.children[childSchemaItemId] == nil ? .white : .blue)
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }.padding(.vertical, 40)
+            } else if self.menu == .schemaItemList,
+                      let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                      let transformationId = sharedState.transformationId,
+                      let transformation = transformations[transformationId]
+            {
+                VStack {
+                    HStack {
+                        Button(action: {
+                            self.menu = .transformation
+                        }) {
+                            Image(systemName: "chevron.left")
+                        }
+                        .clipShape(Circle())
+                        Spacer()
+                        TextField("Search", text: $searchText)
+                    }
+                    .padding(.bottom, 40)
+                    .padding(.horizontal, 20)
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            
+                        }) {
+                            Text("Add schema item")
+                        }
+                    }.padding(.bottom, 40)
+                        .padding(.horizontal, 20)
+                    Spacer()
+                    List {
+                        Section(header: Text("\(transformation.name) > Schema Items")) {
+                            ForEach(transformation.schemaItems.keys.sorted(), id: \.self) { schemaItemId in
+                                if let schemaItem = transformation.schemaItems[schemaItemId] {
+                                    Button(action: {
+                                        self.menu = .schemaItem
+                                        self.sharedState.schemaItemId = schemaItemId
+                                    }) {
+                                        HStack {
+                                            Text(schemaItem.name)
                                             Spacer()
                                             Image(systemName: "chevron.right")
                                         }
