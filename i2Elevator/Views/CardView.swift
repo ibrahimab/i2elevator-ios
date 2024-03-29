@@ -23,7 +23,7 @@ struct CardView: View {
            let userDTO = sharedState.userDTO,
            cardIndex < cards.count
         {
-            let a = transformSchemaEntityTreeToList(schemaItemId: cards[cardIndex].schemaItemId, userDTO: userDTO, transformationId: sharedState.transformationId, indentation: 0)
+            let a = transformSchemaEntityTreeToList(schemaItemId: cards[cardIndex].schemaItemId, userDTO: userDTO, transformationId: sharedState.transformationId, indentation: 1)
             return a
         } else {
             return []
@@ -42,7 +42,7 @@ struct CardView: View {
             Spacer().frame(width: 20.0)
             if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
                 Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)")
-                    .foregroundColor(indentedSchemaItem.indentation == 0 ? .white : .gray)
+                    .foregroundColor(indentedSchemaItem.indentation == 1 ? .white : .gray)
             }
             Spacer()
             if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
@@ -69,7 +69,7 @@ struct CardView: View {
             if let schemaItem = transformation.schemaItems[indentedSchemaItem.schemaItemId] {
                 Text("\(schemaItem.name) 1:\(indentedSchemaItem.rangeMax)")
                     .fontWeight(sharedState.outputItemId == indentedSchemaItem.schemaItemId ? .bold : .regular)
-                    .foregroundColor(indentedSchemaItem.indentation == 0 ? .white : .gray)
+                    .foregroundColor(indentedSchemaItem.indentation == 1 ? .white : .gray)
             }
             Spacer()
             if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
@@ -79,7 +79,7 @@ struct CardView: View {
                let targetName = transformation.schemaItems[reference]?.name
             {
                 Text(targetName)
-                    .foregroundColor(indentedSchemaItem.indentation == 0 ? .white : .gray)
+                    .foregroundColor(indentedSchemaItem.indentation == 1 ? .white : .gray)
             } else if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
                       let subTransformationId = mapRule.subTransformationId
             {
@@ -127,22 +127,20 @@ struct CardView: View {
                                 } .clipShape(Circle())
                             }.padding(.horizontal, 20)
                             List {
-                                Section(header: Text("Root")) {
-                                    HStack {
-                                        if let schemaItem = cards[cardIndex].schemaItemId,
-                                           let schemaItemName = transformation.schemaItems[schemaItem]?.name {
-                                            Text(schemaItemName)
-                                        } else {
-                                            Text("")
-                                        }
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                    }
-                                }
                                 Section(header: Text("Schema Items")) {
+                                    if let schemaItem = cards[cardIndex].schemaItemId,
+                                       let schemaItemName = transformation.schemaItems[schemaItem]?.name {
+                                        HStack {
+                                            Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
+                                            Spacer().frame(width: 20.0)
+                                            Text(schemaItemName)
+                                        }
+                                    } else {
+                                        Text("")
+                                    }
                                     ForEach(indentedSchemaItemList) { indentedSchemaItem in
                                         Button(action: {
-                                            if cardType == "out" && indentedSchemaItem.indentation == 0 {
+                                            if cardType == "out" && indentedSchemaItem.indentation == 1 {
                                                 sharedState.cardType = cardType
                                                 sharedState.cardIndex = cardIndex
                                                 if sharedState.outputItemId == nil {
@@ -164,7 +162,7 @@ struct CardView: View {
                                             }*/
                                         }) {
                                             if cardType == "in",
-                                               indentedSchemaItem.indentation == 0
+                                               indentedSchemaItem.indentation == 1
                                             {
                                                 inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                                 .onDrag {
@@ -180,7 +178,7 @@ struct CardView: View {
                                             } else if let indentedInputItem = sharedState.draggedSchemaItem,
                                                       cardType == "out",
                                                       (indentedSchemaItem.rangeMax == indentedInputItem.rangeMax || indentedSchemaItem.rangeMax == "S"),
-                                                      indentedSchemaItem.indentation == 0
+                                                      indentedSchemaItem.indentation == 1
                                             {
                                                 outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                                 .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
