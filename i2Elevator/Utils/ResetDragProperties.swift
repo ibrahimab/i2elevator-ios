@@ -7,5 +7,5 @@
 
 func resetDragProperties() {
     SharedState().draggedSchemaItem = nil
-    SharedState().newFunctionName = nil
+    SharedState().draggedFunctionName = nil
 }

@@ -82,6 +82,7 @@ var functionPropsTypes: [FunctionCategory] = []
 
 struct FunctionCategory: Codable {
     var name: String
+    var description: String?
     var tabItemImage: String
     var functions: [String: [[PropType]]]
     var id: String {

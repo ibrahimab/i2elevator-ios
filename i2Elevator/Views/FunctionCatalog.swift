@@ -10,7 +10,13 @@ import SwiftUI
 struct FunctionCatalog: View {
     @EnvironmentObject var sharedState: SharedState
     var body: some View {
-        List {
+        if let selectedFunctionName = sharedState.selectedFunctionName {
+            VStack {
+                Text("\(selectedFunctionName): Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.")
+                Spacer()
+            }.padding()
+        }
+        /*List {
             ForEach(Array(functionPropsTypes[sharedState.functionCategoryIndex].functions.keys.sorted()), id: \.self) { key in
                 Button(action: {
                     
@@ -18,12 +24,12 @@ struct FunctionCatalog: View {
                     Text(key)
                 }.onDrag {
                     resetDragProperties()
-                    sharedState.newFunctionName = key
+                    sharedState.draggedFunctionName = key
                     let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
                     return itemProvider
                 }
             }
-        }.padding(.vertical, 40)
+        }.padding(.vertical, 40)*/
     }
 }
 

@@ -74,7 +74,7 @@ func transformExpressionsToGrid(
 ) -> [ExpressionRow] {
     var rows: [ExpressionRow] = []
     var columns: [ExpressionColumn] = []
-    if indentation == 1 {
+    if indentation == 0 {
         columns.append(ExpressionColumn(text: "=", index: 0, isBtnStyle: false, expressionKeypathSegment: keyPath))
     }
     if expression?.type == "function", 

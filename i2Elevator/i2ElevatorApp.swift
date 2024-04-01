@@ -21,6 +21,7 @@ struct CardSettingsData: Codable, Hashable {
 struct i2ElevatorApp: App {
     private var portraitSize : CGSize = CGSize(width: 400, height: 600)
     private var landscapeSize : CGSize = CGSize(width: 600, height: 400)
+    private var landscapeSize2x : CGSize = CGSize(width: 800, height: 600)
     let sharedState = SharedState()
     var body: some Scene {
         WindowGroup {
@@ -44,9 +45,9 @@ struct i2ElevatorApp: App {
         }.defaultSize(portraitSize)
         WindowGroup("MapRuleEditor", id: "MapRuleEditor") {
             MapRuleEditor().environmentObject(sharedState)
-        }.defaultSize(landscapeSize)
+        }.defaultSize(landscapeSize2x)
         WindowGroup("FunctionCatalog", id: "FunctionCatalog") {          
-            FunctionCatalogContainer().environmentObject(sharedState)
+            FunctionCatalog().environmentObject(sharedState)
         }.defaultSize(portraitSize)
     }
 }

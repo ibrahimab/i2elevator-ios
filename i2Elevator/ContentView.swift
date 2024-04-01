@@ -17,12 +17,14 @@ class SharedState: ObservableObject {
     @Published var draggedSchemaItem: DraggedSchemaItem? = nil
     @Published var outputItemId: String? = nil
     @Published var userDTO: UserDTO? = nil
-    @Published var newFunctionName: String? = nil
+    @Published var draggedFunctionName: String? = nil
     @Published var expressionKeypathSegment: [Any]? = nil
     @Published var schemaItemsOnScratchpad: [DraggedSchemaItem] = []
     @Published var functionCategoryIndex: Int = 0
     @Published var schemaItemId: String? = nil
     @Published var childSchemaItemId: String? = nil
+    @Published var isFunctionCatalogCombined: Bool = true
+    @Published var selectedFunctionName: String? = nil
 }
 
 enum SelectedMenuItem {
@@ -59,6 +61,12 @@ struct ContentView: View {
                         .clipShape(Circle())
                         Spacer()
                         TextField("Search", text: $searchText)
+                        Spacer()
+                        Button(action: {
+                            
+                        }) {
+                            Image(systemName: "gear")
+                        } .clipShape(Circle())
                     }
                     .padding(.bottom, 40)
                     .padding(.horizontal, 20)
