@@ -39,10 +39,10 @@ struct FunctionCatalogContainer: View {
         ZStack {
             TopColorGradient(color: .cyan)
             TabView(selection: $sharedState.functionCategoryIndex) {
-                ForEach(functionPropsTypes.indices, id: \.self) { index in
+                ForEach(signatureCategories.indices, id: \.self) { index in
                     FunctionCatalog()
                         .tabItem {
-                            Label(functionPropsTypes[index].name, systemImage: functionPropsTypes[index].tabItemImage)
+                            Label(signatureCategories[index].name, systemImage: signatureCategories[index].tabItemImage)
                         }
                 }
             }

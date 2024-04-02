@@ -10,6 +10,8 @@ import UniformTypeIdentifiers
 
 struct MapRuleEditor: View {
     @EnvironmentObject var sharedState: SharedState
+    @State private var text: String = ""
+    @State private var isEditing: Bool = false
     
     var body: some View {
         var rowInd = 0
@@ -17,9 +19,9 @@ struct MapRuleEditor: View {
             TopColorGradient(color: .yellow)
             NavigationView {
                 List {
-                    ForEach(functionPropsTypes.indices, id: \.self) { index in
-                        Section(header: Text(functionPropsTypes[index].name)) {
-                            ForEach(Array(functionPropsTypes[index].functions.keys.sorted()), id: \.self) { key in
+                    ForEach(signatureCategories.indices, id: \.self) { index in
+                        Section(header: Text(signatureCategories[index].name)) {
+                            ForEach(Array(signatureCategories[index].functions.keys.sorted()), id: \.self) { key in
                                 Button(action: {
                                     sharedState.selectedFunctionName = key
                                 }) {
@@ -56,15 +58,41 @@ struct MapRuleEditor: View {
                                 Spacer().frame(width: CGFloat(v.indentation) * 20.0)
                                 ForEach(v.columns, id: \.id) { column in
                                     if column.isBtnStyle == true {
-                                        
-                                        // Reference dropped onto a parameter of a function
-                                        if let draggedSchemaItem = sharedState.draggedSchemaItem,
+                                        // If this parameter is const
+                                        if let parentExpression = column.parentExpression,
+                                           let functionName = parentExpression.function?.name,
                                            let functionPropIndex = column.functionPropIndex,
-                                           let functionName = column.parentExpression?.function?.name,
-                                           functionPropsTypes[sharedState.functionCategoryIndex].functions[functionName]?[functionPropIndex].first(where: { propType in
-                                               let ret = propType.type == "reference" && propType.rangeMax == draggedSchemaItem.rangeMax
-                                               return ret
+                                           signatureCategories.first(where: { fp in
+                                               let ret = fp.functions[functionName]?[functionPropIndex].first(where: { signatureItemVariant in
+                                                   let ret = signatureItemVariant.type == "constant"
+                                                   return ret
+                                               })
+                                               return ret != nil
                                            }) != nil
+                                        {
+                                            TextField("constant", text: $text, onEditingChanged: { editing in
+                                                self.isEditing = editing
+                                                if !editing {
+                                                    // Text field is closed, perform any necessary actions here
+                                                    let value = ["type": "constant", "constant": text]
+                                                    let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + column.expressionKeypathSegment
+                                                    let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
+                                                    sharedState.userDTO = newUserDTO
+                                                }
+                                            })
+                                            .padding()
+                                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                                            .autocapitalization(.none)
+                                            .disableAutocorrection(true)
+                                            .frame(width: 200)
+                                            // Reference dropped onto a parameter of a function
+                                        } else if let draggedSchemaItem = sharedState.draggedSchemaItem,
+                                                  let functionPropIndex = column.functionPropIndex,
+                                                  let functionName = column.parentExpression?.function?.name,
+                                                  signatureCategories[sharedState.functionCategoryIndex].functions[functionName]?[functionPropIndex].first(where: { propType in
+                                                      let ret = propType.type == "reference" && propType.rangeMax == draggedSchemaItem.rangeMax
+                                                      return ret
+                                                  }) != nil
                                         {
                                             Button(action: {
                                             }) {
@@ -98,7 +126,7 @@ struct MapRuleEditor: View {
                                             
                                             // Function dropped
                                         } else if let newFunctionName = sharedState.draggedFunctionName,
-                                                  let newFunctionType =  functionPropsTypes[sharedState.functionCategoryIndex].functions[newFunctionName],
+                                                  let newFunctionType =  signatureCategories[sharedState.functionCategoryIndex].functions[newFunctionName],
                                                   (column.functionPropIndex == nil || {
                                                       if let functionPropIndex = column.functionPropIndex,
                                                          let functionName = column.parentExpression?.function?.name/*,
@@ -132,7 +160,7 @@ struct MapRuleEditor: View {
                                                 var newProps: [Expression] = []
                                                 if column.expression?.type == "function",
                                                    let prevFunctionName = column.expression?.function?.name,
-                                                   let prevFunctionType = functionPropsTypes[sharedState.functionCategoryIndex].functions[prevFunctionName],
+                                                   let prevFunctionType = signatureCategories[sharedState.functionCategoryIndex].functions[prevFunctionName],
                                                    let prevFunctionPropCount =  column.expression?.function?.props.count
                                                 {
                                                     // Copy elements from the original array to the resized array

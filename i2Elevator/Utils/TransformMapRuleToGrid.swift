@@ -114,7 +114,7 @@ func transformExpressionsToGrid(
         rowInd = rowInd + 1
         rows.append(zz)
     } else if expression?.type == "constant" {
-        columns.append(ExpressionColumn(text: expression?.constant ?? "na", parentExpression: parentExpression, expression: expression, index: 1, isBtnStyle: true, expressionKeypathSegment: keyPath))
+        columns.append(ExpressionColumn(text: expression?.constant ?? "na", parentExpression: parentExpression, expression: expression, index: 1, isBtnStyle: true, expressionKeypathSegment: keyPath, functionPropIndex: functionPropIndex))
         let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: columns)
         rowInd = rowInd + 1
         rows.append(zz)

@@ -350,7 +350,7 @@ struct ContentView: View {
                     }
                     do {
                         let jsonDecoder = JSONDecoder()
-                        functionPropsTypes = try jsonDecoder.decode([FunctionCategory].self, from: jsonData )
+                        signatureCategories = try jsonDecoder.decode([SignatureCategory].self, from: jsonData )
                     } catch {
                         // Handle decoding error
                         print("Decoding error: \(error)")

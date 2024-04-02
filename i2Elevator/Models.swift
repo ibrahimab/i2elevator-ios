@@ -78,19 +78,19 @@ struct DraggedSchemaItem: Identifiable {
     }
 }
 
-var functionPropsTypes: [FunctionCategory] = []
+var signatureCategories: [SignatureCategory] = []
 
-struct FunctionCategory: Codable {
+struct SignatureCategory: Codable {
     var name: String
     var description: String?
     var tabItemImage: String
-    var functions: [String: [[PropType]]]
+    var functions: [String: [[SignatureItemVariation]]]
     var id: String {
         name
     }
 }
 
-struct PropType: Codable {
+struct SignatureItemVariation: Codable {
     var type: String
     var rangeMax: String?
     var id: String {
