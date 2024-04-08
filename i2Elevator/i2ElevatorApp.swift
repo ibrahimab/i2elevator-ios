@@ -19,14 +19,14 @@ struct CardSettingsData: Codable, Hashable {
 
 @main
 struct i2ElevatorApp: App {
-    private var portraitSize : CGSize = CGSize(width: 400, height: 600)
+    private var portraitSize : CGSize = CGSize(width: 800, height: 600)
     private var landscapeSize : CGSize = CGSize(width: 600, height: 400)
     private var landscapeSize2x : CGSize = CGSize(width: 800, height: 600)
     let sharedState = SharedState()
     var body: some Scene {
         WindowGroup {
             ContentView().environmentObject(sharedState)
-        }.defaultSize(portraitSize)
+        }//.defaultSize(portraitSize)
         WindowGroup(id: "SubTransformationView", for: MyData.self) { data in
             if let data = data.wrappedValue {
                 CardView(cardIndex: data.intValue, cardType: data.stringValue)
@@ -34,7 +34,9 @@ struct i2ElevatorApp: App {
             } else {
                 EmptyView()
             }
-        }.defaultSize(portraitSize)
+        }
+        .defaultSize(portraitSize)
+        //.frame(width: CGFloat(400 * (sharedState.aaa.count + 1)))
         WindowGroup(id: "CardSettingsView", for: CardSettingsData.self) { data in
             if let data = data.wrappedValue {
                 CardSettingsView(cardIndex: data.intValue, cardType: data.stringValue)

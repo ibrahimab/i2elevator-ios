@@ -103,9 +103,27 @@ struct CardView: View {
                     {
                         VStack {
                             Spacer()
-                            Text("\(cardType) \(cardIndex)")
                             HStack {
                                 Spacer()
+                                Button(action: {
+                                   
+                                }) {
+                                    Text("\(cardType) \(cardIndex)")
+                                }.onDrag {
+                                    sharedState.viewToDrop = ViewDropData(name: "YourDraggedData", cardType: cardType, cardIndex: cardIndex)
+                                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                    return itemProvider
+                                }
+                                Button(action: {
+                                    if let i = sharedState.viewStack.firstIndex { aa in
+                                        aa.cardIndex == cardIndex && aa.cardType == cardType
+                                    } {
+                                        sharedState.viewStack.remove(at: i)
+                                        openWindow(id: "SubTransformationView", value: MyData(intValue: cardIndex, stringValue: cardType))
+                                    }
+                                }) {
+                                    Image(systemName: "lanyardcard")
+                                }.clipShape(Circle())
                                 if cardType == "out" {
                                     Button(action: {
                                         openWindow(id: "MapRuleEditor")
