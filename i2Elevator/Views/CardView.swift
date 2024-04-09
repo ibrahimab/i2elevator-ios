@@ -115,9 +115,9 @@ struct CardView: View {
                                     return itemProvider
                                 }
                                 Button(action: {
-                                    if let i = sharedState.viewStack.firstIndex { aa in
+                                    if let i = sharedState.viewStack.firstIndex(where: { aa in
                                         aa.cardIndex == cardIndex && aa.cardType == cardType
-                                    } {
+                                    }) {
                                         sharedState.viewStack.remove(at: i)
                                         openWindow(id: "SubTransformationView", value: MyData(intValue: cardIndex, stringValue: cardType))
                                     }
@@ -162,8 +162,12 @@ struct CardView: View {
                                                 sharedState.cardType = cardType
                                                 sharedState.cardIndex = cardIndex
                                                 if sharedState.outputItemId == nil {
-                                                    openWindow(id: "MapRuleEditor")
-                                                    openWindow(id: "FunctionCatalog")
+                                                    //openWindow(id: "MapRuleEditor")
+                                                    //openWindow(id: "FunctionCatalog")
+                                                    let mapRuleEditor = ViewDropData(name: "MapRuleEditor")
+                                                    let functionCatalog = ViewDropData(name: "FunctionCatalog")
+                                                    sharedState.viewStack.append(mapRuleEditor)
+                                                    sharedState.viewStack.append(functionCatalog)
                                                 }
                                                 sharedState.outputItemId = indentedSchemaItem.schemaItemId
                                             } /*else if let outputItemId = sharedState.outputItemId,

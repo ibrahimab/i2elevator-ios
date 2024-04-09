@@ -52,9 +52,10 @@ struct ContentView: View {
     @Environment(\.dismissWindow) private var dismissWindow
     
     var body: some View {
-        ZStack {
-            TopColorGradient(color: .red)
-            HStack {
+        
+        HStack {
+            ZStack {
+                TopColorGradient(color: .red)
                 if self.menu == .subTransformation,
                    let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
                    let transformationId = sharedState.transformationId,
@@ -335,26 +336,35 @@ struct ContentView: View {
                         }
                     }.padding(.vertical, 40)
                 }
-                ForEach(sharedState.viewStack.indices, id: \.self) { stackItemIndex in
-                    let stackItem = sharedState.viewStack[stackItemIndex]
-                    if let cardType = stackItem.cardType,
-                       let cardIndex = stackItem.cardIndex
-                    {
-                        CardView(cardIndex: cardIndex, cardType: cardType)
-                    }
-                }//.frame(width: CGFloat((sharedState.aaa.count + 1) * 200), height: 400)
-            }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
-                if let __aa = sharedState.viewToDrop {
-                    sharedState.viewStack.append(__aa)
-                    sharedState.viewToDrop = nil
-                    if let cardIndex = __aa.cardIndex,
-                    let cardType = __aa.cardType
-                    {
-                        dismissWindow(id: "SubTransformationView", value: MyData(intValue: cardIndex, stringValue: cardType))
-                    }
+            }
+            
+            ForEach(sharedState.viewStack.indices, id: \.self) { stackItemIndex in
+                let stackItem = sharedState.viewStack[stackItemIndex]
+                if let cardType = stackItem.cardType,
+                   let cardIndex = stackItem.cardIndex
+                {
+                    CardView(cardIndex: cardIndex, cardType: cardType)
+                } else if stackItem.name == "MapRuleEditor"
+                {
+                    MapRuleEditor()
+                } else if stackItem.name == "FunctionCatalog"
+                {
+                    FunctionCatalog()
                 }
-                return true
-            }//.frame(width: CGFloat(400 * (sharedState.aaa.count + 1)))
+            }//.frame(width: CGFloat((sharedState.aaa.count + 1) * 200), height: 400)
+        }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
+            if let viewToDrop = sharedState.viewToDrop {
+                sharedState.viewStack.append(viewToDrop)
+                sharedState.viewToDrop = nil
+                if let cardIndex = viewToDrop.cardIndex,
+                   let cardType = viewToDrop.cardType
+                {
+                    dismissWindow(id: "SubTransformationView", value: MyData(intValue: cardIndex, stringValue: cardType))
+                } else {
+                    dismissWindow(id: viewToDrop.name)
+                }
+            }
+            return true
         }.onAppear {
             if let str = Bundle.main.path(forResource: "UserDTO", ofType: "plist") {
                 let d = NSDictionary(contentsOfFile: str)

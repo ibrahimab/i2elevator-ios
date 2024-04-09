@@ -9,27 +9,55 @@ import SwiftUI
 
 struct FunctionCatalog: View {
     @EnvironmentObject var sharedState: SharedState
+    @Environment(\.openWindow) private var openWindow
+    
     var body: some View {
-        if let selectedFunctionName = sharedState.selectedFunctionName {
+        ZStack {
+            TopColorGradient(color: .cyan)
             VStack {
-                Text("\(selectedFunctionName): Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.")
+                HStack {
+                    Button(action: {
+                        
+                    }) {
+                        Text("Function Catalog")
+                    }.onDrag {
+                        sharedState.viewToDrop = ViewDropData(name: "FunctionCatalog")
+                        let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                        return itemProvider
+                    }
+                    Button(action: {
+                        if let i = sharedState.viewStack.firstIndex(where: { aa in
+                            aa.name == "FunctionCatalog"
+                        }) {
+                            sharedState.viewStack.remove(at: i)
+                            openWindow(id: "FunctionCatalog")
+                        }
+                    }) {
+                        Image(systemName: "lanyardcard")
+                    }.clipShape(Circle())
+                }
+                List {
+                    ForEach(signatureCategories.indices, id: \.self) { index in
+                        Section(header: Text(signatureCategories[index].name)) {
+                            ForEach(Array(signatureCategories[index].functions.keys.sorted()), id: \.self) { key in
+                                Button(action: {
+                                    sharedState.selectedFunctionName = key
+                                }) {
+                                    Text(key)
+                                }.onDrag {
+                                    resetDragProperties()
+                                    sharedState.draggedFunctionName = key
+                                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                    return itemProvider
+                                }
+                                .listRowSeparator(.hidden)
+                            }
+                        }
+                    }
+                }
                 Spacer()
             }.padding()
         }
-        /*List {
-            ForEach(Array(functionPropsTypes[sharedState.functionCategoryIndex].functions.keys.sorted()), id: \.self) { key in
-                Button(action: {
-                    
-                }) {
-                    Text(key)
-                }.onDrag {
-                    resetDragProperties()
-                    sharedState.draggedFunctionName = key
-                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                    return itemProvider
-                }
-            }
-        }.padding(.vertical, 40)*/
     }
 }
 
