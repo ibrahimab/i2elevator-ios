@@ -19,7 +19,7 @@ struct MapRuleEditor: View {
         ZStack {
             TopColorGradient(color: .yellow)
             VStack {
-                HStack {
+                /*HStack {
                     Button(action: {
                        
                     }) {
@@ -39,7 +39,7 @@ struct MapRuleEditor: View {
                     }) {
                         Image(systemName: "lanyardcard")
                     }.clipShape(Circle())
-                }
+                }*/
                 if let userDTO = sharedState.userDTO,
                    let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
                    let transformationId = sharedState.transformationId,
@@ -81,7 +81,6 @@ struct MapRuleEditor: View {
                                                 sharedState.userDTO = newUserDTO
                                             }
                                         })
-                                        .padding()
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                         .autocapitalization(.none)
                                         .disableAutocorrection(true)

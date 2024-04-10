@@ -15,7 +15,7 @@ struct FunctionCatalog: View {
         ZStack {
             TopColorGradient(color: .cyan)
             VStack {
-                HStack {
+                /*HStack {
                     Button(action: {
                         
                     }) {
@@ -35,7 +35,7 @@ struct FunctionCatalog: View {
                     }) {
                         Image(systemName: "lanyardcard")
                     }.clipShape(Circle())
-                }
+                }*/
                 List {
                     ForEach(signatureCategories.indices, id: \.self) { index in
                         Section(header: Text(signatureCategories[index].name)) {

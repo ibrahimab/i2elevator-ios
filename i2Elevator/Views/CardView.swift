@@ -164,10 +164,10 @@ struct CardView: View {
                                                 if sharedState.outputItemId == nil {
                                                     //openWindow(id: "MapRuleEditor")
                                                     //openWindow(id: "FunctionCatalog")
-                                                    let mapRuleEditor = ViewDropData(name: "MapRuleEditor")
+                                                    /*let mapRuleEditor = ViewDropData(name: "MapRuleEditor")
                                                     let functionCatalog = ViewDropData(name: "FunctionCatalog")
                                                     sharedState.viewStack.append(mapRuleEditor)
-                                                    sharedState.viewStack.append(functionCatalog)
+                                                    sharedState.viewStack.append(functionCatalog)*/
                                                 }
                                                 sharedState.outputItemId = indentedSchemaItem.schemaItemId
                                             } /*else if let outputItemId = sharedState.outputItemId,

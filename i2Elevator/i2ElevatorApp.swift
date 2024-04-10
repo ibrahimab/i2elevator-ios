@@ -26,7 +26,7 @@ struct i2ElevatorApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView().environmentObject(sharedState)
-        }//.defaultSize(portraitSize)
+        }.defaultSize(CGSize(width: 1600, height: 800))
         WindowGroup(id: "SubTransformationView", for: MyData.self) { data in
             if let data = data.wrappedValue {
                 CardView(cardIndex: data.intValue, cardType: data.stringValue)
