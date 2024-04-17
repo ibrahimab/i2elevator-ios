@@ -327,8 +327,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                }.padding(.vertical, 40).frame(width: 300 + x1Movement)
-                
+                }.padding(.vertical, 40).frame(width: 300 + x1Movement)                
                 VStack {
                     MapRuleEditor().frame(height: geometry.size.height * 0.5 + yMovement)
                     HStack {
@@ -356,14 +355,19 @@ struct ContentView: View {
                     }.frame(height: geometry.size.height * 0.5 - yMovement)
                 }
                 .overlay {
-                    DraggingViewY(yMovement: $yMovement)
+                    Rectangle()
+                        .frame(width: 100, height: 16)
+                        .foregroundColor(.gray)
+                        .cornerRadius(8)
+                        .offset(x: 0, y: yMovement)
                         .gesture(DragGesture()
                             .onChanged { value in
-                                yMovement = value.translation.height
+                                withAnimation(.easeInOut(duration: 0.1)) {
+                                    yMovement = value.translation.height
+                                }
                             }
                         )
                 }
-                
                 FunctionCatalog().frame(width: 300 - x2Movement)
             }.onAppear {
                 if let str = Bundle.main.path(forResource: "UserDTO", ofType: "plist") {
@@ -402,25 +406,29 @@ struct ContentView: View {
                 }
             }.overlay {
                 Rectangle()
-                    .frame(width: 8, height: 100)
-                    .background(Color.green)
-                    .foregroundColor(.white)
+                    .frame(width: 16, height: 100)
+                    .cornerRadius(8)
+                    .foregroundColor(.gray)
                     .gesture(DragGesture()
                         .onChanged { value in
-                            x1Movement = value.translation.width
+                            withAnimation(.easeInOut(duration: 0.1)) {
+                                x1Movement = value.translation.width
+                            }
                         }
                     )
-                    .position(x: 300 + x1Movement, y: 400)
+                    .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0, y: 0)
                 Rectangle()
-                    .frame(width: 8, height: 100)
-                    .background(Color.green)
-                    .foregroundColor(.white)
+                    .frame(width: 16, height: 100)
+                    .foregroundColor(.gray)
+                    .cornerRadius(8)
                     .gesture(DragGesture()
                         .onChanged { value in
-                            x2Movement = value.translation.width
+                            withAnimation(.easeInOut(duration: 0.1)) {
+                                x2Movement = value.translation.width
+                            }
                         }
                     )
-                    .position(x: geometry.size.width - 300 + x2Movement, y: 400)
+                    .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0, y: 0)
             }
         }
     }
@@ -428,16 +436,4 @@ struct ContentView: View {
 
 #Preview(windowStyle: .automatic) {
     ContentView()
-}
-
-struct DraggingViewY: View {
-    @Binding var yMovement: CGFloat
-    
-    var body: some View {
-        Rectangle()
-            .frame(width: 100, height: 8)
-            .background(Color.green)
-            .foregroundColor(.white)
-            .offset(x: 0, y: yMovement)
-    }
 }
