@@ -10,6 +10,8 @@ import RealityKit
 import RealityKitContent
 import UniformTypeIdentifiers
 
+let barTransparency = 0.5
+
 class SharedState: ObservableObject {
     @Published var transformationId: String? = nil
     @Published var subTransformationId: String? = nil
@@ -356,9 +358,13 @@ struct ContentView: View {
                 }
                 .overlay {
                     Rectangle()
-                        .frame(width: 100, height: 16)
-                        .foregroundColor(.gray)
-                        .cornerRadius(8)
+                        .frame(width: 100, height: 8)
+                        .cornerRadius(4)
+                        .foregroundColor(Color.black.opacity(0.2))
+                        .offset(x: 0, y: yMovement)
+                    Rectangle()
+                        .frame(width: geometry.size.width - 600 - x1Movement + x2Movement, height: 16)
+                        .foregroundColor(Color.gray.opacity(barTransparency))
                         .offset(x: 0, y: yMovement)
                         .gesture(DragGesture()
                             .onChanged { value in
@@ -406,9 +412,13 @@ struct ContentView: View {
                 }
             }.overlay {
                 Rectangle()
-                    .frame(width: 16, height: 100)
-                    .cornerRadius(8)
-                    .foregroundColor(.gray)
+                    .frame(width: 8, height: 100)
+                    .cornerRadius(4)
+                    .foregroundColor(Color.black.opacity(0.2))
+                    .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0 - 8.0, y: 0)
+                Rectangle()
+                    .frame(width: 16, height: geometry.size.height)
+                    .foregroundColor(Color.gray.opacity(barTransparency))
                     .gesture(DragGesture()
                         .onChanged { value in
                             withAnimation(.easeInOut(duration: 0.1)) {
@@ -416,11 +426,15 @@ struct ContentView: View {
                             }
                         }
                     )
-                    .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0, y: 0)
+                    .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0 - 8.0, y: 0)
                 Rectangle()
-                    .frame(width: 16, height: 100)
-                    .foregroundColor(.gray)
-                    .cornerRadius(8)
+                    .frame(width: 8, height: 100)
+                    .cornerRadius(4)
+                    .foregroundColor(Color.black.opacity(0.2))
+                    .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0 - 8.0, y: 0)
+                Rectangle()
+                    .frame(width: 16, height: geometry.size.height)
+                    .foregroundColor(Color.gray.opacity(barTransparency))
                     .gesture(DragGesture()
                         .onChanged { value in
                             withAnimation(.easeInOut(duration: 0.1)) {
@@ -428,7 +442,7 @@ struct ContentView: View {
                             }
                         }
                     )
-                    .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0, y: 0)
+                    .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0 - 8.0, y: 0)
             }
         }
     }
