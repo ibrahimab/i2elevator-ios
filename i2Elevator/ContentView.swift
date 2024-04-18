@@ -376,23 +376,28 @@ struct ContentView: View {
                 }
                 FunctionCatalog().frame(width: 300 - x2Movement)
             }.onAppear {
-                if let str = Bundle.main.path(forResource: "UserDTO", ofType: "plist") {
-                    let d = NSDictionary(contentsOfFile: str)
-                    if let d = d {
-                        guard let jsonData = try? JSONSerialization.data(withJSONObject: d, options: [])
-                        else {
-                            // Handle errors
-                            return
-                        }
+                let url = URL(string: "https://datamapper.vercel.app/api/auth/me")! //https://datamapper.vercel.app/api/auth/me"
+                var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+                components.queryItems = []
+                let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkrDoW5vcyIsInVzZXJJZCI6IjY1M2Q3NWQzZWFhODdjODM3YTFkZDkwOCIsImVtYWlsIjoia3Vrb2RhamFub3NAaWNsb3VkLmNvbSIsImlhdCI6MTcxMzQ1NzExMiwiZXhwIjoxNzE2MDQ5MTEyfQ.MUiv_Z4ORIs84FOwKsb7LelEnE_vXnjwSr55AA9YBu8"
+                var request = URLRequest(url: components.url!)
+                request.httpMethod = "GET"
+                request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+                let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                    let decoder = JSONDecoder()
+                    if let data = data {
                         do {
-                            let jsonDecoder = JSONDecoder()
-                            sharedState.userDTO = try jsonDecoder.decode(UserDTO.self, from: jsonData )
+                            let authResponse = try decoder.decode(AuthResponse.self, from: data)
+                            DispatchQueue.main.async {
+                                sharedState.userDTO = authResponse.data
+                            }
                         } catch {
-                            // Handle decoding error
-                            print("Decoding error: \(error)")
+                            // Handle the error here
+                            print("Error: \(error)")
                         }
                     }
                 }
+                task.resume()
                 if let str = Bundle.main.path(forResource: "FunctionPropsTypes", ofType: "plist") {
                     let d = NSArray(contentsOfFile: str)
                     if let d = d {

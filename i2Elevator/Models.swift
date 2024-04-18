@@ -7,6 +7,11 @@
 
 import Foundation
 
+struct AuthResponse: Codable {
+    var message: String?
+    var data: UserDTO?
+}
+
 struct UserDTO: Codable {
     var teams: [String: TeamDTO]?
 }

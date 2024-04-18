@@ -1,5 +1,5 @@
 //
-//  Update.swift
+//  UpdateClient.swift
 //  i2Elevator
 //
 //  Created by János Kukoda on 23/02/2024.
@@ -9,6 +9,7 @@
 import Foundation
 
 func updateClient(userDTO: UserDTO, value: Any?, keyPath: [Any], operation: String) -> UserDTO? {
+    updateServer(value: value, keyPath: keyPath, operation: operation)
     let jsonEncoder = JSONEncoder()
     guard let jsonData = try? jsonEncoder.encode(userDTO),
           let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] else
