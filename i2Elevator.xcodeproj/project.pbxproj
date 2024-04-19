@@ -26,6 +26,9 @@
 		349370E52BB1822300B19A79 /* GetAllExpressionChildren.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349370E42BB1822300B19A79 /* GetAllExpressionChildren.swift */; };
 		349370E72BB187C800B19A79 /* CardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349370E62BB187C800B19A79 /* CardSettingsView.swift */; };
 		34A2C0082BD13BF9008634DD /* UpdateServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2C0072BD13BF9008634DD /* UpdateServer.swift */; };
+		34A2C00B2BD25F2D008634DD /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 34A2C00A2BD25F2D008634DD /* ComposableArchitecture */; };
+		34A2C00D2BD261D2008634DD /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 34A2C00C2BD261D2008634DD /* ComposableArchitecture */; };
+		34A6897F2BD264190031E636 /* UserReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6897E2BD264190031E636 /* UserReducer.swift */; };
 		34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +54,7 @@
 		349370E42BB1822300B19A79 /* GetAllExpressionChildren.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAllExpressionChildren.swift; sourceTree = "<group>"; };
 		349370E62BB187C800B19A79 /* CardSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardSettingsView.swift; sourceTree = "<group>"; };
 		34A2C0072BD13BF9008634DD /* UpdateServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateServer.swift; sourceTree = "<group>"; };
+		34A6897E2BD264190031E636 /* UserReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserReducer.swift; sourceTree = "<group>"; };
 		34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformMapRuleToGrid.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -59,7 +63,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34A2C00B2BD25F2D008634DD /* ComposableArchitecture in Frameworks */,
 				343B92B72B83DE35007F78A8 /* RealityKitContent in Frameworks */,
+				34A2C00D2BD261D2008634DD /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +102,7 @@
 				343B92BC2B83DE37007F78A8 /* Assets.xcassets */,
 				343B92C12B83DE37007F78A8 /* Info.plist */,
 				343B92BE2B83DE37007F78A8 /* Preview Content */,
+				34A6897E2BD264190031E636 /* UserReducer.swift */,
 			);
 			path = i2Elevator;
 			sourceTree = "<group>";
@@ -160,6 +167,8 @@
 			name = i2Elevator;
 			packageProductDependencies = (
 				343B92B62B83DE35007F78A8 /* RealityKitContent */,
+				34A2C00A2BD25F2D008634DD /* ComposableArchitecture */,
+				34A2C00C2BD261D2008634DD /* ComposableArchitecture */,
 			);
 			productName = i2Elevator;
 			productReference = 343B92B12B83DE35007F78A8 /* i2Elevator.app */;
@@ -189,6 +198,9 @@
 				Base,
 			);
 			mainGroup = 343B92A82B83DE35007F78A8;
+			packageReferences = (
+				34A2C0092BD25F2D008634DD /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+			);
 			productRefGroup = 343B92B22B83DE35007F78A8 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -222,6 +234,7 @@
 				34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */,
 				3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */,
 				343B92BB2B83DE35007F78A8 /* ContentView.swift in Sources */,
+				34A6897F2BD264190031E636 /* UserReducer.swift in Sources */,
 				34A2C0082BD13BF9008634DD /* UpdateServer.swift in Sources */,
 				344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */,
 				347293502B96D92D0033D38F /* MapRuleEditor.swift in Sources */,
@@ -432,10 +445,31 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		34A2C0092BD25F2D008634DD /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.9.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		343B92B62B83DE35007F78A8 /* RealityKitContent */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RealityKitContent;
+		};
+		34A2C00A2BD25F2D008634DD /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34A2C0092BD25F2D008634DD /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		34A2C00C2BD261D2008634DD /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34A2C0092BD25F2D008634DD /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

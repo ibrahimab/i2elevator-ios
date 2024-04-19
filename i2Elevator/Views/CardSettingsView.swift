@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import ComposableArchitecture
 
 struct CardSettingsView: View {
     var cardIndex: Int
@@ -14,11 +15,12 @@ struct CardSettingsView: View {
     @State private var isSelectionListVisible: Bool = false
     @EnvironmentObject var sharedState: SharedState
     @Environment(\.openWindow) private var openWindow
+    let store: StoreOf<UserFeature>
 
     var body: some View {
         if let subTransformationId = sharedState.subTransformationId
         {
-            if let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+            if let transformations = store.userDTO?.teams?["response"]?.transformations,
                let transformationId = sharedState.transformationId,
                let transformation = transformations[transformationId],
                let cards = cardType == "in" ? transformation.subTransformations[subTransformationId]?.inputs : transformation.subTransformations[subTransformationId]?.outputs
@@ -31,13 +33,12 @@ struct CardSettingsView: View {
                             Spacer()
                             List {
                                 Section(header: Text("Root")) {
-                                    if let userDTO = sharedState.userDTO,
+                                    if let userDTO = store.userDTO,
                                        isSelectionListVisible == true {
                                         ForEach(Array(transformation.schemaItems.keys.sorted()), id: \.self) { schemaItemId in
                                             Button(action: {
                                                 let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, cardType == "in" ? "inputs" : "outputs", cardIndex, "schemaItemId"]
-                                                let newUserDTO = updateClient(userDTO: userDTO, value: schemaItemId, keyPath: keyPath, operation: "setValue")
-                                                sharedState.userDTO = newUserDTO
+                                                store.send(.setValue(keyPath: keyPath, value: schemaItemId))
                                                 self.isSelectionListVisible = false
                                             }) {
                                                 HStack {

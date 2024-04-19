@@ -9,6 +9,7 @@ import SwiftUI
 import RealityKit
 import RealityKitContent
 import UniformTypeIdentifiers
+import ComposableArchitecture
 
 let barTransparency = 0.5
 
@@ -19,7 +20,6 @@ class SharedState: ObservableObject {
     @Published var cardIndex: Int? = nil
     @Published var draggedSchemaItem: DraggedSchemaItem? = nil
     @Published var outputItemId: String? = nil
-    @Published var userDTO: UserDTO? = nil
     @Published var draggedFunctionName: String? = nil
     @Published var expressionKeypathSegment: [Any]? = nil
     @Published var schemaItemsOnScratchpad: [DraggedSchemaItem] = []
@@ -55,13 +55,13 @@ struct ContentView: View {
     @State private var yMovement: CGFloat = 0.0
     @State private var x1Movement: CGFloat = 0.0
     @State private var x2Movement: CGFloat = 0.0
-    
+    let store: StoreOf<UserFeature>
     var body: some View {
         GeometryReader { geometry in
             HStack {
                 VStack {
                     if self.menu == .subTransformation,
-                       let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                       let transformations = store.userDTO?.teams?["response"]?.transformations,
                        let transformationId = sharedState.transformationId,
                        let subTransformations = transformations[transformationId]?.subTransformations,
                        let subTransformationId = sharedState.subTransformationId,
@@ -120,7 +120,7 @@ struct ContentView: View {
                             }
                         }
                     } else if self.menu == .transformation,
-                              let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                              let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
                               let transformation = transformations[transformationId]
                     {
@@ -167,7 +167,7 @@ struct ContentView: View {
                             }
                         }
                     } else if self.menu == .schemaItem,
-                              let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                              let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
                               let transformation = transformations[transformationId],
                               let schemaItemId = sharedState.schemaItemId,
@@ -216,7 +216,7 @@ struct ContentView: View {
                         }
                         Spacer()
                     } else if self.menu == .schemaItem,
-                              let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                              let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
                               let transformation = transformations[transformationId],
                               let schemaItemId = sharedState.schemaItemId,
@@ -258,7 +258,7 @@ struct ContentView: View {
                             }
                         }
                     } else if self.menu == .schemaItemList,
-                              let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                              let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
                               let transformation = transformations[transformationId]
                     {
@@ -303,7 +303,7 @@ struct ContentView: View {
                                 }
                             }
                         }
-                    } else if let transformations = sharedState.userDTO?.teams?["response"]?.transformations {
+                    } else if let transformations = store.userDTO?.teams?["response"]?.transformations {
                         
                         HStack {
                             TextField("Search", text: $searchText)
@@ -331,14 +331,14 @@ struct ContentView: View {
                     }
                 }.padding(.vertical, 40).frame(width: 300 + x1Movement)                
                 VStack {
-                    MapRuleEditor().frame(height: geometry.size.height * 0.5 + yMovement)
+                    MapRuleEditor(store: store).frame(height: geometry.size.height * 0.5 + yMovement)
                     HStack {
                         ForEach(sharedState.viewStack.indices, id: \.self) { stackItemIndex in
                             let stackItem = sharedState.viewStack[stackItemIndex]
                             if let cardType = stackItem.cardType,
                                let cardIndex = stackItem.cardIndex
                             {
-                                CardView(cardIndex: cardIndex, cardType: cardType)
+                                CardView(cardIndex: cardIndex, cardType: cardType, store: store)
                             }
                         }
                     }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
@@ -389,7 +389,9 @@ struct ContentView: View {
                         do {
                             let authResponse = try decoder.decode(AuthResponse.self, from: data)
                             DispatchQueue.main.async {
-                                sharedState.userDTO = authResponse.data
+                                if let userDTO = authResponse.data {
+                                    store.send(.initialize(userDTO: userDTO))
+                                }
                             }
                         } catch {
                             // Handle the error here
@@ -454,5 +456,8 @@ struct ContentView: View {
 }
 
 #Preview(windowStyle: .automatic) {
-    ContentView()
+    let store = Store(initialState: UserFeature.State()) {
+        UserFeature()
+    }
+    ContentView(store: store)
 }

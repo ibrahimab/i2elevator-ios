@@ -7,20 +7,22 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import ComposableArchitecture
 
 struct CardView: View {
     var cardIndex: Int
     var cardType: String
     @EnvironmentObject var sharedState: SharedState
     @Environment(\.openWindow) private var openWindow
+    let store: StoreOf<UserFeature>
 
     func updateIndentedSchemaItemList() -> [IndentedSchemaItem] {
-        if let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+        if let transformations = store.userDTO?.teams?["response"]?.transformations,
            let transformationId = sharedState.transformationId,
            let transformation = transformations[transformationId],
            let subTransformationId = sharedState.subTransformationId,
            let cards = cardType == "in" ? transformation.subTransformations[subTransformationId]?.inputs : transformation.subTransformations[subTransformationId]?.outputs,
-           let userDTO = sharedState.userDTO,
+           let userDTO = store.userDTO,
            cardIndex < cards.count
         {
             let a = transformSchemaEntityTreeToList(schemaItemId: cards[cardIndex].schemaItemId, userDTO: userDTO, transformationId: sharedState.transformationId, indentation: 1)
@@ -92,7 +94,7 @@ struct CardView: View {
         let indentedSchemaItemList = updateIndentedSchemaItemList()
         if let subTransformationId = sharedState.subTransformationId
         {
-            if let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+            if let transformations = store.userDTO?.teams?["response"]?.transformations,
                let transformationId = sharedState.transformationId,
                let transformation = transformations[transformationId],
                let cards = cardType == "in" ? transformation.subTransformations[subTransformationId]?.inputs : transformation.subTransformations[subTransformationId]?.outputs
@@ -171,14 +173,14 @@ struct CardView: View {
                                                 }
                                                 sharedState.outputItemId = indentedSchemaItem.schemaItemId
                                             } /*else if let outputItemId = sharedState.outputItemId,
-                                                      let userDTO = sharedState.userDTO
+                                                      let userDTO = store.userDTO
                                             {
                                                 let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"]
                                                 if var objectrule = cards[cardIndex].mapRules?[outputItemId]?.objectrule {
                                                     objectrule.reference = indentedSchemaItem.schemaItemId
                                                     let newUserDTO = updateClient(userDTO: userDTO, value: objectrule, keyPath: keyPath, operation: "setValue")
                                                     if let ret = newUserDTO {
-                                                        sharedState.userDTO = ret
+                                                        store.userDTO = ret
                                                     }
                                                 }
                                             }*/
@@ -205,7 +207,7 @@ struct CardView: View {
                                                 outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                                 .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
                                                     if let indentedInputItem = sharedState.draggedSchemaItem,
-                                                       let userDTO = sharedState.userDTO,
+                                                       let userDTO = store.userDTO,
                                                        cardType == "out"
                                                     {
                                                         let _outputItemId = indentedSchemaItem.schemaItemId
@@ -223,45 +225,33 @@ struct CardView: View {
                                                             let jsonEncoder = JSONEncoder()
                                                             if let jsonData = try? jsonEncoder.encode(objectrule),
                                                                let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-                                                                let newUserDTO = updateClient(userDTO: userDTO, value: dictionary, keyPath: keyPath, operation: "setValue")
-                                                                if let ret = newUserDTO {
-                                                                    sharedState.userDTO = ret
-                                                                    sharedState.draggedSchemaItem = nil
-                                                                }
+                                                                store.send(.setValue(keyPath: keyPath, value: dictionary))
+                                                                sharedState.draggedSchemaItem = nil
                                                             }
                                                         } else if indentedSchemaItem.rangeMax == "S" {
                                                             var newUserDTO: UserDTO?
                                                             if let subTransformationId = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId]?.subTransformationId,
-                                                               let inputCount = sharedState.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.count
+                                                               let inputCount = store.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.count
                                                             {
-                                                                let i = sharedState.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.firstIndex(where: { input in
+                                                                let i = store.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.firstIndex(where: { input in
                                                                     input.schemaItemId == _inputSchemaItemId
                                                                 })
                                                                 if let i = i
                                                                 {
-                                                                    //ret2 = updateClient(userDTO: userDTO, keyPath: ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", inputCount], operation: "removeKey")
+
                                                                     let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", i]
-                                                                    newUserDTO = updateClient(userDTO: userDTO, value: nil, keyPath: keyPath, operation: "removeKey")
+                                                                    store.send(.removeKey(keyPath: keyPath))
                                                                 } else {
-                                                                    //subTransformation?.inputs.count {
                                                                     let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", inputCount]
-                                                                    newUserDTO = updateClient(userDTO: userDTO, value: ["schemaItemId": _inputSchemaItemId], keyPath: keyPath, operation: "setValue")
-                                                                }
-                                                                if let newUserDTO = newUserDTO {
-                                                                    sharedState.userDTO = newUserDTO
+                                                                    store.send(.setValue(keyPath: keyPath, value: ["schemaItemId": _inputSchemaItemId]))
                                                                 }
                                                             } else {
                                                                 let rand = randomAlphaNumeric(length: 4)
                                                                 let value: [String: Any] = ["name": "f_\(rand)", "outputs": [["mapRules":[:], "schemaItemId": _outputItemId]], "inputs": [["schemaItemId": _inputSchemaItemId]]]
                                                                 let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", "f_\(rand)"]
-                                                                newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
+                                                                store.send(.setValue(keyPath: keyPath, value: value))
                                                                 let keyPath2: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId, "subTransformationId"]
-                                                                if let newUserDTO = newUserDTO {
-                                                                    let newUserDTO2 = updateClient(userDTO: newUserDTO, value: "f_\(rand)", keyPath: keyPath2, operation: "setValue")
-                                                                    if let newUserDTO = newUserDTO2 {
-                                                                        sharedState.userDTO = newUserDTO
-                                                                    }
-                                                                }
+                                                                store.send(.setValue(keyPath: keyPath2, value: "f_\(rand)"))
                                                             }
                                                         }
                                                     }

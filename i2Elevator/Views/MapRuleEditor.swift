@@ -7,12 +7,14 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import ComposableArchitecture
 
 struct MapRuleEditor: View {
     @EnvironmentObject var sharedState: SharedState
     @State private var text: String = ""
     @State private var isEditing: Bool = false
     @Environment(\.openWindow) private var openWindow
+    let store: StoreOf<UserFeature>
     
     var body: some View {
         var rowInd = 0
@@ -40,8 +42,8 @@ struct MapRuleEditor: View {
                         Image(systemName: "lanyardcard")
                     }.clipShape(Circle())
                 }*/
-                if let userDTO = sharedState.userDTO,
-                   let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                if let userDTO = store.userDTO,
+                   let transformations = store.userDTO?.teams?["response"]?.transformations,
                    let transformationId = sharedState.transformationId,
                    let transformation = transformations[transformationId],
                    let subTransformationId = sharedState.subTransformationId,
@@ -77,8 +79,7 @@ struct MapRuleEditor: View {
                                                 // Text field is closed, perform any necessary actions here
                                                 let value = ["type": "constant", "constant": text]
                                                 let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + column.expressionKeypathSegment
-                                                let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
-                                                sharedState.userDTO = newUserDTO
+                                                store.send(.setValue(keyPath: keyPath, value: value))
                                             }
                                         })
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -116,8 +117,7 @@ struct MapRuleEditor: View {
                                                 if let jsonData = try? jsonEncoder.encode(_expression),
                                                    let value = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
                                                     let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + column.expressionKeypathSegment
-                                                    let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
-                                                    sharedState.userDTO = newUserDTO
+                                                    store.send(.setValue(keyPath: keyPath, value: value))
                                                 }
                                             }
                                             sharedState.draggedSchemaItem = nil
@@ -205,8 +205,7 @@ struct MapRuleEditor: View {
                                                 
                                                 //let value: [String: Any] = ["type": "function", "function": ["name": newFunctionName, "props": props]]
                                                 let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + column.expressionKeypathSegment
-                                                let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
-                                                sharedState.userDTO = newUserDTO
+                                                store.send(.setValue(keyPath: keyPath, value: value))
                                             }
                                             sharedState.draggedFunctionName = nil
                                             return true
@@ -256,7 +255,7 @@ struct MapRuleEditor: View {
                                     Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
                                 }
                                 Spacer().frame(width: 20.0)
-                                if let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                                if let transformations = store.userDTO?.teams?["response"]?.transformations,
                                    let transformationId = sharedState.transformationId,
                                    let schemaItem = transformations[transformationId]?.schemaItems[schemaItemOnScratchpad.schemaItemId]
                                 {
@@ -315,8 +314,8 @@ struct MapRuleEditor: View {
                                })
                             {
                                 sharedState.schemaItemsOnScratchpad.remove(at: i)
-                            } else if let userDTO = sharedState.userDTO,
-                                      let transformations = sharedState.userDTO?.teams?["response"]?.transformations,
+                            } else if let userDTO = store.userDTO,
+                                      let transformations = store.userDTO?.teams?["response"]?.transformations,
                                       let transformationId = sharedState.transformationId,
                                       let transformation = transformations[transformationId],
                                       let subTransformationId = sharedState.subTransformationId,
@@ -330,7 +329,7 @@ struct MapRuleEditor: View {
                                 let value: [String: Any] = ["type": "placeholder"]
                                 let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + expressionKeypathSegment
                                 let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
-                                sharedState.userDTO = newUserDTO
+                                store.userDTO = newUserDTO
                             }
                             sharedState.draggedSchemaItem = nil
                             return true

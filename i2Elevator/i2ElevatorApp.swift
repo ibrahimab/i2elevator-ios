@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 struct MyData: Codable, Hashable {
     var intValue: Int
@@ -23,13 +24,18 @@ struct i2ElevatorApp: App {
     private var landscapeSize : CGSize = CGSize(width: 600, height: 400)
     private var landscapeSize2x : CGSize = CGSize(width: 800, height: 600)
     let sharedState = SharedState()
+    
+    let store = Store(initialState: UserFeature.State()) {
+        UserFeature()
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView().environmentObject(sharedState)
+            ContentView(store: store).environmentObject(sharedState)
         }.defaultSize(CGSize(width: 1600, height: 800))
         WindowGroup(id: "SubTransformationView", for: MyData.self) { data in
             if let data = data.wrappedValue {
-                CardView(cardIndex: data.intValue, cardType: data.stringValue)
+                CardView(cardIndex: data.intValue, cardType: data.stringValue, store: store)
                     .environmentObject(sharedState)
             } else {
                 EmptyView()
@@ -39,14 +45,14 @@ struct i2ElevatorApp: App {
         //.frame(width: CGFloat(400 * (sharedState.aaa.count + 1)))
         WindowGroup(id: "CardSettingsView", for: CardSettingsData.self) { data in
             if let data = data.wrappedValue {
-                CardSettingsView(cardIndex: data.intValue, cardType: data.stringValue)
+                CardSettingsView(cardIndex: data.intValue, cardType: data.stringValue, store: store)
                     .environmentObject(sharedState)
             } else {
                 EmptyView()
             }
         }.defaultSize(portraitSize)
         WindowGroup("MapRuleEditor", id: "MapRuleEditor") {
-            MapRuleEditor().environmentObject(sharedState)
+            MapRuleEditor(store: store).environmentObject(sharedState)
         }.defaultSize(landscapeSize2x)
         WindowGroup("FunctionCatalog", id: "FunctionCatalog") {          
             FunctionCatalog().environmentObject(sharedState)

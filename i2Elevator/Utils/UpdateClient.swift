@@ -7,8 +7,12 @@
 
 
 import Foundation
+import ComposableArchitecture
 
-func updateClient(userDTO: UserDTO, value: Any?, keyPath: [Any], operation: String) -> UserDTO? {
+func updateClient(userDTO: UserDTO?, value: Any?, keyPath: [Any], operation: String) -> UserDTO? {
+    guard let userDTO = userDTO else {
+        return nil
+    }
     updateServer(value: value, keyPath: keyPath, operation: operation)
     let jsonEncoder = JSONEncoder()
     guard let jsonData = try? jsonEncoder.encode(userDTO),
