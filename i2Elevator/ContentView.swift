@@ -56,6 +56,8 @@ struct ContentView: View {
     @State private var x1Movement: CGFloat = 0.0
     @State private var x2Movement: CGFloat = 0.0
     let store: StoreOf<UserFeature>
+    @State private var editedSchemaItem: SchemaItem? = nil
+    @State private var isSchemaItemEdited: Bool = false
     var body: some View {
         GeometryReader { geometry in
             HStack {
@@ -236,11 +238,16 @@ struct ContentView: View {
                         .padding(.horizontal, 20)
                         Spacer()
                         List {
-                            
                             Section(header: Text("\(transformation.name) > Schema Items")) {
-                                Text(schemaItem.name)
+                                TextField("Enter Initiator", text: Binding(
+                                    get: { editedSchemaItem?.name ?? "" }, 
+                                    set: {
+                                        editedSchemaItem?.name = $0
+                                        isSchemaItemEdited = true
+                                    }
+                                )).autocapitalization(.none)
                             }
-                            Section(header: Text("Chidren")) {
+                            Section(header: Text("Children")) {
                                 ForEach(transformation.schemaItems.keys.sorted(), id: \.self) { childSchemaItemId in
                                     if let childSchemaItem = transformation.schemaItems[childSchemaItemId] {
                                         Button(action: {
@@ -256,7 +263,62 @@ struct ContentView: View {
                                     }
                                 }
                             }
+                            Section(header: Text("Initiator")) {
+                                TextField("Enter Initiator", text: Binding(
+                                    get: { editedSchemaItem?.initiator ?? "" }, 
+                                    set: { 
+                                        editedSchemaItem?.initiator = $0
+                                        isSchemaItemEdited = true
+                                    }
+                                )).autocapitalization(.none)
+                            }
+                            Section(header: Text("Terminator")) {
+                                TextField("Enter Initiator", text: Binding(
+                                    get: { editedSchemaItem?.terminator ?? "" }, 
+                                    set: {
+                                        editedSchemaItem?.terminator = $0
+                                        isSchemaItemEdited = true
+                                    }
+                                )).autocapitalization(.none)
+                            }
+                            Section(header: Text("Delimiter")) {
+                                TextField("Enter Initiator", text: Binding(
+                                    get: { editedSchemaItem?.delimiter ?? "" }, 
+                                    set: {
+                                        editedSchemaItem?.delimiter = $0
+                                        isSchemaItemEdited = true
+                                    }
+                                )).autocapitalization(.none)
+                            }
+                            Section(header: Text("Type")) {
+                                TextField("Enter Initiator", text: Binding(
+                                    get: { editedSchemaItem?.type ?? "" }, 
+                                    set: {
+                                        editedSchemaItem?.type = $0
+                                        isSchemaItemEdited = true
+                                    }
+                                )).autocapitalization(.none)
+                            }
                         }
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                let encoder = JSONEncoder()
+                                if let jsonData = try? encoder.encode(editedSchemaItem),
+                                   let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+                                {
+                                    let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", schemaItemId]
+                                    store.send(.setValue(keyPath: keyPath, value: dictionary))
+                                }
+                                isSchemaItemEdited = false
+                            }) {
+                                Text("Save")
+                            }
+                            .disabled(!isSchemaItemEdited)
+                            .foregroundColor(.white)
+                            .background(isSchemaItemEdited ? Color.blue : Color.gray)
+                            .cornerRadius(24)
+                        }.padding(.horizontal, 24)
                     } else if self.menu == .schemaItemList,
                               let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
@@ -278,7 +340,11 @@ struct ContentView: View {
                         HStack {
                             Spacer()
                             Button(action: {
-                                
+                                let schemaItemId = randomAlphaNumeric(length: 4)
+                                let value: [String: Any] = ["name": "New schema item",
+                                                            "children": [:]]
+                                let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", schemaItemId]
+                                store.send(.setValue(keyPath: keyPath, value: value))
                             }) {
                                 Text("Add schema item")
                             }
@@ -292,6 +358,7 @@ struct ContentView: View {
                                         Button(action: {
                                             self.menu = .schemaItem
                                             self.sharedState.schemaItemId = schemaItemId
+                                            editedSchemaItem = schemaItem
                                         }) {
                                             HStack {
                                                 Text(schemaItem.name)
@@ -304,12 +371,35 @@ struct ContentView: View {
                             }
                         }
                     } else if let transformations = store.userDTO?.teams?["response"]?.transformations {
-                        
                         HStack {
                             TextField("Search", text: $searchText)
                         }
                         .padding(.bottom, 40)
                         .padding(.horizontal, 40)
+                        Button(action: {
+                            let transformationId = randomAlphaNumeric(length: 4)
+                            let outputRootItemId = randomAlphaNumeric(length: 4)
+                            let inputRootItemId = randomAlphaNumeric(length: 4)
+                            let value: [String: Any] = ["name": "New transformation",
+                                                        "subTransformations": [
+                                                            transformationId: ["name": "New sub transformation",
+                                                                   "outputs": [["mapRules":[:],
+                                                                                "schemaItemId": outputRootItemId]],
+                                                                   "inputs": [["schemaItemId": inputRootItemId]]]],
+                                                        "schemaItems": [outputRootItemId: ["name": "Output item",
+                                                                                           "children": [:]],
+                                                                         inputRootItemId: ["name": "Input item",
+                                                                                           "children": [:]]]]
+                            let keyPath: [Any] = ["response", "transformations", transformationId]
+                            store.send(.setValue(keyPath: keyPath, value: value))
+                            sharedState.transformationId = transformationId
+                            self.menu = .transformation
+                        }) {
+                            Text("Create Transformation")
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }.padding(.bottom, 40)
+                            .padding(.horizontal, 40)
                         List {
                             Section(header: Text("Transformations")) {
                                 ForEach(transformations.keys.sorted(), id: \.self) { transformationId in

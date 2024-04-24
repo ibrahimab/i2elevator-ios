@@ -29,6 +29,10 @@ struct Transformation: Codable {
 struct SchemaItem: Codable {
     var name: String
     var children: [String: SchemaItemRelationship]
+    var initiator: String?
+    var terminator: String?
+    var delimiter: String?
+    var type: String?
 }
 
 public class SchemaItemRelationship: Codable {
