@@ -9,7 +9,8 @@ func transformSchemaEntityTreeToList(
     schemaItemId: String?,
     userDTO: UserDTO?,
     transformationId: String?,
-    indentation: Int
+    indentation: Int,
+    disable: Bool
 ) -> [IndentedSchemaItem] {
     guard let schemaItemId = schemaItemId, 
             let userDTO = userDTO, let transformationId = transformationId else 
@@ -24,12 +25,13 @@ func transformSchemaEntityTreeToList(
         guard let child = userDTO.teams?["response"]?.transformations[transformationId]?.schemaItems[k] else {
             continue
         }
-        ret.append(IndentedSchemaItem(indentation: indentation, numOfChildren: child.children.count, schemaItemId: k, rangeMax: v.rangeMax))
+        ret.append(IndentedSchemaItem(indentation: indentation, numOfChildren: child.children.count, schemaItemId: k, rangeMax: v.rangeMax, disable: disable))
         let a = transformSchemaEntityTreeToList(
             schemaItemId: k,
             userDTO: userDTO,
             transformationId: transformationId,
-            indentation: indentation+1
+            indentation: indentation+1, 
+            disable: v.rangeMax == "S" ? true : disable
         )
         ret += a
     }

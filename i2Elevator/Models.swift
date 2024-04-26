@@ -72,15 +72,16 @@ struct IndentedSchemaItem: Identifiable {
     var indentation: Int
     var numOfChildren: Int
     var schemaItemId: String
-    var rangeMax: String
+    var rangeMax: String?
     var id: String {
         schemaItemId
     }
+    var disable: Bool
 }
 
 struct DraggedSchemaItem: Identifiable {
     var schemaItemId: String
-    var rangeMax: String
+    var rangeMax: String?
     var numOfChildren: Int
     var id: String {
         schemaItemId
