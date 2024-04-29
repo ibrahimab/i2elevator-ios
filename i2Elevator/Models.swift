@@ -18,12 +18,19 @@ struct UserDTO: Codable {
 
 struct TeamDTO: Codable {
     var transformations: [String: Transformation]
+    var texts: [String: String]?
 }
 
 struct Transformation: Codable {
     var name: String
     var subTransformations: [String: SubTransformation]
     var schemaItems: [String: SchemaItem]
+    var inputExpectedOutputTextIdPairs: [InputExpectedOutputTextIdPair]?
+}
+
+struct InputExpectedOutputTextIdPair: Codable {
+    var inputTextId: String?
+    var expectedOutputTextId: String?
 }
 
 struct SchemaItem: Codable {
