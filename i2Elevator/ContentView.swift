@@ -6,8 +6,6 @@
 //
 
 import SwiftUI
-import RealityKit
-import RealityKitContent
 import UniformTypeIdentifiers
 import ComposableArchitecture
 
@@ -49,7 +47,6 @@ struct ViewDropData {
 
 struct ContentView: View {
     @EnvironmentObject var sharedState: SharedState
-    @Environment(\.openWindow) private var openWindow
     @State private var menu: SelectedMenuItem = .none
     @State private var searchText: String = ""
     @Environment(\.dismissWindow) private var dismissWindow
@@ -185,10 +182,8 @@ struct ContentView: View {
                             task.resume()
                         }) {
                             Text("Run Transformation")
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
-                        }.padding(.bottom, 40)
-                            .padding(.horizontal, 40)
+                        }
+                        .buttonStyle(BorderedButtonStyle())
                         Spacer()
                         List {
                             Section(header: Text("\(transformation.name) > Sub Transformations")) {
@@ -447,10 +442,8 @@ struct ContentView: View {
                             self.menu = .transformation
                         }) {
                             Text("Create Transformation")
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
-                        }.padding(.bottom, 40)
-                            .padding(.horizontal, 40)
+                        }
+                        .buttonStyle(BorderedButtonStyle())
                         List {
                             Section(header: Text("Transformations")) {
                                 ForEach(transformations.keys.sorted(), id: \.self) { transformationId in
@@ -594,11 +587,4 @@ struct ContentView: View {
             }
         }
     }
-}
-
-#Preview(windowStyle: .automatic) {
-    let store = Store(initialState: UserFeature.State()) {
-        UserFeature()
-    }
-    ContentView(store: store)
 }

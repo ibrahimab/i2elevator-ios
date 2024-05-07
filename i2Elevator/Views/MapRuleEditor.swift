@@ -13,36 +13,12 @@ struct MapRuleEditor: View {
     @EnvironmentObject var sharedState: SharedState
     @State private var text: String = ""
     @State private var isEditing: Bool = false
-    @Environment(\.openWindow) private var openWindow
     let store: StoreOf<UserFeature>
     
     var body: some View {
         var rowInd = 0
-        ZStack {
-            TopColorGradient(color: .yellow)
             if let subTransformationId = sharedState.subTransformationId {
                 VStack {
-                    /*HStack {
-                        Button(action: {
-                           
-                        }) {
-                            Text("Maprule Editor")
-                        }.onDrag {
-                            sharedState.viewToDrop = ViewDropData(name: "MapRuleEditor")
-                            let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                            return itemProvider
-                        }
-                        Button(action: {
-                            if let i = sharedState.viewStack.firstIndex(where: { aa in
-                                aa.name == "MapRuleEditor"
-                            }) {
-                                sharedState.viewStack.remove(at: i)
-                                openWindow(id: "MapRuleEditor")
-                            }
-                        }) {
-                            Image(systemName: "lanyardcard")
-                        }.clipShape(Circle())
-                    }*/
                     if let userDTO = store.userDTO,
                        let transformations = store.userDTO?.teams?["response"]?.transformations,
                        let transformationId = sharedState.transformationId,
@@ -99,10 +75,6 @@ struct MapRuleEditor: View {
                                             Button(action: {
                                             }) {
                                                 Text(column.text)
-                                                    .padding(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                                                    .foregroundColor(.white)
-                                                //.background(b ? Color.green : Color.blue)
-                                                    .cornerRadius(8)
                                             }.onDrag {
                                                 //sharedState.expressionKeypathSegment = column.expressionKeypathSegment
                                                 let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
@@ -123,7 +95,7 @@ struct MapRuleEditor: View {
                                                 }
                                                 sharedState.draggedSchemaItem = nil
                                                 return true
-                                            }
+                                            }.buttonStyle(BorderedButtonStyle())
                                             
                                             // Function dropped
                                         } else if let newFunctionName = sharedState.draggedFunctionName,
@@ -147,10 +119,6 @@ struct MapRuleEditor: View {
                                                  inputSchemaItemId = nil*/
                                             }) {
                                                 Text(column.text)
-                                                    .padding(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                                                    .foregroundColor(.white)
-                                                //.background(b ? Color.green : Color.blue)
-                                                    .cornerRadius(8)
                                             }.onDrag {
                                                 resetDragProperties()
                                                 sharedState.expressionKeypathSegment = column.expressionKeypathSegment
@@ -210,7 +178,7 @@ struct MapRuleEditor: View {
                                                 }
                                                 sharedState.draggedFunctionName = nil
                                                 return true
-                                            }
+                                            }.buttonStyle(BorderedButtonStyle())
                                         } else {
                                             Button(action: {
                                                 /*expressionKeypathSegment = column.expressionKeypathSegment
@@ -218,16 +186,12 @@ struct MapRuleEditor: View {
                                                  inputSchemaItemId = nil*/
                                             }) {
                                                 Text(column.text)
-                                                    .padding(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                                                    .foregroundColor(.white)
-                                                //.background(b ? Color.green : Color.blue)
-                                                    .cornerRadius(8)
                                             }.onDrag {
                                                 resetDragProperties()
                                                 sharedState.expressionKeypathSegment = column.expressionKeypathSegment
                                                 let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
                                                 return itemProvider
-                                            }
+                                            }.buttonStyle(BorderedButtonStyle())
                                         }
                                     } else {
                                         Text(column.text)
@@ -285,58 +249,6 @@ struct MapRuleEditor: View {
                     Spacer()
                 }
                 .padding()
-                    /*.navigationBarItems(
-                        leading:  HStack {
-                            Button(action: {
-                                
-                            }) {
-                                Image(systemName: "chevron.left")
-                            }
-                            .clipShape(Circle())
-                            
-                            Button(action: {
-                                
-                            }) {
-                                Image(systemName: "chevron.right")
-                            }
-                            .clipShape(Circle())
-                        },
-                        trailing: HStack {
-                            Button(action: {
-                                
-                            }) {
-                                Image(systemName: "trash")
-                            }
-                            .clipShape(Circle())
-                            .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
-                                if let _draggedSchemaItem = sharedState.draggedSchemaItem,
-                                   let i = sharedState.schemaItemsOnScratchpad.firstIndex(where: { draggedSchemaItem in
-                                       draggedSchemaItem.schemaItemId == _draggedSchemaItem.schemaItemId
-                                   })
-                                {
-                                    sharedState.schemaItemsOnScratchpad.remove(at: i)
-                                } else if let userDTO = store.userDTO,
-                                          let transformations = store.userDTO?.teams?["response"]?.transformations,
-                                          let transformationId = sharedState.transformationId,
-                                          let transformation = transformations[transformationId],
-                                          let subTransformationId = sharedState.subTransformationId,
-                                          let _ = transformation.subTransformations[subTransformationId]?.outputs,
-                                          let cardIndex = sharedState.cardIndex,
-                                          let cardType = sharedState.cardType,
-                                          cardType == "out",
-                                          let outputItemId = sharedState.outputItemId,
-                                          let expressionKeypathSegment = sharedState.expressionKeypathSegment
-                                {
-                                    let value: [String: Any] = ["type": "placeholder"]
-                                    let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + expressionKeypathSegment
-                                    let newUserDTO = updateClient(userDTO: userDTO, value: value, keyPath: keyPath, operation: "setValue")
-                                    store.userDTO = newUserDTO
-                                }
-                                sharedState.draggedSchemaItem = nil
-                                return true
-                            }
-                        }
-                    )*/
             } else {
                 List {
                     if let transformationId = sharedState.transformationId,
@@ -357,5 +269,5 @@ struct MapRuleEditor: View {
                 }.padding()
             }
         }
-    }
+    
 }

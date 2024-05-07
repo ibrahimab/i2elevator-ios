@@ -14,7 +14,6 @@ struct CardSettingsView: View {
     var cardType: String
     @State private var isSelectionListVisible: Bool = false
     @EnvironmentObject var sharedState: SharedState
-    @Environment(\.openWindow) private var openWindow
     let store: StoreOf<UserFeature>
 
     var body: some View {
@@ -25,8 +24,6 @@ struct CardSettingsView: View {
                let transformation = transformations[transformationId],
                let cards = cardType == "in" ? transformation.subTransformations[subTransformationId]?.inputs : transformation.subTransformations[subTransformationId]?.outputs
             {
-                ZStack {
-                    TopColorGradient(color: .indigo)
                     if cardIndex < cards.count
                     {
                         VStack {
@@ -79,7 +76,7 @@ struct CardSettingsView: View {
                         .padding(.horizontal, 20)
                     }
                 }
-            }
+            
         }
     }
 }

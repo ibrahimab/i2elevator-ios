@@ -13,9 +13,8 @@ struct CardView: View {
     var cardIndex: Int
     var cardType: String
     @EnvironmentObject var sharedState: SharedState
-    @Environment(\.openWindow) private var openWindow
     let store: StoreOf<UserFeature>
-
+    
     func updateIndentedSchemaItemList() -> [IndentedSchemaItem] {
         if let transformations = store.userDTO?.teams?["response"]?.transformations,
            let transformationId = sharedState.transformationId,
@@ -104,7 +103,7 @@ struct CardView: View {
             }
         }
     }
-
+    
     var body: some View {
         let indentedSchemaItemList = updateIndentedSchemaItemList()
         if let subTransformationId = sharedState.subTransformationId
@@ -114,86 +113,36 @@ struct CardView: View {
                let transformation = transformations[transformationId],
                let cards = cardType == "in" ? transformation.subTransformations[subTransformationId]?.inputs : transformation.subTransformations[subTransformationId]?.outputs
             {
-                ZStack {
-                    TopColorGradient(color: cardType == "in" ? .blue : .green)
-                    if cardIndex < cards.count
-                    {
-                        VStack {
+                if cardIndex < cards.count
+                {
+                    VStack {
+                        Spacer()
+                        HStack {
                             Spacer()
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                   
-                                }) {
-                                    Text("\(cardType) \(cardIndex)")
-                                }.onDrag {
-                                    sharedState.viewToDrop = ViewDropData(name: "YourDraggedData", cardType: cardType, cardIndex: cardIndex)
-                                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                                    return itemProvider
-                                }
-                                Button(action: {
-                                    if let i = sharedState.viewStack.firstIndex(where: { aa in
-                                        aa.cardIndex == cardIndex && aa.cardType == cardType
-                                    }) {
-                                        sharedState.viewStack.remove(at: i)
-                                        openWindow(id: "SubTransformationView", value: MyData(intValue: cardIndex, stringValue: cardType))
-                                    }
-                                }) {
-                                    Image(systemName: "lanyardcard")
-                                }.clipShape(Circle())
-                                if cardType == "out" {
+                            Button(action: {
+                                
+                            }) {
+                                Text("\(cardType) \(cardIndex)")
+                            }.onDrag {
+                                sharedState.viewToDrop = ViewDropData(name: "YourDraggedData", cardType: cardType, cardIndex: cardIndex)
+                                let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                return itemProvider
+                            }
+                        }.padding(.horizontal, 20)
+                        List {
+                            Section(header: Text("Schema Items")) {
+                                ForEach(indentedSchemaItemList) { indentedSchemaItem in
                                     Button(action: {
-                                        openWindow(id: "MapRuleEditor")
+                                        if cardType == "out" && !indentedSchemaItem.disable {
+                                            sharedState.cardType = cardType
+                                            sharedState.cardIndex = cardIndex
+                                            sharedState.outputItemId = indentedSchemaItem.schemaItemId
+                                        }
                                     }) {
-                                        Image(systemName: "function")
-                                    }
-                                    .clipShape(Circle())
-                                    Button(action: {
-                                        openWindow(id: "FunctionCatalog")
-                                    }) {
-                                        Image(systemName: "list.bullet")
-                                    }
-                                    .clipShape(Circle())
-                                }
-                                Button(action: {
-                                    openWindow(id: "CardSettingsView", value: CardSettingsData(intValue: cardIndex, stringValue: cardType))
-                                }) {
-                                    Image(systemName: "gear")
-                                } .clipShape(Circle())
-                            }.padding(.horizontal, 20)
-                            List {
-                                Section(header: Text("Schema Items")) {
-                                    ForEach(indentedSchemaItemList) { indentedSchemaItem in
-                                        Button(action: {
-                                            if cardType == "out" && !indentedSchemaItem.disable {
-                                                sharedState.cardType = cardType
-                                                sharedState.cardIndex = cardIndex
-                                                if sharedState.outputItemId == nil {
-                                                    //openWindow(id: "MapRuleEditor")
-                                                    //openWindow(id: "FunctionCatalog")
-                                                    /*let mapRuleEditor = ViewDropData(name: "MapRuleEditor")
-                                                    let functionCatalog = ViewDropData(name: "FunctionCatalog")
-                                                    sharedState.viewStack.append(mapRuleEditor)
-                                                    sharedState.viewStack.append(functionCatalog)*/
-                                                }
-                                                sharedState.outputItemId = indentedSchemaItem.schemaItemId
-                                            } /*else if let outputItemId = sharedState.outputItemId,
-                                                      let userDTO = store.userDTO
-                                            {
-                                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"]
-                                                if var objectrule = cards[cardIndex].mapRules?[outputItemId]?.objectrule {
-                                                    objectrule.reference = indentedSchemaItem.schemaItemId
-                                                    let newUserDTO = updateClient(userDTO: userDTO, value: objectrule, keyPath: keyPath, operation: "setValue")
-                                                    if let ret = newUserDTO {
-                                                        store.userDTO = ret
-                                                    }
-                                                }
-                                            }*/
-                                        }) {
-                                            if cardType == "in",
-                                               !indentedSchemaItem.disable
-                                            {
-                                                inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
+                                        if cardType == "in",
+                                           !indentedSchemaItem.disable
+                                        {
+                                            inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                                 .onDrag {
                                                     resetDragProperties()
                                                     if cardType == "in" {
@@ -202,14 +151,14 @@ struct CardView: View {
                                                     let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
                                                     return itemProvider
                                                 }
-                                            } else if cardType == "in" {
-                                                inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
-                                            } else if let indentedInputItem = sharedState.draggedSchemaItem,
-                                                      cardType == "out",
-                                                      (indentedSchemaItem.rangeMax == indentedInputItem.rangeMax || indentedInputItem.rangeMax == nil || indentedSchemaItem.rangeMax == "S"),
-                                                      !indentedSchemaItem.disable
-                                            {
-                                                outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
+                                        } else if cardType == "in" {
+                                            inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
+                                        } else if let indentedInputItem = sharedState.draggedSchemaItem,
+                                                  cardType == "out",
+                                                  (indentedSchemaItem.rangeMax == indentedInputItem.rangeMax || indentedInputItem.rangeMax == nil || indentedSchemaItem.rangeMax == "S"),
+                                                  !indentedSchemaItem.disable
+                                        {
+                                            outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                                 .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
                                                     if let indentedInputItem = sharedState.draggedSchemaItem,
                                                        let userDTO = store.userDTO,
@@ -243,7 +192,7 @@ struct CardView: View {
                                                                 })
                                                                 if let i = i
                                                                 {
-
+                                                                    
                                                                     let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", i]
                                                                     store.send(.removeKey(keyPath: keyPath))
                                                                 } else {
@@ -263,10 +212,9 @@ struct CardView: View {
                                                     sharedState.draggedSchemaItem = nil
                                                     return true
                                                 }
-                                            } else if cardType == "out"
-                                            {
-                                                outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
-                                            }
+                                        } else if cardType == "out"
+                                        {
+                                            outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards)
                                         }
                                     }
                                 }
