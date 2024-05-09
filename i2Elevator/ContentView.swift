@@ -29,6 +29,7 @@ class SharedState: ObservableObject {
     @Published var viewStack: [ViewDropData] = []
     @Published var viewToDrop: ViewDropData? = nil
     @Published var output: [String : Any]?
+    @Published var menu: SelectedMenuItem = .none
 }
 
 enum SelectedMenuItem {
@@ -47,7 +48,6 @@ struct ViewDropData {
 
 struct ContentView: View {
     @EnvironmentObject var sharedState: SharedState
-    @State private var menu: SelectedMenuItem = .none
     @State private var searchText: String = ""
     @Environment(\.dismissWindow) private var dismissWindow
     @State private var yMovement: CGFloat = 0.0
@@ -60,7 +60,7 @@ struct ContentView: View {
         GeometryReader { geometry in
             HStack {
                 VStack {
-                    if self.menu == .subTransformation,
+                    if sharedState.menu == .subTransformation,
                        let transformations = store.userDTO?.teams?["response"]?.transformations,
                        let transformationId = sharedState.transformationId,
                        let subTransformations = transformations[transformationId]?.subTransformations,
@@ -69,7 +69,7 @@ struct ContentView: View {
                     {
                         HStack {
                             Button(action: {
-                                self.menu = .transformation
+                                sharedState.menu = .transformation
                             }) {
                                 Image(systemName: "chevron.left")
                             }
@@ -119,14 +119,14 @@ struct ContentView: View {
                                 }
                             }
                         }
-                    } else if self.menu == .transformation,
+                    } else if sharedState.menu == .transformation,
                               let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
                               let transformation = transformations[transformationId]
                     {
                         HStack {
                             Button(action: {
-                                self.menu = .none
+                                sharedState.menu = .none
                             }) {
                                 Image(systemName: "chevron.left")
                             }
@@ -190,7 +190,7 @@ struct ContentView: View {
                                 ForEach(transformation.subTransformations.keys.sorted(), id: \.self) { subTransformationId in
                                     if let subTransformation = transformation.subTransformations[subTransformationId] {
                                         Button(action: {
-                                            self.menu = .subTransformation
+                                            sharedState.menu = .subTransformation
                                             self.sharedState.subTransformationId = subTransformationId
                                         }) {
                                             HStack {
@@ -204,7 +204,7 @@ struct ContentView: View {
                             }
                             Section(header: Text("")) {
                                 Button(action: {
-                                    self.menu = .schemaItemList
+                                    sharedState.menu = .schemaItemList
                                 }) {
                                     HStack {
                                         Text("Schema items")
@@ -214,7 +214,7 @@ struct ContentView: View {
                                 }
                             }
                         }
-                    } else if self.menu == .schemaItem,
+                    } else if sharedState.menu == .schemaItem,
                               let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
                               let transformation = transformations[transformationId],
@@ -263,7 +263,7 @@ struct ContentView: View {
                             }
                         }
                         Spacer()
-                    } else if self.menu == .schemaItem,
+                    } else if sharedState.menu == .schemaItem,
                               let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
                               let transformation = transformations[transformationId],
@@ -272,7 +272,7 @@ struct ContentView: View {
                     {
                         HStack {
                             Button(action: {
-                                self.menu = .schemaItemList
+                                sharedState.menu = .schemaItemList
                             }) {
                                 Image(systemName: "chevron.left")
                             }
@@ -365,14 +365,14 @@ struct ContentView: View {
                             .background(isSchemaItemEdited ? Color.blue : Color.gray)
                             .cornerRadius(24)
                         }.padding(.horizontal, 24)
-                    } else if self.menu == .schemaItemList,
+                    } else if sharedState.menu == .schemaItemList,
                               let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
                               let transformation = transformations[transformationId]
                     {
                         HStack {
                             Button(action: {
-                                self.menu = .transformation
+                                sharedState.menu = .transformation
                             }) {
                                 Image(systemName: "chevron.left")
                             }
@@ -402,7 +402,7 @@ struct ContentView: View {
                                 ForEach(transformation.schemaItems.keys.sorted(), id: \.self) { schemaItemId in
                                     if let schemaItem = transformation.schemaItems[schemaItemId] {
                                         Button(action: {
-                                            self.menu = .schemaItem
+                                            sharedState.menu = .schemaItem
                                             self.sharedState.schemaItemId = schemaItemId
                                             editedSchemaItem = schemaItem
                                         }) {
@@ -439,7 +439,7 @@ struct ContentView: View {
                             let keyPath: [Any] = ["response", "transformations", transformationId]
                             store.send(.setValue(keyPath: keyPath, value: value))
                             sharedState.transformationId = transformationId
-                            self.menu = .transformation
+                            sharedState.menu = .transformation
                         }) {
                             Text("Create Transformation")
                         }
@@ -450,7 +450,7 @@ struct ContentView: View {
                                     if let transformation = transformations[transformationId] {
                                         Button(action: {
                                             self.sharedState.transformationId = transformationId
-                                            self.menu = .transformation
+                                            sharedState.menu = .transformation
                                         }) {
                                             HStack {
                                                 Text(transformation.name)

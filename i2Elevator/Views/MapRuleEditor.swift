@@ -17,8 +17,45 @@ struct MapRuleEditor: View {
     
     var body: some View {
         var rowInd = 0
-            if let subTransformationId = sharedState.subTransformationId {
+        if let subTransformationId = sharedState.subTransformationId,
+            sharedState.menu == .subTransformation
+        {
                 VStack {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            
+                        }) {
+                            Image(systemName: "trash")
+                        }
+                        .clipShape(Circle())
+                        .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
+                            if let _draggedSchemaItem = sharedState.draggedSchemaItem,
+                               let i = sharedState.schemaItemsOnScratchpad.firstIndex(where: { draggedSchemaItem in
+                                   draggedSchemaItem.schemaItemId == _draggedSchemaItem.schemaItemId
+                               })
+                            {
+                                sharedState.schemaItemsOnScratchpad.remove(at: i)
+                            } else if let userDTO = store.userDTO,
+                                      let transformations = store.userDTO?.teams?["response"]?.transformations,
+                                      let transformationId = sharedState.transformationId,
+                                      let transformation = transformations[transformationId],
+                                      let subTransformationId = sharedState.subTransformationId,
+                                      let _ = transformation.subTransformations[subTransformationId]?.outputs,
+                                      let cardIndex = sharedState.cardIndex,
+                                      let cardType = sharedState.cardType,
+                                      cardType == "out",
+                                      let outputItemId = sharedState.outputItemId,
+                                      let expressionKeypathSegment = sharedState.expressionKeypathSegment
+                            {
+                                let value: [String: Any] = ["type": "placeholder"]
+                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + expressionKeypathSegment
+                                store.send(.setValue(keyPath: keyPath, value: value))
+                            }
+                            sharedState.draggedSchemaItem = nil
+                            return true
+                        }
+                    }
                     if let userDTO = store.userDTO,
                        let transformations = store.userDTO?.teams?["response"]?.transformations,
                        let transformationId = sharedState.transformationId,
@@ -222,9 +259,10 @@ struct MapRuleEditor: View {
                                     Spacer().frame(width: 20.0)
                                     if let transformations = store.userDTO?.teams?["response"]?.transformations,
                                        let transformationId = sharedState.transformationId,
-                                       let schemaItem = transformations[transformationId]?.schemaItems[schemaItemOnScratchpad.schemaItemId]
+                                       let schemaItem = transformations[transformationId]?.schemaItems[schemaItemOnScratchpad.schemaItemId],
+                                       let rangeMax = schemaItemOnScratchpad.rangeMax
                                     {
-                                        Text("\(schemaItem.name) 1:\(schemaItemOnScratchpad.rangeMax)")
+                                        Text("\(schemaItem.name) 1:\(rangeMax)")
                                     }
                                 }.onDrag {
                                     resetDragProperties()

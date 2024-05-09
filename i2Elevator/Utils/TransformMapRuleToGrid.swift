@@ -47,7 +47,7 @@ func transformMapRuleToGrid(mapRule: MapRule, schemaItems: [String: SchemaItem]?
                 i = i + 1
             }
         }
-        let vv2 = ExpressionColumn(text: "=\(subTransformation.name)(\(jj))", index: 0, isBtnStyle: false, expressionKeypathSegment: [])
+        let vv2 = ExpressionColumn(text: "=\(subTransformation.name)(\(jj))", index: 0, isBtnStyle: true, expressionKeypathSegment: [])
         let zz3 = ExpressionRow(index: rowInd, indentation: 0, columns: [vv2])
         return [zz3]
     } else {
