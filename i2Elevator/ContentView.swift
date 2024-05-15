@@ -138,7 +138,7 @@ struct ContentView: View {
                         .padding(.horizontal, 20)
                         Spacer()
                         Button(action: {
-                            let url = URL(string: "https://datamapper.vercel.app/api/transform")!
+                            let url = URL(string: "\(baseUrl)/transform")!
                             var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
                             components.queryItems = [
                                 URLQueryItem(name: "transformationId", value: transformationId)
@@ -510,7 +510,7 @@ struct ContentView: View {
                 }
                 FunctionCatalog().frame(width: 300 - x2Movement)
             }.onAppear {
-                let url = URL(string: "https://datamapper.vercel.app/api/auth/me")! //https://datamapper.vercel.app/api/auth/me"
+                let url = URL(string: "\(baseUrl)/auth/me")! //https://datamapper.vercel.app/api/auth/me"
                 var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
                 components.queryItems = []
                 let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkrDoW5vcyIsInVzZXJJZCI6IjY1M2Q3NWQzZWFhODdjODM3YTFkZDkwOCIsImVtYWlsIjoia3Vrb2RhamFub3NAaWNsb3VkLmNvbSIsImlhdCI6MTcxMzQ1NzExMiwiZXhwIjoxNzE2MDQ5MTEyfQ.MUiv_Z4ORIs84FOwKsb7LelEnE_vXnjwSr55AA9YBu8"

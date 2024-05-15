@@ -8,13 +8,19 @@
 
 import Foundation
 
+let baseUrl = "https://datamapper.vercel.app/api"
+
+//"https://datamapper.vercel.app/api"
+//"http://localhost:3000/api"
+
 func updateServer(value: Any?, keyPath: [Any], operation: String) {
     let parameters: [String: Any] = [
         "value": value,
         "keyPath": keyPath,
-        "operation": operation
+        "operation": operation,
+        "version": 1
     ]
-    guard let url = URL(string: "https://datamapper.vercel.app/api/update") else {
+    guard let url = URL(string: "\(baseUrl)/update") else {
         print("Invalid URL")
         return
     }

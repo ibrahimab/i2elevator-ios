@@ -29,8 +29,8 @@ struct ExpressionColumn: Identifiable {
     }
 }
 
-func transformMapRuleToGrid(mapRule: MapRule, schemaItems: [String: SchemaItem]?, rowInd: inout Int, transformation: Transformation?) -> [ExpressionRow] {
-    if let subTransformationId = mapRule.subTransformationId,
+func transformMapRuleToGrid(mapRule: MapRule?, schemaItems: [String: SchemaItem]?, rowInd: inout Int, transformation: Transformation?) -> [ExpressionRow] {
+    if let subTransformationId = mapRule?.subTransformationId,
        let subTransformation = transformation?.subTransformations[subTransformationId]
        //let lastReference = mapRule.objectrule?.reference?.last?.last,
        //let displayName = schemaItems?[lastReference]?.displayName
@@ -50,7 +50,7 @@ func transformMapRuleToGrid(mapRule: MapRule, schemaItems: [String: SchemaItem]?
         let vv2 = ExpressionColumn(text: "=\(subTransformation.name)(\(jj))", index: 0, isBtnStyle: true, expressionKeypathSegment: [])
         let zz3 = ExpressionRow(index: rowInd, indentation: 0, columns: [vv2])
         return [zz3]
-    } else {
+    } else if let mapRule = mapRule {
         return transformExpressionsToGrid(
             expression: mapRule.objectrule,
             indentation: 0,
@@ -60,6 +60,10 @@ func transformMapRuleToGrid(mapRule: MapRule, schemaItems: [String: SchemaItem]?
             rowInd: &rowInd,
             functionPropIndex: nil
         )
+    } else {
+        let vv2 = ExpressionColumn(text: "=", index: 0, isBtnStyle: true, expressionKeypathSegment: [])
+        let zz3 = ExpressionRow(index: rowInd, indentation: 0, columns: [vv2])
+        return [zz3]
     }
 }
 
@@ -101,8 +105,8 @@ func transformExpressionsToGrid(
         let vv2 = ExpressionColumn(text: ")", index: 3, isBtnStyle: false, expressionKeypathSegment: keyPath)
         let zz3 = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv2])
         rows.append(zz3)
-    } else if expression?.type == "reference", let reference = expression?.reference {
-        if let displayName = schemaItems?[reference]?.name {
+    } else if expression?.type == "reference", let lastReference = expression?.reference?.last?.last {
+        if let displayName = schemaItems?[lastReference]?.name {
             columns.append(ExpressionColumn(text: "\(displayName)", parentExpression: parentExpression, expression: expression, index: 1, isBtnStyle: true, expressionKeypathSegment: keyPath, functionPropIndex: functionPropIndex))
             let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: columns)
             rowInd = rowInd + 1

@@ -65,7 +65,7 @@ struct MapRule: Codable {
 struct Expression: Codable {
     var type: String?
     var function: Function?
-    var reference: String?
+    var reference: [[String]]?
     var rangeMax: String?
     var constant: String?
 }
@@ -83,7 +83,9 @@ struct IndentedSchemaItem: Identifiable {
     var id: String {
         schemaItemId
     }
-    var disable: Bool
+    //var disable: Bool
+    var numOf1SWalkedBy: Int
+    var reference: [[String]]
 }
 
 struct DraggedSchemaItem: Identifiable {
@@ -93,6 +95,7 @@ struct DraggedSchemaItem: Identifiable {
     var id: String {
         schemaItemId
     }
+    var reference: [[String]]
 }
 
 var signatureCategories: [SignatureCategory] = []
