@@ -9,7 +9,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 import ComposableArchitecture
 
-let barTransparency = 0.5
+let barTransparency = 0.01
 
 class SharedState: ObservableObject {
     @Published var transformationId: String? = nil
@@ -56,6 +56,9 @@ struct ContentView: View {
     let store: StoreOf<UserFeature>
     @State private var editedSchemaItem: SchemaItem? = nil
     @State private var isSchemaItemEdited: Bool = false
+    @State private var isLeftBarHighlighted: Bool = false
+    @State private var isRightBarHighlighted: Bool = false
+    @State private var isCenterBarHighlighted: Bool = false
     var body: some View {
         GeometryReader { geometry in
             HStack {
@@ -494,7 +497,7 @@ struct ContentView: View {
                     Rectangle()
                         .frame(width: 100, height: 8)
                         .cornerRadius(4)
-                        .foregroundColor(Color.black.opacity(0.2))
+                        .foregroundColor(isCenterBarHighlighted ? Color.gray.opacity(0.5) : Color.black.opacity(0.2))
                         .offset(x: 0, y: yMovement)
                     Rectangle()
                         .frame(width: geometry.size.width - 600 - x1Movement + x2Movement, height: 16)
@@ -504,6 +507,12 @@ struct ContentView: View {
                             .onChanged { value in
                                 withAnimation(.easeInOut(duration: 0.1)) {
                                     yMovement = value.translation.height
+                                    isCenterBarHighlighted = true
+                                }
+                            }
+                            .onEnded { _ in
+                                withAnimation(.easeInOut(duration: 0.1)) {
+                                    isCenterBarHighlighted = false
                                 }
                             }
                         )
@@ -513,7 +522,7 @@ struct ContentView: View {
                 let url = URL(string: "\(baseUrl)/auth/me")! //https://datamapper.vercel.app/api/auth/me"
                 var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
                 components.queryItems = []
-                let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkrDoW5vcyIsInVzZXJJZCI6IjY1M2Q3NWQzZWFhODdjODM3YTFkZDkwOCIsImVtYWlsIjoia3Vrb2RhamFub3NAaWNsb3VkLmNvbSIsImlhdCI6MTcxMzQ1NzExMiwiZXhwIjoxNzE2MDQ5MTEyfQ.MUiv_Z4ORIs84FOwKsb7LelEnE_vXnjwSr55AA9YBu8"
+                let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkrDoW5vcyIsInVzZXJJZCI6IjY2MmYzYWE2ZDdiYWEyZGY5MjExODJiNCIsImVtYWlsIjoia3Vrb2RhamFub3NAaWNsb3VkLmNvbSIsImlhdCI6MTcxNTMxMTI3OSwiZXhwIjoxNzE3OTAzMjc5fQ.I4bbviNSMDZcvZYc1Jf07nZUVVrXsOOA8M9Ig3hJp0s"
                 var request = URLRequest(url: components.url!)
                 request.httpMethod = "GET"
                 request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -555,7 +564,7 @@ struct ContentView: View {
                 Rectangle()
                     .frame(width: 8, height: 100)
                     .cornerRadius(4)
-                    .foregroundColor(Color.black.opacity(0.2))
+                    .foregroundColor(isLeftBarHighlighted ? Color.gray.opacity(0.5) : Color.black.opacity(0.2))
                     .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0 - 8.0, y: 0)
                 Rectangle()
                     .frame(width: 16, height: geometry.size.height)
@@ -564,6 +573,12 @@ struct ContentView: View {
                         .onChanged { value in
                             withAnimation(.easeInOut(duration: 0.1)) {
                                 x1Movement = value.translation.width
+                                isLeftBarHighlighted = true
+                            }
+                        }
+                        .onEnded { _ in
+                            withAnimation(.easeInOut(duration: 0.1)) {
+                                isLeftBarHighlighted = false
                             }
                         }
                     )
@@ -571,7 +586,7 @@ struct ContentView: View {
                 Rectangle()
                     .frame(width: 8, height: 100)
                     .cornerRadius(4)
-                    .foregroundColor(Color.black.opacity(0.2))
+                    .foregroundColor(isRightBarHighlighted ? Color.gray.opacity(0.5) : Color.black.opacity(0.2))
                     .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0 - 8.0, y: 0)
                 Rectangle()
                     .frame(width: 16, height: geometry.size.height)
@@ -580,6 +595,12 @@ struct ContentView: View {
                         .onChanged { value in
                             withAnimation(.easeInOut(duration: 0.1)) {
                                 x2Movement = value.translation.width
+                                isRightBarHighlighted = true
+                            }
+                        }
+                        .onEnded { _ in
+                            withAnimation(.easeInOut(duration: 0.1)) {
+                                isRightBarHighlighted = false
                             }
                         }
                     )
