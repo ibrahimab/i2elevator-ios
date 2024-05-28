@@ -30,6 +30,7 @@ class SharedState: ObservableObject {
     @Published var viewToDrop: ViewDropData? = nil
     @Published var output: [String : Any]?
     @Published var menu: SelectedMenuItem = .none
+    @Published var inputExpectedOutputPairInd: Int? = nil
 }
 
 enum SelectedMenuItem {
@@ -38,6 +39,7 @@ enum SelectedMenuItem {
     case transformation
     case schemaItemList
     case schemaItem
+    case inputExpectedOutputPair
 }
 
 struct ViewDropData {
@@ -122,14 +124,19 @@ struct ContentView: View {
                                 }
                             }
                         }
-                    } else if sharedState.menu == .transformation,
+                    } else if sharedState.menu == .transformation || sharedState.menu == .inputExpectedOutputPair,
                               let transformations = store.userDTO?.teams?["response"]?.transformations,
                               let transformationId = sharedState.transformationId,
                               let transformation = transformations[transformationId]
                     {
                         HStack {
                             Button(action: {
-                                sharedState.menu = .none
+                                if sharedState.inputExpectedOutputPairInd != nil {
+                                    sharedState.inputExpectedOutputPairInd = nil
+                                    sharedState.menu = .transformation
+                                } else {
+                                    sharedState.menu = .none
+                                }
                             }) {
                                 Image(systemName: "chevron.left")
                             }
@@ -140,7 +147,7 @@ struct ContentView: View {
                         .padding(.bottom, 40)
                         .padding(.horizontal, 20)
                         Spacer()
-                        Button(action: {
+                        /*Button(action: {
                             let url = URL(string: "\(baseUrl)/transform")!
                             var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
                             components.queryItems = [
@@ -187,9 +194,12 @@ struct ContentView: View {
                             Text("Run Transformation")
                         }
                         .buttonStyle(BorderedButtonStyle())
-                        Spacer()
+                        Spacer()*/
                         List {
-                            Section(header: Text("\(transformation.name) > Sub Transformations")) {
+                            Section(header: Text("Transformation name")) {
+                                Text(transformation.name)
+                            }
+                            Section(header: Text("Sub Transformations")) {
                                 ForEach(transformation.subTransformations.keys.sorted(), id: \.self) { subTransformationId in
                                     if let subTransformation = transformation.subTransformations[subTransformationId] {
                                         Button(action: {
@@ -198,6 +208,22 @@ struct ContentView: View {
                                         }) {
                                             HStack {
                                                 Text(subTransformation.name)
+                                                Spacer()
+                                                Image(systemName: "chevron.right")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Section(header: Text("Input - Expected Output Pairs")) {
+                                if let inputExpectedOutputTextIdPairs = transformation.inputExpectedOutputTextIdPairs {
+                                    ForEach(Array(inputExpectedOutputTextIdPairs.enumerated()), id: \.element.inputTextId) { index, inputExpectedOutputTextIdPair in
+                                        Button(action: {
+                                            self.sharedState.menu = .inputExpectedOutputPair
+                                            self.sharedState.inputExpectedOutputPairInd = index
+                                        }) {
+                                            HStack {
+                                                Text("\(index)")
                                                 Spacer()
                                                 Image(systemName: "chevron.right")
                                             }
@@ -468,7 +494,7 @@ struct ContentView: View {
                     }
                 }.padding(.vertical, 40).frame(width: 300 + x1Movement)                
                 VStack {
-                    MapRuleEditor(store: store).frame(height: geometry.size.height * 0.5 + yMovement)
+                    CenterTopView(store: store).frame(height: geometry.size.height * 0.5 + yMovement)
                     HStack {
                         ForEach(sharedState.viewStack.indices, id: \.self) { stackItemIndex in
                             let stackItem = sharedState.viewStack[stackItemIndex]
@@ -516,7 +542,7 @@ struct ContentView: View {
                     .foregroundColor(Color.gray.opacity(barTransparency))
                     .offset(x: -8, y: yMovement)
                 }
-                FunctionCatalog().frame(width: 300 - x2Movement)
+                RightView(store: store).frame(width: 300 - x2Movement)
             }.onAppear {
                 let url = URL(string: "\(baseUrl)/auth/me")! //https://datamapper.vercel.app/api/auth/me"
                 var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!

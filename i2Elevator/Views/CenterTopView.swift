@@ -9,11 +9,37 @@ import SwiftUI
 import UniformTypeIdentifiers
 import ComposableArchitecture
 
-struct MapRuleEditor: View {
+struct CenterTopView: View {
     @EnvironmentObject var sharedState: SharedState
     @State private var text: String = ""
     @State private var isEditing: Bool = false
     let store: StoreOf<UserFeature>
+    @State private var inputText: String = ""
+    @State private var expectedOutputText: String = ""
+    
+    func initializeTextViewVariables(inputExpectedOutputPairInd: Int?, transformationId: String) {
+        if let inputExpectedOutputPairInd = inputExpectedOutputPairInd,
+           let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
+           c > inputExpectedOutputPairInd,
+           let a = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs
+        {
+            if let inputTextId = a[inputExpectedOutputPairInd].inputTextId
+            {
+                if let _inputText = store.userDTO?.teams?["response"]?.texts?[inputTextId] as? String {
+                    inputText = String(_inputText.dropFirst())
+                } else {
+                    inputText = ""
+                }
+            }
+            if let expectedOutputTextId = a[inputExpectedOutputPairInd].expectedOutputTextId {
+                if let _expectedOutputText = store.userDTO?.teams?["response"]?.texts?[expectedOutputTextId] as? String {
+                    expectedOutputText = String(_expectedOutputText.dropFirst())
+                } else {
+                    expectedOutputText = ""
+                }
+            }
+        }
+    }
     
     var body: some View {
         var rowInd = 0
@@ -293,23 +319,35 @@ struct MapRuleEditor: View {
                 Spacer()
             }
             .padding()
-        } else {
+        } else if let transformationId = sharedState.transformationId,
+                  sharedState.menu == .inputExpectedOutputPair,
+                  let inputExpectedOutputPairInd = sharedState.inputExpectedOutputPairInd
+        {
             List {
-                if let transformationId = sharedState.transformationId,
-                   let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
-                   c > 0,
+                if let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
+                   c > inputExpectedOutputPairInd,
                    let a = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs
                 {
-                    if let inputTextId = a[0].inputTextId,
-                       let inputText = store.userDTO?.teams?["response"]?.texts?[inputTextId] as? String {
+                    if let inputTextId = a[inputExpectedOutputPairInd].inputTextId {
                         Section(header: Text("Input")) {
-                            Text(inputText.dropFirst())
+                            TextEditor(text: $inputText)
+                                .frame(minHeight: 100)
+                                .onChange(of: inputText) { old, new in
+                                    let value: String = "#" + new
+                                    let keyPath: [Any] = ["response", "texts", inputTextId]
+                                    store.send(.setValue(keyPath: keyPath, value: value))
+                                }
                         }
                     }
-                    if let expectedOutputTextId = a[0].expectedOutputTextId,
-                       let expectedOutputText = store.userDTO?.teams?["response"]?.texts?[expectedOutputTextId] as? String {
+                    if let expectedOutputTextId = a[inputExpectedOutputPairInd].expectedOutputTextId {
                         Section(header: Text("Expected output")) {
-                            Text(expectedOutputText.dropFirst())
+                            TextEditor(text: $expectedOutputText)
+                                .frame(minHeight: 100)
+                                .onChange(of: expectedOutputText) { old, new in
+                                    let value: String = "#" + new
+                                    let keyPath: [Any] = ["response", "texts", expectedOutputTextId]
+                                    store.send(.setValue(keyPath: keyPath, value: value))
+                                }
                         }
                     }
                 }
@@ -318,6 +356,13 @@ struct MapRuleEditor: View {
                         Text(str)
                     }
                 }
+            }
+            .padding()
+            .onChange(of: sharedState.inputExpectedOutputPairInd, initial: true) { old, inputExpectedOutputPairInd in
+                initializeTextViewVariables(inputExpectedOutputPairInd: inputExpectedOutputPairInd, transformationId: transformationId)
+            }
+        } else {
+            List {
             }.padding()
         }
     }
