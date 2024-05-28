@@ -298,11 +298,19 @@ struct MapRuleEditor: View {
                 if let transformationId = sharedState.transformationId,
                    let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
                    c > 0,
-                   let a = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs,
-                   let expectedOutputTextId = a[0].expectedOutputTextId,
-                   let expectedOutputText = store.userDTO?.teams?["response"]?.texts?[expectedOutputTextId] as? String {
-                    Section(header: Text("Expected output")) {
-                        Text(expectedOutputText.dropFirst())
+                   let a = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs
+                {
+                    if let inputTextId = a[0].inputTextId,
+                       let inputText = store.userDTO?.teams?["response"]?.texts?[inputTextId] as? String {
+                        Section(header: Text("Input")) {
+                            Text(inputText.dropFirst())
+                        }
+                    }
+                    if let expectedOutputTextId = a[0].expectedOutputTextId,
+                       let expectedOutputText = store.userDTO?.teams?["response"]?.texts?[expectedOutputTextId] as? String {
+                        Section(header: Text("Expected output")) {
+                            Text(expectedOutputText.dropFirst())
+                        }
                     }
                 }
                 if let str = sharedState.output?["output"] as? String {

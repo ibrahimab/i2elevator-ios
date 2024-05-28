@@ -494,28 +494,27 @@ struct ContentView: View {
                     }.frame(height: geometry.size.height * 0.5 - yMovement)
                 }
                 .overlay {
-                    Rectangle()
-                        .frame(width: 100, height: 8)
-                        .cornerRadius(4)
-                        .foregroundColor(isCenterBarHighlighted ? Color.gray.opacity(0.5) : Color.black.opacity(0.2))
-                        .offset(x: 0, y: yMovement)
-                    Rectangle()
-                        .frame(width: geometry.size.width - 600 - x1Movement + x2Movement, height: 16)
-                        .foregroundColor(Color.gray.opacity(barTransparency))
-                        .offset(x: 0, y: yMovement)
-                        .gesture(DragGesture()
-                            .onChanged { value in
-                                withAnimation(.easeInOut(duration: 0.1)) {
-                                    yMovement = value.translation.height
-                                    isCenterBarHighlighted = true
-                                }
-                            }
-                            .onEnded { _ in
-                                withAnimation(.easeInOut(duration: 0.1)) {
-                                    isCenterBarHighlighted = false
-                                }
-                            }
-                        )
+                    Button(action: {
+                    }) {
+                        ZStack {
+                            Rectangle()
+                                .frame(width: 100, height: 8)
+                                .cornerRadius(4)
+                                .foregroundColor(Color.gray.opacity(0.8))
+                            Rectangle()
+                                .frame(width: geometry.size.width - 600 - x1Movement + x2Movement - 16, height: 8)
+                                .gesture(DragGesture()
+                                    .onChanged { value in
+                                        withAnimation(.easeInOut(duration: 0.1)) {
+                                            yMovement = value.translation.width
+                                        }
+                                    }
+                                )
+                        }
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .foregroundColor(Color.gray.opacity(barTransparency))
+                    .offset(x: -8, y: yMovement)
                 }
                 FunctionCatalog().frame(width: 300 - x2Movement)
             }.onAppear {
@@ -561,50 +560,48 @@ struct ContentView: View {
                     }
                 }
             }.overlay {
-                Rectangle()
-                    .frame(width: 8, height: 100)
-                    .cornerRadius(4)
-                    .foregroundColor(isLeftBarHighlighted ? Color.gray.opacity(0.5) : Color.black.opacity(0.2))
-                    .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0 - 8.0, y: 0)
-                Rectangle()
-                    .frame(width: 16, height: geometry.size.height)
-                    .foregroundColor(Color.gray.opacity(barTransparency))
-                    .gesture(DragGesture()
-                        .onChanged { value in
-                            withAnimation(.easeInOut(duration: 0.1)) {
-                                x1Movement = value.translation.width
-                                isLeftBarHighlighted = true
-                            }
-                        }
-                        .onEnded { _ in
-                            withAnimation(.easeInOut(duration: 0.1)) {
-                                isLeftBarHighlighted = false
-                            }
-                        }
-                    )
-                    .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0 - 8.0, y: 0)
-                Rectangle()
-                    .frame(width: 8, height: 100)
-                    .cornerRadius(4)
-                    .foregroundColor(isRightBarHighlighted ? Color.gray.opacity(0.5) : Color.black.opacity(0.2))
-                    .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0 - 8.0, y: 0)
-                Rectangle()
-                    .frame(width: 16, height: geometry.size.height)
-                    .foregroundColor(Color.gray.opacity(barTransparency))
-                    .gesture(DragGesture()
-                        .onChanged { value in
-                            withAnimation(.easeInOut(duration: 0.1)) {
-                                x2Movement = value.translation.width
-                                isRightBarHighlighted = true
-                            }
-                        }
-                        .onEnded { _ in
-                            withAnimation(.easeInOut(duration: 0.1)) {
-                                isRightBarHighlighted = false
-                            }
-                        }
-                    )
-                    .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0 - 8.0, y: 0)
+                Button(action: {
+                }) {
+                    ZStack {
+                        Rectangle()
+                            .frame(width: 8, height: 100)
+                            .cornerRadius(4)
+                            .foregroundColor(Color.gray.opacity(0.8))
+                        Rectangle()
+                            .frame(width: 8, height: geometry.size.height)
+                            .gesture(DragGesture()
+                                .onChanged { value in
+                                    withAnimation(.easeInOut(duration: 0.1)) {
+                                        x1Movement = value.translation.width
+                                    }
+                                }
+                            )
+                    }
+                }
+                .buttonStyle(PlainButtonStyle())
+                .foregroundColor(Color.gray.opacity(barTransparency))
+                .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0 - 8.0, y: 0)
+                Button(action: {
+                }) {
+                    ZStack {
+                        Rectangle()
+                            .frame(width: 8, height: 100)
+                            .cornerRadius(4)
+                            .foregroundColor(Color.gray.opacity(0.8))
+                        Rectangle()
+                            .frame(width: 8, height: geometry.size.height)
+                            .gesture(DragGesture()
+                                .onChanged { value in
+                                    withAnimation(.easeInOut(duration: 0.1)) {
+                                        x2Movement = value.translation.width
+                                    }
+                                }
+                            )
+                    }
+                }
+                .buttonStyle(PlainButtonStyle())
+                .foregroundColor(Color.gray.opacity(barTransparency))
+                .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0 - 8.0, y: 0)
             }
         }
     }
