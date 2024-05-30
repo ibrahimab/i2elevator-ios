@@ -8,6 +8,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 import ComposableArchitecture
+import Combine
 
 struct CenterTopView: View {
     @EnvironmentObject var sharedState: SharedState
@@ -16,6 +17,10 @@ struct CenterTopView: View {
     let store: StoreOf<UserFeature>
     @State private var inputText: String = ""
     @State private var expectedOutputText: String = ""
+    @State private var showDocumentPicker = false
+    @State private var filename: String?
+    @State private var documentDataTypeTree: Data? = nil
+    @State private var documentDataTransformation: Data? = nil
     
     func initializeTextViewVariables(inputExpectedOutputPairInd: Int?, transformationId: String) {
         if let inputExpectedOutputPairInd = inputExpectedOutputPairInd,
@@ -361,6 +366,63 @@ struct CenterTopView: View {
             .onChange(of: sharedState.inputExpectedOutputPairInd, initial: true) { old, inputExpectedOutputPairInd in
                 initializeTextViewVariables(inputExpectedOutputPairInd: inputExpectedOutputPairInd, transformationId: transformationId)
             }
+        } else if let transformationId = sharedState.transformationId
+        {
+            List {
+                Section(header: Text("External TypeTree updated at")) {
+                    if let externalTypeTreeUpdatedAt = store.userDTO?.teams?["response"]?.transformations[transformationId]?.externalTypeTreeUpdatedAt
+                    {
+                        Text(externalTypeTreeUpdatedAt)
+                    } else {
+                        Text("")
+                    }
+                    Button(action: {
+                        self.showDocumentPicker.toggle()
+                    }) {
+                        Text("Import external xml typetree")
+                    }
+                    .sheet(isPresented: $showDocumentPicker) {
+                        DocumentPickerViewController(isPresented: self.$showDocumentPicker, documentData: self.$documentDataTypeTree, filename: $filename)
+                    }.onReceive(Just(documentDataTypeTree)) { documentData in
+                        guard let documentData = documentData else { return }
+                        let value = String(data: documentData, encoding: .utf8) ?? ""
+                        let keyPath: [Any] = ["response", "transformations", transformationId, "externalTypeTree"]
+                        store.send(.setValue(keyPath: keyPath, value: value))
+                        let currentDate = Date()
+                        let isoFormatter = ISO8601DateFormatter()
+                        let value2 = isoFormatter.string(from: currentDate)
+                        let keyPath2: [Any] = ["response", "transformations", transformationId, "externalTypeTreeUpdatedAt"]
+                        store.send(.setValue(keyPath: keyPath2, value: value2))
+                    }
+                }
+                Section(header: Text("External Transformation updated at")) {
+                    if let externalTransformationUpdatedAt = store.userDTO?.teams?["response"]?.transformations[transformationId]?.externalTransformationUpdatedAt
+                    {
+                        Text(externalTransformationUpdatedAt)
+                    } else {
+                        Text("")
+                    }
+                    Button(action: {
+                        self.showDocumentPicker.toggle()
+                    }) {
+                        Text("Import external xml transformation")
+                    }
+                    .sheet(isPresented: $showDocumentPicker) {
+                        DocumentPickerViewController(isPresented: self.$showDocumentPicker, documentData: self.$documentDataTransformation, filename: $filename)
+                    }.onReceive(Just(documentDataTransformation)) { documentData in
+                        guard let documentData = documentData else { return }
+                        let value = String(data: documentData, encoding: .utf8) ?? ""
+                        let keyPath: [Any] = ["response", "transformations", transformationId, "externalTransformation"]
+                        store.send(.setValue(keyPath: keyPath, value: value))
+                        let currentDate = Date()
+                        let isoFormatter = ISO8601DateFormatter()
+                        let value2 = isoFormatter.string(from: currentDate)
+                        let keyPath2: [Any] = ["response", "transformations", transformationId, "externalTransformationUpdatedAt"]
+                        store.send(.setValue(keyPath: keyPath2, value: value2))
+                    }
+                }
+            }
+            .padding()
         } else {
             List {
             }.padding()

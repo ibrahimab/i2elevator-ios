@@ -15,6 +15,7 @@
 		343B92C92B83DF34007F78A8 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343B92C82B83DF34007F78A8 /* CardView.swift */; };
 		344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344802822B8684D5008E5551 /* TopColorGradient.swift */; };
 		344802862B889424008E5551 /* UpdateClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344802852B889424008E5551 /* UpdateClient.swift */; };
+		346593D92C08343D002FC118 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346593D82C08343D002FC118 /* DocumentPicker.swift */; };
 		346641402BA4251500D50E1D /* FunctionPropsTypes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3466413F2BA4251500D50E1D /* FunctionPropsTypes.plist */; };
 		346641422BA432D200D50E1D /* ResetDragProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346641412BA432D200D50E1D /* ResetDragProperties.swift */; };
 		3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */; };
@@ -43,6 +44,7 @@
 		343B92C82B83DF34007F78A8 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		344802822B8684D5008E5551 /* TopColorGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopColorGradient.swift; sourceTree = "<group>"; };
 		344802852B889424008E5551 /* UpdateClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateClient.swift; sourceTree = "<group>"; };
+		346593D82C08343D002FC118 /* DocumentPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		3466413F2BA4251500D50E1D /* FunctionPropsTypes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = FunctionPropsTypes.plist; sourceTree = "<group>"; };
 		346641412BA432D200D50E1D /* ResetDragProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResetDragProperties.swift; sourceTree = "<group>"; };
 		3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomAlphaNumeric.swift; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 		344802842B889414008E5551 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				346593D82C08343D002FC118 /* DocumentPicker.swift */,
 				3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */,
 				346641412BA432D200D50E1D /* ResetDragProperties.swift */,
 				34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */,
@@ -233,6 +236,7 @@
 				349370E72BB187C800B19A79 /* CardSettingsView.swift in Sources */,
 				34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */,
 				3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */,
+				346593D92C08343D002FC118 /* DocumentPicker.swift in Sources */,
 				343B92BB2B83DE35007F78A8 /* ContentView.swift in Sources */,
 				34A6897F2BD264190031E636 /* UserReducer.swift in Sources */,
 				34A2C0082BD13BF9008634DD /* UpdateServer.swift in Sources */,

@@ -8,29 +8,80 @@
 import SwiftUI
 import UniformTypeIdentifiers
 import ComposableArchitecture
-
+import Combine
 
 struct RightView: View {
     @EnvironmentObject var sharedState: SharedState
     let store: StoreOf<UserFeature>
+    @State private var showDocumentPickerTypeTree = false
+    @State private var showDocumentPickerTransformation = false
+    @State private var filename: String?
+    @State private var documentDataTypeTree: Data? = nil
+    @State private var documentDataTransformation: Data? = nil
     
     var body: some View {
         VStack {
-            
             if let transformationId = sharedState.transformationId,
                sharedState.menu == .transformation
             {
-                Button(action: {
-                    let inputTextId = randomAlphaNumeric(length: 4)
-                    let expectedOutputTextId = randomAlphaNumeric(length: 4)
-                    let value: [String: Any] = ["inputTextId": inputTextId, "expectedOutputTextId": expectedOutputTextId]
-                    let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count ?? 0
-                    let keyPath: [Any] = ["response", "transformations", transformationId, "inputExpectedOutputTextIdPairs", c]
-                    store.send(.setValue(keyPath: keyPath, value: value))
-                }) {
-                    Text("Create input - expected output pair")
+                HStack {
+                    Button(action: {
+                        let inputTextId = randomAlphaNumeric(length: 4)
+                        let expectedOutputTextId = randomAlphaNumeric(length: 4)
+                        let value: [String: Any] = ["inputTextId": inputTextId, "expectedOutputTextId": expectedOutputTextId]
+                        let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count ?? 0
+                        let keyPath: [Any] = ["response", "transformations", transformationId, "inputExpectedOutputTextIdPairs", c]
+                        store.send(.setValue(keyPath: keyPath, value: value))
+                    }) {
+                        Text("Create input - expected output pair")
+                    }
+                    .buttonStyle(BorderedButtonStyle())
+                    Spacer()
                 }
-                .buttonStyle(BorderedButtonStyle())
+                HStack {
+                    Button(action: {
+                        self.showDocumentPickerTypeTree.toggle()
+                    }) {
+                        Text("Import external xml typetree")
+                    }
+                    .buttonStyle(BorderedButtonStyle())
+                    .sheet(isPresented: $showDocumentPickerTypeTree) {
+                        DocumentPickerViewController(isPresented: self.$showDocumentPickerTypeTree, documentData: self.$documentDataTypeTree, filename: $filename)
+                    }.onReceive(Just(documentDataTypeTree)) { documentData in
+                        guard let documentData = documentData else { return }
+                        let value = String(data: documentData, encoding: .utf8) ?? ""
+                        let keyPath: [Any] = ["response", "transformations", transformationId, "externalTypeTree"]
+                        store.send(.setValue(keyPath: keyPath, value: value))
+                        let currentDate = Date()
+                        let isoFormatter = ISO8601DateFormatter()
+                        let value2 = isoFormatter.string(from: currentDate)
+                        let keyPath2: [Any] = ["response", "transformations", transformationId, "externalTypeTreeUpdatedAt"]
+                        store.send(.setValue(keyPath: keyPath2, value: value2))
+                    }
+                    Spacer()
+                }
+                HStack {
+                    Button(action: {
+                        self.showDocumentPickerTransformation.toggle()
+                    }) {
+                        Text("Import external xml transformation")
+                    }
+                    .buttonStyle(BorderedButtonStyle())
+                    .sheet(isPresented: $showDocumentPickerTransformation) {
+                        DocumentPickerViewController(isPresented: self.$showDocumentPickerTransformation, documentData: self.$documentDataTransformation, filename: $filename)
+                    }.onReceive(Just(documentDataTransformation)) { documentData in
+                        guard let documentData = documentData else { return }
+                        let value = String(data: documentData, encoding: .utf8) ?? ""
+                        let keyPath: [Any] = ["response", "transformations", transformationId, "externalTransformation"]
+                        store.send(.setValue(keyPath: keyPath, value: value))
+                        let currentDate = Date()
+                        let isoFormatter = ISO8601DateFormatter()
+                        let value2 = isoFormatter.string(from: currentDate)
+                        let keyPath2: [Any] = ["response", "transformations", transformationId, "externalTransformationUpdatedAt"]
+                        store.send(.setValue(keyPath: keyPath2, value: value2))
+                    }
+                    Spacer()
+                }
             } else if let transformationId = sharedState.transformationId,
                       sharedState.menu == .inputExpectedOutputPair
             {

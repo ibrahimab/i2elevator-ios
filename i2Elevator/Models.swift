@@ -26,6 +26,10 @@ struct Transformation: Codable {
     var subTransformations: [String: SubTransformation]
     var schemaItems: [String: SchemaItem]
     var inputExpectedOutputTextIdPairs: [InputExpectedOutputTextIdPair]?
+    var externalTypeTree: String?
+    var externalTypeTreeUpdatedAt: String?
+    var externalTransformation: String?
+    var externalTransformationUpdatedAt: String?
 }
 
 struct InputExpectedOutputTextIdPair: Codable {
