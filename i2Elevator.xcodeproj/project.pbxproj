@@ -31,6 +31,7 @@
 		34A2C00D2BD261D2008634DD /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 34A2C00C2BD261D2008634DD /* ComposableArchitecture */; };
 		34A6897F2BD264190031E636 /* UserReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6897E2BD264190031E636 /* UserReducer.swift */; };
 		34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */; };
+		34BFA6562C104A180096D3AE /* ConstantTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BFA6552C104A180096D3AE /* ConstantTextField.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,7 @@
 		34A2C0072BD13BF9008634DD /* UpdateServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateServer.swift; sourceTree = "<group>"; };
 		34A6897E2BD264190031E636 /* UserReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserReducer.swift; sourceTree = "<group>"; };
 		34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformMapRuleToGrid.swift; sourceTree = "<group>"; };
+		34BFA6552C104A180096D3AE /* ConstantTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstantTextField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +135,7 @@
 				347F48272B99C83C00F73DF6 /* RightView.swift */,
 				3472934F2B96D92D0033D38F /* CenterTopView.swift */,
 				344802822B8684D5008E5551 /* TopColorGradient.swift */,
+				34BFA6552C104A180096D3AE /* ConstantTextField.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 				34A6897F2BD264190031E636 /* UserReducer.swift in Sources */,
 				34A2C0082BD13BF9008634DD /* UpdateServer.swift in Sources */,
 				344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */,
+				34BFA6562C104A180096D3AE /* ConstantTextField.swift in Sources */,
 				347293502B96D92D0033D38F /* CenterTopView.swift in Sources */,
 				344802862B889424008E5551 /* UpdateClient.swift in Sources */,
 				346641422BA432D200D50E1D /* ResetDragProperties.swift in Sources */,

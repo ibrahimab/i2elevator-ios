@@ -60,7 +60,7 @@ struct CardView: View {
     @ViewBuilder
     func inputCardItem(for indentedSchemaItem: IndentedSchemaItem, transformation: Transformation, cards: [Card], subTransformationId: String) -> some View {
         HStack {
-            Spacer().frame(width: CGFloat(indentedSchemaItem.indentation + 1) * 20.0)
+            Spacer().frame(width: CGFloat(indentedSchemaItem.indentation) * 20.0)
             if indentedSchemaItem.numOfChildren == 0 {
                 Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
             } else {
@@ -103,7 +103,7 @@ struct CardView: View {
     @ViewBuilder
     func outputCardItem(for indentedSchemaItem: IndentedSchemaItem, transformation: Transformation, cards: [Card], subTransformationId: String) -> some View {
         HStack {
-            Spacer().frame(width: CGFloat((indentedSchemaItem.indentation + 1)) * 20.0)
+            Spacer().frame(width: CGFloat(indentedSchemaItem.indentation) * 20.0)
             if indentedSchemaItem.numOfChildren == 0 {
                 Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
             } else {
@@ -174,7 +174,15 @@ struct CardView: View {
                         HStack {
                             Spacer()
                             Button(action: {
-                                
+                                if let i = sharedState.viewStack.firstIndex(where: { viewDropData in
+                                    viewDropData.cardIndex == cardIndex && viewDropData.cardType == cardType
+                                }) {
+                                    sharedState.viewStack.remove(at: i)
+                                }
+                            }) {
+                                Image(systemName: "multiply.circle")
+                            }
+                            Button(action: {
                             }) {
                                 Text("\(cardType) \(cardIndex)")
                             }.onDrag {
@@ -184,89 +192,87 @@ struct CardView: View {
                             }
                         }.padding(.horizontal, 20)
                         List {
-                            Section(header: Text("Schema Items")) {
-                                ForEach(indentedSchemaItemList) { indentedSchemaItem in
-                                    Button(action: {
-                                        if cardType == "out" && (indentedSchemaItem.numOf1SWalkedBy < 1) {
-                                            sharedState.cardType = cardType
-                                            sharedState.cardIndex = cardIndex
-                                            sharedState.outputItemId = indentedSchemaItem.schemaItemId
-                                        }
-                                    }) {
-                                        if cardType == "in",
-                                           isIndentedItemEnabled(indentedSchemaItem: indentedSchemaItem, outputItemId: sharedState.outputItemId, subTransformation: transformation.subTransformations[subTransformationId]) == true
-                                        {
-                                            inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
-                                                .onDrag {
-                                                    resetDragProperties()
-                                                    if cardType == "in" {
-                                                        sharedState.draggedSchemaItem = DraggedSchemaItem(schemaItemId: indentedSchemaItem.schemaItemId, rangeMax: indentedSchemaItem.rangeMax, numOfChildren: indentedSchemaItem.numOfChildren, reference: indentedSchemaItem.reference)
-                                                    }
-                                                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                                                    return itemProvider
+                            ForEach(indentedSchemaItemList) { indentedSchemaItem in
+                                Button(action: {
+                                    if cardType == "out" && (indentedSchemaItem.numOf1SWalkedBy < 1) {
+                                        sharedState.cardType = cardType
+                                        sharedState.cardIndex = cardIndex
+                                        sharedState.outputItemId = indentedSchemaItem.schemaItemId
+                                    }
+                                }) {
+                                    if cardType == "in",
+                                       isIndentedItemEnabled(indentedSchemaItem: indentedSchemaItem, outputItemId: sharedState.outputItemId, subTransformation: transformation.subTransformations[subTransformationId]) == true
+                                    {
+                                        inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
+                                            .onDrag {
+                                                resetDragProperties()
+                                                if cardType == "in" {
+                                                    sharedState.draggedSchemaItem = DraggedSchemaItem(schemaItemId: indentedSchemaItem.schemaItemId, rangeMax: indentedSchemaItem.rangeMax, numOfChildren: indentedSchemaItem.numOfChildren, reference: indentedSchemaItem.reference)
                                                 }
-                                        } else if cardType == "in" {
-                                            inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
-                                        } else if let indentedInputItem = sharedState.draggedSchemaItem,
-                                                  cardType == "out",
-                                                  isIndentedItemEnabled(indentedSchemaItem: indentedSchemaItem, outputItemId: sharedState.outputItemId, subTransformation: transformation.subTransformations[subTransformationId]) == true
-                                        {
-                                            outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
-                                                .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
-                                                    if let indentedInputItem = sharedState.draggedSchemaItem,
-                                                       cardType == "out"
-                                                    {
-                                                        let _outputItemId = indentedSchemaItem.schemaItemId
-                                                        let _inputSchemaItemId = indentedInputItem.schemaItemId
-                                                        if indentedSchemaItem.rangeMax == "S" {
-                                                            if let subTransformationId = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId]?.subTransformationId,
-                                                               let inputCount = store.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.count
+                                                let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                                return itemProvider
+                                            }
+                                    } else if cardType == "in" {
+                                        inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
+                                    } else if let _ = sharedState.draggedSchemaItem,
+                                              cardType == "out",
+                                              isIndentedItemEnabled(indentedSchemaItem: indentedSchemaItem, outputItemId: sharedState.outputItemId, subTransformation: transformation.subTransformations[subTransformationId]) == true
+                                    {
+                                        outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
+                                            .onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
+                                                if let indentedInputItem = sharedState.draggedSchemaItem,
+                                                   cardType == "out"
+                                                {
+                                                    let _outputItemId = indentedSchemaItem.schemaItemId
+                                                    let _inputSchemaItemId = indentedInputItem.schemaItemId
+                                                    if indentedSchemaItem.rangeMax == "S" {
+                                                        if let subTransformationId = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId]?.subTransformationId,
+                                                           let inputCount = store.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.count
+                                                        {
+                                                            let i = store.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.firstIndex(where: { input in
+                                                                input.schemaItemId == _inputSchemaItemId
+                                                            })
+                                                            if let i = i
                                                             {
-                                                                let i = store.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]?.inputs.firstIndex(where: { input in
-                                                                    input.schemaItemId == _inputSchemaItemId
-                                                                })
-                                                                if let i = i
-                                                                {
-                                                                    
-                                                                    let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", i]
-                                                                    store.send(.removeKey(keyPath: keyPath))
-                                                                } else {
-                                                                    let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", inputCount]
-                                                                    store.send(.setValue(keyPath: keyPath, value: ["schemaItemId": _inputSchemaItemId]))
-                                                                }
+                                                                
+                                                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", i]
+                                                                store.send(.removeKey(keyPath: keyPath))
                                                             } else {
-                                                                let rand = randomAlphaNumeric(length: 4)
-                                                                let value: [String: Any] = ["name": "f_\(rand)", "outputs": [["mapRules":[:], "schemaItemId": _outputItemId]], "inputs": [["schemaItemId": _inputSchemaItemId]]]
-                                                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", "f_\(rand)"]
-                                                                store.send(.setValue(keyPath: keyPath, value: value))
-                                                                let keyPath2: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId, "subTransformationId"]
-                                                                store.send(.setValue(keyPath: keyPath2, value: "f_\(rand)"))
+                                                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "inputs", inputCount]
+                                                                store.send(.setValue(keyPath: keyPath, value: ["schemaItemId": _inputSchemaItemId]))
                                                             }
-                                                        } else { // "1" and nil
-                                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId, "objectrule"]
-                                                            var objectrule: Expression
-                                                            if var _objectrule = cards[cardIndex].mapRules?[_outputItemId]?.objectrule {
-                                                                _objectrule.reference = indentedInputItem.reference
-                                                                _objectrule.type = "reference"
-                                                                objectrule = _objectrule
-                                                            } else {
-                                                                objectrule = Expression(type: "reference", reference: indentedInputItem.reference, rangeMax: indentedSchemaItem.rangeMax)
-                                                            }
-                                                            let jsonEncoder = JSONEncoder()
-                                                            if let jsonData = try? jsonEncoder.encode(objectrule),
-                                                               let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-                                                                store.send(.setValue(keyPath: keyPath, value: dictionary))
-                                                                sharedState.draggedSchemaItem = nil
-                                                            }
+                                                        } else {
+                                                            let rand = randomAlphaNumeric(length: 4)
+                                                            let value: [String: Any] = ["name": "f_\(rand)", "outputs": [["mapRules":[:], "schemaItemId": _outputItemId]], "inputs": [["schemaItemId": _inputSchemaItemId]]]
+                                                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", "f_\(rand)"]
+                                                            store.send(.setValue(keyPath: keyPath, value: value))
+                                                            let keyPath2: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId, "subTransformationId"]
+                                                            store.send(.setValue(keyPath: keyPath2, value: "f_\(rand)"))
+                                                        }
+                                                    } else { // "1" and nil
+                                                        let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", _outputItemId, "objectrule"]
+                                                        var objectrule: Expression
+                                                        if var _objectrule = cards[cardIndex].mapRules?[_outputItemId]?.objectrule {
+                                                            _objectrule.reference = indentedInputItem.reference
+                                                            _objectrule.type = "reference"
+                                                            objectrule = _objectrule
+                                                        } else {
+                                                            objectrule = Expression(type: "reference", reference: indentedInputItem.reference, rangeMax: indentedSchemaItem.rangeMax)
+                                                        }
+                                                        let jsonEncoder = JSONEncoder()
+                                                        if let jsonData = try? jsonEncoder.encode(objectrule),
+                                                           let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                                                            store.send(.setValue(keyPath: keyPath, value: dictionary))
+                                                            sharedState.draggedSchemaItem = nil
                                                         }
                                                     }
-                                                    sharedState.draggedSchemaItem = nil
-                                                    return true
                                                 }
-                                        } else if cardType == "out"
-                                        {
-                                            outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
-                                        }
+                                                sharedState.draggedSchemaItem = nil
+                                                return true
+                                            }
+                                    } else if cardType == "out"
+                                    {
+                                        outputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
                                     }
                                 }
                             }

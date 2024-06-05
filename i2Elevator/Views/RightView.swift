@@ -18,6 +18,7 @@ struct RightView: View {
     @State private var filename: String?
     @State private var documentDataTypeTree: Data? = nil
     @State private var documentDataTransformation: Data? = nil
+    @State private var searchText: String = ""
     
     var body: some View {
         VStack {
@@ -95,7 +96,7 @@ struct RightView: View {
                         var request = URLRequest(url: components.url!)
                         request.httpMethod = "POST"
                         request.setValue("text/plain; charset=utf-8", forHTTPHeaderField: "Content-Type")
-
+                        
                         // sharedState.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationInd]
                         guard let inputExpectedOutputPairInd = sharedState.inputExpectedOutputPairInd else {
                             return
@@ -136,6 +137,38 @@ struct RightView: View {
                         Text("Run transformation")
                     }
                     .buttonStyle(BorderedButtonStyle())
+                    .buttonStyle(BorderedButtonStyle())
+                    Spacer()
+                }
+            } else if sharedState.menu == .transformationList
+            {
+                VStack {
+                    /*HStack {
+                        TextField("Search", text: $searchText)
+                    }
+                    .padding(.bottom, 20)
+                    .padding(.horizontal, 40)*/
+                    Button(action: {
+                        let transformationId = randomAlphaNumeric(length: 4)
+                        let outputRootItemId = randomAlphaNumeric(length: 4)
+                        let inputRootItemId = randomAlphaNumeric(length: 4)
+                        let value: [String: Any] = ["name": "New transformation",
+                                                    "subTransformations": [
+                                                        transformationId: ["name": "New sub transformation",
+                                                                           "outputs": [["mapRules":[:],
+                                                                                        "schemaItemId": outputRootItemId]],
+                                                                           "inputs": [["schemaItemId": inputRootItemId]]]],
+                                                    "schemaItems": [outputRootItemId: ["name": "Output item",
+                                                                                       "children": [:]],
+                                                                     inputRootItemId: ["name": "Input item",
+                                                                                       "children": [:]]]]
+                        let keyPath: [Any] = ["response", "transformations", transformationId]
+                        store.send(.setValue(keyPath: keyPath, value: value))
+                        sharedState.transformationId = transformationId
+                        sharedState.menu = .transformation
+                    }) {
+                        Text("Create Transformation")
+                    }
                     .buttonStyle(BorderedButtonStyle())
                     Spacer()
                 }

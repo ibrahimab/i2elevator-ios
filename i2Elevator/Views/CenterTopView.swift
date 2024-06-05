@@ -48,7 +48,7 @@ struct CenterTopView: View {
     
     var body: some View {
         var rowInd = 0
-        if let subTransformationId = sharedState.subTransformationId,
+        if let _ = sharedState.subTransformationId,
            sharedState.menu == .subTransformation
         {
             VStack {
@@ -67,7 +67,7 @@ struct CenterTopView: View {
                            })
                         {
                             sharedState.schemaItemsOnScratchpad.remove(at: i)
-                        } else if let userDTO = store.userDTO,
+                        } else if let _ = store.userDTO,
                                   let transformations = store.userDTO?.teams?["response"]?.transformations,
                                   let transformationId = sharedState.transformationId,
                                   let transformation = transformations[transformationId],
@@ -118,15 +118,15 @@ struct CenterTopView: View {
                                            return ret != nil
                                        }) != nil
                                     {
-                                        TextField("constant", text: $text, onEditingChanged: { editing in
-                                            self.isEditing = editing
-                                            if !editing {
-                                                // Text field is closed, perform any necessary actions here
-                                                let value = ["type": "constant", "constant": text]
-                                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] + column.expressionKeypathSegment
-                                                store.send(.setValue(keyPath: keyPath, value: value))
-                                            }
-                                        })
+                                        ConstantTextField(
+                                            store: store,
+                                            transformationId: transformationId,
+                                            subTransformationId: subTransformationId,
+                                            cardIndex: cardIndex,
+                                            outputItemId: outputItemId,
+                                            column: column
+                                        )
+                                        .environmentObject(SharedState())
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                         .autocapitalization(.none)
                                         .disableAutocorrection(true)
@@ -149,7 +149,7 @@ struct CenterTopView: View {
                                             return itemProvider
                                         }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
                                             var _expression = column.expression
-                                            if let schemaItemId = sharedState.draggedSchemaItem?.schemaItemId,
+                                            if let _ = sharedState.draggedSchemaItem?.schemaItemId,
                                                let reference = sharedState.draggedSchemaItem?.reference
                                             {
                                                 _expression?.type = "reference"
@@ -170,8 +170,8 @@ struct CenterTopView: View {
                                     } else if let newFunctionName = sharedState.draggedFunctionName,
                                               let newFunctionType =  signatureCategories[sharedState.functionCategoryIndex].functions[newFunctionName],
                                               (column.functionPropIndex == nil || {
-                                                  if let functionPropIndex = column.functionPropIndex,
-                                                     let functionName = column.parentExpression?.function?.name/*,
+                                                  if let _ = column.functionPropIndex,
+                                                     let _ = column.parentExpression?.function?.name/*,
                                                                                                                 functionPropsTypes[sharedState.functionCategoryIndex].functions[functionName]?[functionPropIndex].first(where: { functionType in
                                                                                                                 return functionType.type == "function"
                                                                                                                 }) != nil*/
@@ -419,6 +419,25 @@ struct CenterTopView: View {
                         let value2 = isoFormatter.string(from: currentDate)
                         let keyPath2: [Any] = ["response", "transformations", transformationId, "externalTransformationUpdatedAt"]
                         store.send(.setValue(keyPath: keyPath2, value: value2))
+                    }
+                }
+                Section(header: Text("Tags")) {
+                    HStack {
+                        Button(action: {
+                        }) {
+                            Text("#apple")
+                        }
+                        Button(action: {
+                            
+                        }) {
+                            Text("#banana")
+                        }
+                        Spacer()
+                        Button(action: {
+                            
+                        }) {
+                            Image(systemName: "chevron.right")
+                        }
                     }
                 }
             }
