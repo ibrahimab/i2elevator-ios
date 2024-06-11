@@ -140,7 +140,7 @@ struct RightView: View {
                     .buttonStyle(BorderedButtonStyle())
                     Spacer()
                 }
-            } else if sharedState.menu == .transformationList
+            } /*else if sharedState.menu == .transformationList
             {
                 VStack {
                     /*HStack {
@@ -172,7 +172,7 @@ struct RightView: View {
                     .buttonStyle(BorderedButtonStyle())
                     Spacer()
                 }
-            } else {
+            }*/ else {
                 List {
                     ForEach(signatureCategories.indices, id: \.self) { index in
                         Section(header: Text(signatureCategories[index].name)) {

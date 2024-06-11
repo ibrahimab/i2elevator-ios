@@ -40,6 +40,7 @@ enum SelectedMenuItem {
     case schemaItemList
     case schemaItem
     case inputExpectedOutputPair
+    case tags
 }
 
 struct ViewDropData {
@@ -61,33 +62,29 @@ struct ContentView: View {
     @State private var isLeftBarHighlighted: Bool = false
     @State private var isRightBarHighlighted: Bool = false
     @State private var isCenterBarHighlighted: Bool = false
+    @State private var selectedTab = 3
     var body: some View {
         GeometryReader { geometry in
-            HStack {
-                if sharedState.menu == .transformationList,
-                   let transformations = store.userDTO?.teams?["response"]?.transformations
-                {
-                    ScrollView {
-                        GeometryReader { geometry in
-                            let availableWidth = geometry.size.width - 300 // Subtract width of other view
-                            let columnCount = max(Int(availableWidth / 150), 1) // Adjust item width as needed
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: columnCount), spacing: 10) {
-                                ForEach(transformations.keys.sorted(), id: \.self) { transformationId in
-                                    if let transformation = transformations[transformationId] {
-                                        Button(action: {
-                                            self.sharedState.transformationId = transformationId
-                                            sharedState.menu = .transformation
-                                        }) {
-                                            Text(transformation.name)
-                                                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 100)
-                                        }
-                                    }
-                                }
-                            }
-                            .padding()
-                        }
+            TabView(selection: $selectedTab) {
+                Text("Permissions")
+                    .tabItem {
+                        Image(systemName: "shield")
+                        Text("Permissions")
                     }
-                } else {
+                    .tag(0)
+                Text("Search")
+                    .tabItem {
+                        Image(systemName: "magnifyingglass")
+                        Text("Search")
+                    }
+                    .tag(1)
+                Text("Teams")
+                    .tabItem {
+                        Image(systemName: "person.2.square.stack")
+                        Text("Teams")
+                    }
+                    .tag(2)
+                HStack {
                     VStack {
                         if sharedState.menu == .subTransformation,
                            let transformations = store.userDTO?.teams?["response"]?.transformations,
@@ -112,11 +109,15 @@ struct ContentView: View {
                                     Image(systemName: "gear")
                                 } .clipShape(Circle())
                             }
-                            .padding(.bottom, 40)
-                            .padding(.horizontal, 20)
+                            .padding(20)
                             List {
                                 if let cards = subTransformations[subTransformationId]?.inputs {
-                                    Section(header: Text("Card In")) {
+                                    Section() {
+                                        HStack {
+                                            Text("Card in").bold()
+                                            Spacer()
+                                        }
+                                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                                         ForEach(cards.indices, id: \.self) { index in
                                             Button(action: {
                                                 if sharedState.viewStack.firstIndex(where: { viewDropData in
@@ -132,11 +133,18 @@ struct ContentView: View {
                                                     Image(systemName: "chevron.right")
                                                 }
                                             }
+                                            .padding()
+                                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                                         }
                                     }
                                 }
                                 if let cards = subTransformations[subTransformationId]?.outputs {
-                                    Section(header: Text("Card Out")) {
+                                    Section() {
+                                        HStack {
+                                            Text("Card out").bold()
+                                            Spacer()
+                                        }
+                                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                                         ForEach(cards.indices, id: \.self) { index in
                                             Button(action: {
                                                 if sharedState.viewStack.firstIndex(where: { viewDropData in
@@ -152,81 +160,13 @@ struct ContentView: View {
                                                     Image(systemName: "chevron.right")
                                                 }
                                             }
+                                            .padding()
+                                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                                         }
                                     }
                                 }
                             }
-                        } else if sharedState.menu == .transformation || sharedState.menu == .inputExpectedOutputPair,
-                                  let transformations = store.userDTO?.teams?["response"]?.transformations,
-                                  let transformationId = sharedState.transformationId,
-                                  let transformation = transformations[transformationId]
-                        {
-                            HStack {
-                                Button(action: {
-                                    if sharedState.inputExpectedOutputPairInd != nil {
-                                        sharedState.inputExpectedOutputPairInd = nil
-                                        sharedState.menu = .transformation
-                                    } else {
-                                        sharedState.menu = .transformationList
-                                    }
-                                }) {
-                                    Image(systemName: "chevron.left")
-                                }
-                                .clipShape(Circle())
-                                Spacer()
-                                TextField("Search", text: $searchText)
-                            }
-                            .padding(.bottom, 40)
-                            .padding(.horizontal, 20)
-                            Spacer()
-                            List {
-                                Section(header: Text("Transformation name")) {
-                                    Text(transformation.name)
-                                }
-                                Section(header: Text("Sub Transformations")) {
-                                    ForEach(transformation.subTransformations.keys.sorted(), id: \.self) { subTransformationId in
-                                        if let subTransformation = transformation.subTransformations[subTransformationId] {
-                                            Button(action: {
-                                                sharedState.menu = .subTransformation
-                                                self.sharedState.subTransformationId = subTransformationId
-                                            }) {
-                                                HStack {
-                                                    Text(subTransformation.name)
-                                                    Spacer()
-                                                    Image(systemName: "chevron.right")
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                Section(header: Text("Input - Expected Output Pairs")) {
-                                    if let inputExpectedOutputTextIdPairs = transformation.inputExpectedOutputTextIdPairs {
-                                        ForEach(Array(inputExpectedOutputTextIdPairs.enumerated()), id: \.element.inputTextId) { index, inputExpectedOutputTextIdPair in
-                                            Button(action: {
-                                                self.sharedState.menu = .inputExpectedOutputPair
-                                                self.sharedState.inputExpectedOutputPairInd = index
-                                            }) {
-                                                HStack {
-                                                    Text("\(index)")
-                                                    Spacer()
-                                                    Image(systemName: "chevron.right")
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                Section(header: Text("")) {
-                                    Button(action: {
-                                        sharedState.menu = .schemaItemList
-                                    }) {
-                                        HStack {
-                                            Text("Schema items")
-                                            Spacer()
-                                            Image(systemName: "chevron.right")
-                                        }
-                                    }
-                                }
-                            }
+                            .listStyle(PlainListStyle())
                         } else if sharedState.menu == .schemaItem,
                                   let transformations = store.userDTO?.teams?["response"]?.transformations,
                                   let transformationId = sharedState.transformationId,
@@ -246,8 +186,7 @@ struct ContentView: View {
                                 Spacer()
                                 TextField("Search", text: $searchText)
                             }
-                            .padding(.bottom, 40)
-                            .padding(.horizontal, 20)
+                            .padding(20)
                             HStack {
                                 Spacer()
                                 Button(action: {
@@ -255,7 +194,7 @@ struct ContentView: View {
                                 }) {
                                     Text(schemaItem.children[childSchemaItemId] == nil ? "Remove child schema item from parent" : "Assign item to \(schemaItem.name)")
                                 }
-                            }.padding(.horizontal, 20)
+                            }
                             HStack {
                                 Spacer()
                                 Button(action: {
@@ -264,7 +203,6 @@ struct ContentView: View {
                                     Text("Delete child schema item")
                                 }
                             }.padding(.bottom, 40)
-                                .padding(.horizontal, 20)
                             List {
                                 Section(header: Text(schemaItem.children[childSchemaItemId] != nil ? "Unassigned Schema Item" : "Assigned Schema Item")) {
                                     Text(childSchemaItem.name)
@@ -275,6 +213,7 @@ struct ContentView: View {
                                     }
                                 }
                             }
+                            .listStyle(PlainListStyle())
                             Spacer()
                         } else if sharedState.menu == .schemaItem,
                                   let transformations = store.userDTO?.teams?["response"]?.transformations,
@@ -293,8 +232,7 @@ struct ContentView: View {
                                 Spacer()
                                 TextField("Search", text: $searchText)
                             }
-                            .padding(.bottom, 40)
-                            .padding(.horizontal, 20)
+                            .padding(20)
                             Spacer()
                             List {
                                 Section(header: Text("\(transformation.name) > Schema Items")) {
@@ -359,6 +297,7 @@ struct ContentView: View {
                                     )).autocapitalization(.none)
                                 }
                             }
+                            .listStyle(PlainListStyle())
                             HStack {
                                 Spacer()
                                 Button(action: {
@@ -393,9 +332,7 @@ struct ContentView: View {
                                 Spacer()
                                 TextField("Search", text: $searchText)
                             }
-                            .padding(.bottom, 40)
-                            .padding(.horizontal, 20)
-                            Spacer()
+                            .padding(20)
                             HStack {
                                 Spacer()
                                 Button(action: {
@@ -408,7 +345,6 @@ struct ContentView: View {
                                     Text("Add schema item")
                                 }
                             }.padding(.bottom, 40)
-                                .padding(.horizontal, 20)
                             Spacer()
                             List {
                                 Section(header: Text("\(transformation.name) > Schema Items")) {
@@ -429,96 +365,303 @@ struct ContentView: View {
                                     }
                                 }
                             }
-                        } else if let transformations = store.userDTO?.teams?["response"]?.transformations {
+                            .listStyle(PlainListStyle())
+                        } else if sharedState.menu == .transformation || sharedState.menu == .inputExpectedOutputPair || sharedState.menu == .tags,
+                                  let transformations = store.userDTO?.teams?["response"]?.transformations,
+                                  let transformationId = sharedState.transformationId,
+                                  let transformation = transformations[transformationId]
+                        {
                             HStack {
-                                TextField("Search", text: $searchText)
+                                Button(action: {
+                                    if sharedState.inputExpectedOutputPairInd != nil {
+                                        sharedState.inputExpectedOutputPairInd = nil
+                                        sharedState.menu = .transformation
+                                    } else {
+                                        sharedState.menu = .transformationList
+                                    }
+                                }) {
+                                    Image(systemName: "chevron.left")
+                                }
+                                .clipShape(Circle())
+                                .padding(.trailing, 8)
+                                Text(transformation.name)
+                                    .font(.title)
+                                    .bold()
+                                Spacer()
                             }
-                            .padding(.bottom, 40)
-                            .padding(.horizontal, 40)
-                            Button(action: {
-                                let transformationId = randomAlphaNumeric(length: 4)
-                                let outputRootItemId = randomAlphaNumeric(length: 4)
-                                let inputRootItemId = randomAlphaNumeric(length: 4)
-                                let value: [String: Any] = ["name": "New transformation",
-                                                            "subTransformations": [
-                                                                transformationId: ["name": "New sub transformation",
-                                                                                   "outputs": [["mapRules":[:],
-                                                                                                "schemaItemId": outputRootItemId]],
-                                                                                   "inputs": [["schemaItemId": inputRootItemId]]]],
-                                                            "schemaItems": [outputRootItemId: ["name": "Output item",
-                                                                                               "children": [:]],
-                                                                             inputRootItemId: ["name": "Input item",
-                                                                                               "children": [:]]]]
-                                let keyPath: [Any] = ["response", "transformations", transformationId]
-                                store.send(.setValue(keyPath: keyPath, value: value))
-                                sharedState.transformationId = transformationId
-                                sharedState.menu = .transformation
-                            }) {
-                                Text("Create Transformation")
-                            }
-                            .buttonStyle(BorderedButtonStyle())
+                            .padding(.vertical, 20)
+                            .padding(.horizontal, 20)
                             List {
-                                Section(header: Text("Transformations")) {
+                                Section {
+                                    HStack {
+                                        Text("Sub Transformations").bold()
+                                        Spacer()
+                                        //Image(systemName: "chevron.down")
+                                    }
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                    .padding()
+                                    ForEach(transformation.subTransformations.keys.sorted(), id: \.self) { subTransformationId in
+                                        if let subTransformation = transformation.subTransformations[subTransformationId] {
+                                            Button(action: {
+                                                sharedState.menu = .subTransformation
+                                                self.sharedState.subTransformationId = subTransformationId
+                                            }) {
+                                                HStack {
+                                                    Text(subTransformation.name).fontWeight(.semibold)
+                                                    Spacer()
+                                                    Image(systemName: "chevron.right")
+                                                }
+                                                
+                                            }
+                                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                            .padding()
+                                        }
+                                    }
+                                }
+                                .background(Color.init(white: 0.35))
+                                Section {
+                                    HStack {
+                                        Text("Input - Expected Output Pairs").bold()
+                                        Spacer()
+                                        //Image(systemName: "chevron.down")
+                                    }
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                    .padding()
+                                    if let inputExpectedOutputTextIdPairs = transformation.inputExpectedOutputTextIdPairs {
+                                        ForEach(Array(inputExpectedOutputTextIdPairs.enumerated()), id: \.element.inputTextId) { index, inputExpectedOutputTextIdPair in
+                                            Button(action: {
+                                                self.sharedState.menu = .inputExpectedOutputPair
+                                                self.sharedState.inputExpectedOutputPairInd = index
+                                            }) {
+                                                HStack {
+                                                    Text("\(index)")
+                                                    Spacer()
+                                                    Image(systemName: "chevron.right")
+                                                }
+                                            }
+                                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                            .padding()
+                                        }
+                                    }
+                                }
+                                .background(Color.init(white: 0.35))
+                                Button(action: {
+                                    sharedState.menu = .schemaItemList
+                                }) {
+                                    HStack {
+                                        Text("Schema items").bold()
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
+                                }
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                .padding()
+                                .background(Color.init(white: 0.35))
+                            }
+                            .listStyle(PlainListStyle())
+                            .background(Color.init(white: 0.35))
+                            Spacer()
+                        } else if let _ = store.userDTO?.teams?["response"]?.transformations {
+                            HStack {
+                                Text("i2Elevator")
+                                    .font(.title)
+                                    .bold()
+                                    .padding(.leading, 8)
+                                Spacer()
+                            }
+                            .padding(20)
+                            List {
+                                Section {
+                                    Button(action: {
+                                        
+                                    }) {
+                                        HStack {
+                                            Image(systemName: "clock").padding(.trailing, 8)
+                                            Text("Recents").bold()
+                                            Spacer()
+                                        }
+                                    }
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                    .padding()
+                                    Button(action: {
+                                        
+                                    }) {
+                                        HStack {
+                                            Image(systemName: "star").padding(.trailing, 8)
+                                            Text("Favorites").bold()
+                                            Spacer()
+                                        }
+                                    }
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                    .padding()
+                                }
+                                .background(Color.init(white: 0.35))
+                                Section {
+                                    HStack {
+                                        Image(systemName: "tag").padding(.trailing, 8)
+                                        Text("Tags").bold()
+                                        Spacer()
+                                    }
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                    .padding()
+                                    //.listRowBackground(Color.init(white: 0.35))
+                                    Button(action: {
+                                        
+                                    }) {
+                                        HStack {
+                                            Text("#itx")
+                                            Spacer()
+                                            Image(systemName: "square")
+                                        }
+                                    }
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                    .padding()
+                                    Button(action: {
+                                        
+                                    }) {
+                                        HStack {
+                                            Text("#tutorial")
+                                            Spacer()
+                                            Image(systemName: "square")
+                                        }
+                                    }
+                                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                    .padding()
+                                }
+                                .background(Color.init(white: 0.35))
+                            }
+                            .listStyle(PlainListStyle())
+                            .background(Color.init(white: 0.35))
+                        }
+                    }
+                    .frame(width: 300 + x1Movement)
+                    .background(Color.init(white: 0.35))
+                    if sharedState.menu == .transformationList,
+                       let transformations = store.userDTO?.teams?["response"]?.transformations
+                    {
+                        VStack {
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    let transformationId = randomAlphaNumeric(length: 4)
+                                    let outputRootItemId = randomAlphaNumeric(length: 4)
+                                    let inputRootItemId = randomAlphaNumeric(length: 4)
+                                    let value: [String: Any] = ["name": "New transformation",
+                                                                "subTransformations": [
+                                                                    transformationId: ["name": "New sub transformation",
+                                                                                       "outputs": [["mapRules":[:],
+                                                                                                    "schemaItemId": outputRootItemId]],
+                                                                                       "inputs": [["schemaItemId": inputRootItemId]]]],
+                                                                "schemaItems": [outputRootItemId: ["name": "Output item",
+                                                                                                   "children": [:]],
+                                                                                 inputRootItemId: ["name": "Input item",
+                                                                                                   "children": [:]]]]
+                                    let keyPath: [Any] = ["response", "transformations", transformationId]
+                                    store.send(.setValue(keyPath: keyPath, value: value))
+                                    sharedState.transformationId = transformationId
+                                    sharedState.menu = .transformation
+                                }) {
+                                    Text("Create Transformation")
+                                }
+                                .buttonStyle(BorderedButtonStyle())
+                            }
+                            ScrollView {
+                                let availableWidth = geometry.size.width - 300 // Subtract width of other view
+                                let columnCount = max(Int(availableWidth / 150), 1) // Adjust item width as needed
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: columnCount), spacing: 10) {
                                     ForEach(transformations.keys.sorted(), id: \.self) { transformationId in
                                         if let transformation = transformations[transformationId] {
                                             Button(action: {
                                                 self.sharedState.transformationId = transformationId
                                                 sharedState.menu = .transformation
                                             }) {
-                                                HStack {
+                                                VStack {
                                                     Text(transformation.name)
-                                                    Spacer()
-                                                    Image(systemName: "chevron.right")
+                                                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 20)
+                                                    //if let tags = transformation.tags {
+                                                    Text(["itx", "tutorial"] .map { "#\($0)" }.joined(separator: " ")) //tags
+                                                        .font(.caption)
+                                                        .foregroundColor(.yellow)
+                                                    //}
                                                 }
                                             }
+                                            .buttonBorderShape(.roundedRectangle(radius: 10))
                                         }
                                     }
                                 }
+                                .padding()
                             }
+                        }.padding()
+                    } else {
+                        VStack {
+                            CenterTopView(store: store).frame(height: geometry.size.height * 0.5 + yMovement)
+                            HStack {
+                                ForEach(sharedState.viewStack.indices, id: \.self) { stackItemIndex in
+                                    let stackItem = sharedState.viewStack[stackItemIndex]
+                                    if let cardType = stackItem.cardType,
+                                       let cardIndex = stackItem.cardIndex
+                                    {
+                                        CardView(cardIndex: cardIndex, cardType: cardType, store: store)
+                                    }
+                                }
+                            }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
+                                if let viewToDrop = sharedState.viewToDrop {
+                                    sharedState.viewStack.append(viewToDrop)
+                                    sharedState.viewToDrop = nil
+                                    if let cardIndex = viewToDrop.cardIndex,
+                                       let cardType = viewToDrop.cardType
+                                    {
+                                        dismissWindow(id: "SubTransformationView", value: MyData(intValue: cardIndex, stringValue: cardType))
+                                    } else {
+                                        dismissWindow(id: viewToDrop.name)
+                                    }
+                                }
+                                return true
+                            }.frame(height: geometry.size.height * 0.5 - yMovement)
                         }
-                    }.padding(.vertical, 40).frame(width: 300 + x1Movement)
-                }
-                if sharedState.menu != .transformationList {
-                    VStack {
-                        CenterTopView(store: store).frame(height: geometry.size.height * 0.5 + yMovement)
-                        HStack {
-                            ForEach(sharedState.viewStack.indices, id: \.self) { stackItemIndex in
-                                let stackItem = sharedState.viewStack[stackItemIndex]
-                                if let cardType = stackItem.cardType,
-                                   let cardIndex = stackItem.cardIndex
-                                {
-                                    CardView(cardIndex: cardIndex, cardType: cardType, store: store)
+                        .overlay {
+                            Button(action: {
+                            }) {
+                                ZStack {
+                                    Rectangle()
+                                        .frame(width: 100, height: 8)
+                                        .cornerRadius(4)
+                                        .foregroundColor(Color.gray.opacity(0.8))
+                                    Rectangle()
+                                        .frame(width: geometry.size.width - 600 - x1Movement + x2Movement - 16, height: 8)
+                                        .gesture(DragGesture()
+                                            .onChanged { value in
+                                                withAnimation(.easeInOut(duration: 0.1)) {
+                                                    yMovement = value.translation.height
+                                                }
+                                            }
+                                        )
                                 }
                             }
-                        }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
-                            if let viewToDrop = sharedState.viewToDrop {
-                                sharedState.viewStack.append(viewToDrop)
-                                sharedState.viewToDrop = nil
-                                if let cardIndex = viewToDrop.cardIndex,
-                                   let cardType = viewToDrop.cardType
-                                {
-                                    dismissWindow(id: "SubTransformationView", value: MyData(intValue: cardIndex, stringValue: cardType))
-                                } else {
-                                    dismissWindow(id: viewToDrop.name)
-                                }
-                            }
-                            return true
-                        }.frame(height: geometry.size.height * 0.5 - yMovement)
+                            .buttonStyle(PlainButtonStyle())
+                            .foregroundColor(Color.gray.opacity(barTransparency))
+                            .offset(x: -8, y: yMovement)
+                        }
                     }
-                    .overlay {
+                    if sharedState.menu != .transformationList
+                    {
+                        RightView(store: store).frame(width: 300 - x2Movement)
+                    }
+                }.overlay {
+                    if sharedState.menu != .transformationList {
                         Button(action: {
                         }) {
                             ZStack {
                                 Rectangle()
-                                    .frame(width: 100, height: 8)
+                                    .frame(width: 8, height: 100)
                                     .cornerRadius(4)
                                     .foregroundColor(Color.gray.opacity(0.8))
                                 Rectangle()
-                                    .frame(width: geometry.size.width - 600 - x1Movement + x2Movement - 16, height: 8)
+                                    .frame(width: 8, height: geometry.size.height)
                                     .gesture(DragGesture()
                                         .onChanged { value in
                                             withAnimation(.easeInOut(duration: 0.1)) {
-                                                yMovement = value.translation.height
+                                                x1Movement = value.translation.width
                                             }
                                         }
                                     )
@@ -526,15 +669,41 @@ struct ContentView: View {
                         }
                         .buttonStyle(PlainButtonStyle())
                         .foregroundColor(Color.gray.opacity(barTransparency))
-                        .offset(x: -8, y: yMovement)
+                        .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0 - 8.0, y: 0)
+                        Button(action: {
+                        }) {
+                            ZStack {
+                                Rectangle()
+                                    .frame(width: 8, height: 100)
+                                    .cornerRadius(4)
+                                    .foregroundColor(Color.gray.opacity(0.8))
+                                Rectangle()
+                                    .frame(width: 8, height: geometry.size.height)
+                                    .gesture(DragGesture()
+                                        .onChanged { value in
+                                            withAnimation(.easeInOut(duration: 0.1)) {
+                                                x2Movement = value.translation.width
+                                            }
+                                        }
+                                    )
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .foregroundColor(Color.gray.opacity(barTransparency))
+                        .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0 - 8.0, y: 0)
                     }
                 }
-                RightView(store: store).frame(width: 300 - x2Movement)//.background(.red)
-            }.onAppear {
+                .tabItem {
+                    Image(systemName: "arrowshape.forward")
+                    Text("Transformations")
+                }
+                .tag(3)
+            }
+            .onAppear {
                 let url = URL(string: "\(baseUrl)/auth/me")! //https://datamapper.vercel.app/api/auth/me"
                 var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
                 components.queryItems = []
-                let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkrDoW5vcyIsInVzZXJJZCI6IjY2MmYzYWE2ZDdiYWEyZGY5MjExODJiNCIsImVtYWlsIjoia3Vrb2RhamFub3NAaWNsb3VkLmNvbSIsImlhdCI6MTcxNTMxMTI3OSwiZXhwIjoxNzE3OTAzMjc5fQ.I4bbviNSMDZcvZYc1Jf07nZUVVrXsOOA8M9Ig3hJp0s"
+                let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkrDoW5vcyIsInVzZXJJZCI6IjY2MmYzYWE2ZDdiYWEyZGY5MjExODJiNCIsImVtYWlsIjoia3Vrb2RhamFub3NAaWNsb3VkLmNvbSIsImlhdCI6MTcxODAwMTgyMiwiZXhwIjoxNzIwNTkzODIyfQ.jsxEJEyBILuqq3bOJg9mOdA5guchXj4iVXsuYUxLnJg"
                 var request = URLRequest(url: components.url!)
                 request.httpMethod = "GET"
                 request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -572,52 +741,8 @@ struct ContentView: View {
                         }
                     }
                 }
-            }.overlay {
-                if sharedState.menu != .transformationList {
-                    Button(action: {
-                    }) {
-                        ZStack {
-                            Rectangle()
-                                .frame(width: 8, height: 100)
-                                .cornerRadius(4)
-                                .foregroundColor(Color.gray.opacity(0.8))
-                            Rectangle()
-                                .frame(width: 8, height: geometry.size.height)
-                                .gesture(DragGesture()
-                                    .onChanged { value in
-                                        withAnimation(.easeInOut(duration: 0.1)) {
-                                            x1Movement = value.translation.width
-                                        }
-                                    }
-                                )
-                        }
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .foregroundColor(Color.gray.opacity(barTransparency))
-                    .offset(x: x1Movement - geometry.size.width / 2.0 + 300.0 - 8.0, y: 0)
-                    Button(action: {
-                    }) {
-                        ZStack {
-                            Rectangle()
-                                .frame(width: 8, height: 100)
-                                .cornerRadius(4)
-                                .foregroundColor(Color.gray.opacity(0.8))
-                            Rectangle()
-                                .frame(width: 8, height: geometry.size.height)
-                                .gesture(DragGesture()
-                                    .onChanged { value in
-                                        withAnimation(.easeInOut(duration: 0.1)) {
-                                            x2Movement = value.translation.width
-                                        }
-                                    }
-                                )
-                        }
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .foregroundColor(Color.gray.opacity(barTransparency))
-                    .offset(x: x2Movement + geometry.size.width / 2.0 - 300.0 - 8.0, y: 0)
-                }
             }
         }
     }
 }
+

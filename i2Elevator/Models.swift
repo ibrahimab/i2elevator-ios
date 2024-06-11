@@ -30,6 +30,7 @@ struct Transformation: Codable {
     var externalTypeTreeUpdatedAt: String?
     var externalTransformation: String?
     var externalTransformationUpdatedAt: String?
+    var tags: [String]?
 }
 
 struct InputExpectedOutputTextIdPair: Codable {

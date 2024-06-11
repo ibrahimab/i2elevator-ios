@@ -27,7 +27,9 @@ struct i2ElevatorApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(store: store).environmentObject(sharedState).preferredColorScheme(.dark)
+            ContentView(store: store)
+                .environmentObject(sharedState)
+                .preferredColorScheme(.dark)
         }
     }
 }

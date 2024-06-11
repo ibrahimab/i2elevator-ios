@@ -366,6 +366,14 @@ struct CenterTopView: View {
             .onChange(of: sharedState.inputExpectedOutputPairInd, initial: true) { old, inputExpectedOutputPairInd in
                 initializeTextViewVariables(inputExpectedOutputPairInd: inputExpectedOutputPairInd, transformationId: transformationId)
             }
+        } else if let transformationId = sharedState.transformationId,
+                    self.sharedState.menu == .tags
+        {
+            List {
+                Text("Apple")
+                Text("Banana")
+            }
+            .padding()
         } else if let transformationId = sharedState.transformationId
         {
             List {
@@ -434,7 +442,7 @@ struct CenterTopView: View {
                         }
                         Spacer()
                         Button(action: {
-                            
+                            self.sharedState.menu = .tags
                         }) {
                             Image(systemName: "chevron.right")
                         }
