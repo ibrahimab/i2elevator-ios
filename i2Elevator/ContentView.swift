@@ -17,12 +17,12 @@ class SharedState: ObservableObject {
     @Published var cardType: String? = nil
     @Published var cardIndex: Int? = nil
     @Published var draggedSchemaItem: DraggedSchemaItem? = nil
-    @Published var outputItemId: String? = nil
+    //@Published var outputItemId: String? = nil
     @Published var draggedFunctionName: String? = nil
     @Published var expressionKeypathSegment: [Any]? = nil
     @Published var schemaItemsOnScratchpad: [DraggedSchemaItem] = []
     @Published var functionCategoryIndex: Int = 0
-    @Published var schemaItemId: String? = nil
+    @Published var selectedSchemaItemId: String? = nil
     @Published var childSchemaItemId: String? = nil
     @Published var isFunctionCatalogCombined: Bool = true
     @Published var selectedFunctionName: String? = nil
@@ -171,7 +171,7 @@ struct ContentView: View {
                                   let transformations = store.userDTO?.teams?["response"]?.transformations,
                                   let transformationId = sharedState.transformationId,
                                   let transformation = transformations[transformationId],
-                                  let schemaItemId = sharedState.schemaItemId,
+                                  let schemaItemId = sharedState.selectedSchemaItemId,
                                   let childSchemaItemId = sharedState.childSchemaItemId,
                                   let schemaItem = transformation.schemaItems[schemaItemId],
                                   let childSchemaItem = transformation.schemaItems[childSchemaItemId]
@@ -219,7 +219,7 @@ struct ContentView: View {
                                   let transformations = store.userDTO?.teams?["response"]?.transformations,
                                   let transformationId = sharedState.transformationId,
                                   let transformation = transformations[transformationId],
-                                  let schemaItemId = sharedState.schemaItemId,
+                                  let schemaItemId = sharedState.selectedSchemaItemId,
                                   let schemaItem = transformation.schemaItems[schemaItemId]
                         {
                             HStack {
@@ -352,7 +352,7 @@ struct ContentView: View {
                                         if let schemaItem = transformation.schemaItems[schemaItemId] {
                                             Button(action: {
                                                 sharedState.menu = .schemaItem
-                                                self.sharedState.schemaItemId = schemaItemId
+                                                self.sharedState.selectedSchemaItemId = schemaItemId
                                                 editedSchemaItem = schemaItem
                                             }) {
                                                 HStack {
@@ -584,7 +584,9 @@ struct ContentView: View {
                                                         .foregroundColor(.yellow)
                                                     //}
                                                 }
+                                                .frame(width: 150, height: 100)
                                             }
+                                            .background(Color.gray)
                                             .buttonBorderShape(.roundedRectangle(radius: 10))
                                         }
                                     }

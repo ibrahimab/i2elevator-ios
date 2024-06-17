@@ -41,6 +41,6 @@ struct ConstantTextField: View {
             }
         })
         .textFieldStyle(RoundedBorderTextFieldStyle())
-        .padding()
+        //.padding()
     }
 }

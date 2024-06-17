@@ -90,17 +90,28 @@ func transformExpressionsToGrid(
         rowInd = rowInd + 1
         rows.append(zz)
         for (index, element) in functionProps.props.enumerated() {
-            let zz2 = transformExpressionsToGrid(
+            let _rows = transformExpressionsToGrid(
                 expression: element,
                 indentation: indentation + 1,
                 keyPath: keyPath + ["function", "props", index],
                 schemaItems: schemaItems,
                 parentExpression: expression,
-                rowInd: &rowInd, 
+                rowInd: &rowInd,
                 functionPropIndex: index
             )
-            rows.append(contentsOf: zz2)
+            rows.append(contentsOf: _rows)
             rowInd = rowInd + 1
+        }
+        if functionProps.name == "LOOKUP" {
+            rows[3].columns.append(ExpressionColumn(text: "=", index: 2, isBtnStyle: false, expressionKeypathSegment: keyPath))
+            rows[3].columns.append(contentsOf: rows[4].columns)
+            rows[3].columns[2].index = 3
+            rows.remove(at: 4)
+        }
+        for (rowIndex, row) in rows.enumerated() {
+            if rowIndex >= 1 && rowIndex < rows.count - 1 {
+                rows[rowIndex].columns.append(ExpressionColumn(text: ",", index: rows[rowIndex].columns.count + 1, isBtnStyle: false, expressionKeypathSegment: keyPath))
+            }
         }
         let vv2 = ExpressionColumn(text: ")", index: 3, isBtnStyle: false, expressionKeypathSegment: keyPath)
         let zz3 = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv2])

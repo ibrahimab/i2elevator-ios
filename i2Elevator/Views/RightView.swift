@@ -19,6 +19,9 @@ struct RightView: View {
     @State private var documentDataTypeTree: Data? = nil
     @State private var documentDataTransformation: Data? = nil
     @State private var searchText: String = ""
+    @State private var editedSchemaItem: SchemaItem? = nil
+    @State private var editedSchemaItemId: String? = nil
+    @State private var isSchemaItemEdited: Bool = false
     
     var body: some View {
         VStack {
@@ -140,39 +143,13 @@ struct RightView: View {
                     .buttonStyle(BorderedButtonStyle())
                     Spacer()
                 }
-            } /*else if sharedState.menu == .transformationList
+            } else if sharedState.menu == .subTransformation,
+                      let transformations = store.userDTO?.teams?["response"]?.transformations,
+                      let transformationId = sharedState.transformationId,
+                      let transformation = transformations[transformationId],
+                      let schemaItemId = sharedState.selectedSchemaItemId,
+                      let schemaItem = transformation.schemaItems[schemaItemId]
             {
-                VStack {
-                    /*HStack {
-                        TextField("Search", text: $searchText)
-                    }
-                    .padding(.bottom, 20)
-                    .padding(.horizontal, 40)*/
-                    Button(action: {
-                        let transformationId = randomAlphaNumeric(length: 4)
-                        let outputRootItemId = randomAlphaNumeric(length: 4)
-                        let inputRootItemId = randomAlphaNumeric(length: 4)
-                        let value: [String: Any] = ["name": "New transformation",
-                                                    "subTransformations": [
-                                                        transformationId: ["name": "New sub transformation",
-                                                                           "outputs": [["mapRules":[:],
-                                                                                        "schemaItemId": outputRootItemId]],
-                                                                           "inputs": [["schemaItemId": inputRootItemId]]]],
-                                                    "schemaItems": [outputRootItemId: ["name": "Output item",
-                                                                                       "children": [:]],
-                                                                     inputRootItemId: ["name": "Input item",
-                                                                                       "children": [:]]]]
-                        let keyPath: [Any] = ["response", "transformations", transformationId]
-                        store.send(.setValue(keyPath: keyPath, value: value))
-                        sharedState.transformationId = transformationId
-                        sharedState.menu = .transformation
-                    }) {
-                        Text("Create Transformation")
-                    }
-                    .buttonStyle(BorderedButtonStyle())
-                    Spacer()
-                }
-            }*/ else {
                 List {
                     ForEach(signatureCategories.indices, id: \.self) { index in
                         Section(header: Text(signatureCategories[index].name)) {
@@ -192,8 +169,66 @@ struct RightView: View {
                         }
                     }
                 }
+                List {
+                    Section(header: Text("Scheme Item Name")) {
+                        TextField("Scheme Item Name", text: Binding(
+                            get: { editedSchemaItem?.name ?? "" },
+                            set: {
+                                editedSchemaItem?.name = $0
+                                isSchemaItemEdited = true
+                            }
+                        )).autocapitalization(.none)
+                    }
+                    Section(header: Text("Initiator")) {
+                        TextField("Enter Initiator", text: Binding(
+                            get: { editedSchemaItem?.initiator ?? "" },
+                            set: {
+                                editedSchemaItem?.initiator = $0
+                                isSchemaItemEdited = true
+                            }
+                        )).autocapitalization(.none)
+                    }
+                    Section(header: Text("Terminator")) {
+                        TextField("Enter Initiator", text: Binding(
+                            get: { editedSchemaItem?.terminator ?? "" },
+                            set: {
+                                editedSchemaItem?.terminator = $0
+                                isSchemaItemEdited = true
+                            }
+                        )).autocapitalization(.none)
+                    }
+                    Section(header: Text("Delimiter")) {
+                        TextField("Enter Initiator", text: Binding(
+                            get: { editedSchemaItem?.delimiter ?? "" },
+                            set: {
+                                editedSchemaItem?.delimiter = $0
+                                isSchemaItemEdited = true
+                            }
+                        )).autocapitalization(.none)
+                    }
+                    Section(header: Text("Type")) {
+                        TextField("Enter Initiator", text: Binding(
+                            get: { editedSchemaItem?.type ?? "" },
+                            set: {
+                                editedSchemaItem?.type = $0
+                                isSchemaItemEdited = true
+                            }
+                        )).autocapitalization(.none)
+                    }
+                }
             }
             Spacer()
-        }.padding()
+        }
+        .padding()
+        .onChange(of: sharedState.selectedSchemaItemId, initial: true) { old, selectedSchemaItemId  in
+            if let transformations = store.userDTO?.teams?["response"]?.transformations,
+               let transformationId = sharedState.transformationId,
+               let transformation = transformations[transformationId],
+               let schemaItemId = selectedSchemaItemId,
+               let schemaItem = transformation.schemaItems[schemaItemId]
+            {
+                editedSchemaItem = schemaItem
+            }
+        }
     }
 }

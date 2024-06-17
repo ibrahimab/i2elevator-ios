@@ -76,7 +76,7 @@ struct CenterTopView: View {
                                   let cardIndex = sharedState.cardIndex,
                                   let cardType = sharedState.cardType,
                                   cardType == "out",
-                                  let outputItemId = sharedState.outputItemId,
+                                  let outputItemId = sharedState.selectedSchemaItemId,
                                   let expressionKeypathSegment = sharedState.expressionKeypathSegment
                         {
                             let value: [String: Any] = ["type": "placeholder"]
@@ -97,7 +97,7 @@ struct CenterTopView: View {
                    let cardType = sharedState.cardType,
                    cardType == "out",
                    let mapRules = outputs[cardIndex].mapRules,
-                   let outputItemId = sharedState.outputItemId
+                   let outputItemId = sharedState.selectedSchemaItemId
                 {
                     let mapRule = mapRules[outputItemId]
                     let expressionGrid = transformMapRuleToGrid(mapRule: mapRule, schemaItems: transformation.schemaItems, rowInd: &rowInd, transformation: transformation)
@@ -107,7 +107,8 @@ struct CenterTopView: View {
                             ForEach(v.columns, id: \.id) { column in
                                 if column.isBtnStyle == true {
                                     // If this parameter is const
-                                    if let parentExpression = column.parentExpression,
+                                    if v.indentation == v.indentation,
+                                       let parentExpression = column.parentExpression,
                                        let functionName = parentExpression.function?.name,
                                        let functionPropIndex = column.functionPropIndex,
                                        signatureCategories.first(where: { fp in
@@ -433,12 +434,12 @@ struct CenterTopView: View {
                     HStack {
                         Button(action: {
                         }) {
-                            Text("#apple")
+                            Text("#itx")
                         }
                         Button(action: {
                             
                         }) {
-                            Text("#banana")
+                            Text("#tutorial")
                         }
                         Spacer()
                         Button(action: {
