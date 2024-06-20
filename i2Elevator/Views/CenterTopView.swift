@@ -21,6 +21,7 @@ struct CenterTopView: View {
     @State private var filename: String?
     @State private var documentDataTypeTree: Data? = nil
     @State private var documentDataTransformation: Data? = nil
+    @State private var transformationName: String = ""
     
     func initializeTextViewVariables(inputExpectedOutputPairInd: Int?, transformationId: String) {
         if let inputExpectedOutputPairInd = inputExpectedOutputPairInd,
@@ -43,6 +44,13 @@ struct CenterTopView: View {
                     expectedOutputText = ""
                 }
             }
+        }
+    }
+    
+    func initializeTransformationName(transformationId: String) {
+        if let _transformationName = store.userDTO?.teams?["response"]?.transformations[transformationId]?.name
+        {
+            transformationName = _transformationName
         }
     }
     
@@ -357,7 +365,7 @@ struct CenterTopView: View {
                         }
                     }
                 }
-                if let str = sharedState.output?["output"] as? String {
+                if let str = sharedState.runTransformationReturn?["output"] as? String {
                     Section(header: Text("Output")) {
                         Text(str)
                     }
@@ -378,6 +386,14 @@ struct CenterTopView: View {
         } else if let transformationId = sharedState.transformationId
         {
             List {
+                Section(header: Text("Transformation Name")) {
+                    TextField("Enter Transformation Name", text: $transformationName)
+                        .onChange(of: transformationName) { old, new in
+                            let value: String = new
+                            let keyPath: [Any] = ["response", "transformations", transformationId, "name"]
+                            store.send(.setValue(keyPath: keyPath, value: value))
+                        }
+                }
                 Section(header: Text("External TypeTree updated at")) {
                     if let externalTypeTreeUpdatedAt = store.userDTO?.teams?["response"]?.transformations[transformationId]?.externalTypeTreeUpdatedAt
                     {
@@ -451,6 +467,9 @@ struct CenterTopView: View {
                 }
             }
             .padding()
+            .onChange(of: transformationId, initial: true) { old, new in
+                initializeTransformationName(transformationId: new)
+            }
         } else {
             List {
             }.padding()

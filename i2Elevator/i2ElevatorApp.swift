@@ -24,6 +24,10 @@ struct i2ElevatorApp: App {
     let store = Store(initialState: UserFeature.State()) {
         UserFeature()
     }
+
+    init() {
+        UITabBar.appearance().backgroundColor = UIColor.white.withAlphaComponent(0.1)
+    }
     
     var body: some Scene {
         WindowGroup {

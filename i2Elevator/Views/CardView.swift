@@ -27,7 +27,7 @@ struct CardView: View {
            let schemaItem = store.userDTO?.teams?["response"]?.transformations[transformationId]?.schemaItems[schemaItemId]
         {
             var ret: [IndentedSchemaItem] = [IndentedSchemaItem(indentation: 0, numOfChildren: schemaItem.children.count, schemaItemId: schemaItemId, rangeMax: nil, numOf1SWalkedBy: 0, reference: [[schemaItemId]])]
-            let a = transformSchemaEntityTreeToList(schemaItemId: cards[cardIndex].schemaItemId, userDTO: userDTO, transformationId: sharedState.transformationId, indentation: 1, numOf1SWalkedBy: 0, reference: [[]])
+            let a = transformSchemaEntityTreeToList(schemaItemId: cards[cardIndex].schemaItemId, userDTO: userDTO, shareState: sharedState, transformationId: sharedState.transformationId, indentation: 1, numOf1SWalkedBy: 0, reference: [[]])
             ret.append(contentsOf: a)
             return ret
         } else {
@@ -109,14 +109,8 @@ struct CardView: View {
                 }
             }
             Spacer()
-            // NOTE: Maybe this never executed as it is input card, and no marule on inputcards?
-            if let mapRule = cards[cardIndex].mapRules?[indentedSchemaItem.schemaItemId],
-               let objectrule = mapRule.objectrule,
-               let lastReference = objectrule.reference?.last?.last,
-               objectrule.type == "reference",
-               let targetName = transformation.schemaItems[lastReference]?.name
-            {
-                Text(targetName)
+            if let rightText = indentedSchemaItem.rightText {
+                Text(rightText)
             }
         }
     }

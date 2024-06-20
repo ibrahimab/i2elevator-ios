@@ -91,6 +91,7 @@ struct IndentedSchemaItem: Identifiable {
     //var disable: Bool
     var numOf1SWalkedBy: Int
     var reference: [[String]]
+    var rightText: String?
 }
 
 struct DraggedSchemaItem: Identifiable {

@@ -18,6 +18,7 @@
 		346593D92C08343D002FC118 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346593D82C08343D002FC118 /* DocumentPicker.swift */; };
 		346641402BA4251500D50E1D /* FunctionPropsTypes.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3466413F2BA4251500D50E1D /* FunctionPropsTypes.plist */; };
 		346641422BA432D200D50E1D /* ResetDragProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346641412BA432D200D50E1D /* ResetDragProperties.swift */; };
+		346BA55A2C242E410028A025 /* RunTransformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346BA5592C242E400028A025 /* RunTransformation.swift */; };
 		3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */; };
 		347293502B96D92D0033D38F /* CenterTopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472934F2B96D92D0033D38F /* CenterTopView.swift */; };
 		347293522B970A220033D38F /* TransformSchemaEntityTreeToList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347293512B970A220033D38F /* TransformSchemaEntityTreeToList.swift */; };
@@ -48,6 +49,7 @@
 		346593D82C08343D002FC118 /* DocumentPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		3466413F2BA4251500D50E1D /* FunctionPropsTypes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = FunctionPropsTypes.plist; sourceTree = "<group>"; };
 		346641412BA432D200D50E1D /* ResetDragProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResetDragProperties.swift; sourceTree = "<group>"; };
+		346BA5592C242E400028A025 /* RunTransformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunTransformation.swift; sourceTree = "<group>"; };
 		3472934D2B95B7320033D38F /* RandomAlphaNumeric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomAlphaNumeric.swift; sourceTree = "<group>"; };
 		3472934F2B96D92D0033D38F /* CenterTopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterTopView.swift; sourceTree = "<group>"; };
 		347293512B970A220033D38F /* TransformSchemaEntityTreeToList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformSchemaEntityTreeToList.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				344802852B889424008E5551 /* UpdateClient.swift */,
 				34A2C0072BD13BF9008634DD /* UpdateServer.swift */,
 				349370E42BB1822300B19A79 /* GetAllExpressionChildren.swift */,
+				346BA5592C242E400028A025 /* RunTransformation.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -236,6 +239,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				349370E52BB1822300B19A79 /* GetAllExpressionChildren.swift in Sources */,
+				346BA55A2C242E410028A025 /* RunTransformation.swift in Sources */,
 				349370E72BB187C800B19A79 /* CardSettingsView.swift in Sources */,
 				34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */,
 				3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */,

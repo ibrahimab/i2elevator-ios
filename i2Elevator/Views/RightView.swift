@@ -91,55 +91,10 @@ struct RightView: View {
             {
                 HStack {
                     Button(action: {
-                        let url = URL(string: "\(baseUrl)/transform")!
-                        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-                        components.queryItems = [
-                            URLQueryItem(name: "transformationId", value: transformationId)
-                        ]
-                        var request = URLRequest(url: components.url!)
-                        request.httpMethod = "POST"
-                        request.setValue("text/plain; charset=utf-8", forHTTPHeaderField: "Content-Type")
-                        
-                        // sharedState.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationInd]
-                        guard let inputExpectedOutputPairInd = sharedState.inputExpectedOutputPairInd else {
-                            return
-                        }
-                        
-                        guard let tid = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?[inputExpectedOutputPairInd].inputTextId else {
-                            return
-                        }
-                        guard var text = store.userDTO?.teams?["response"]?.texts?[tid] else {
-                            return
-                        }
-                        if !text.isEmpty {
-                            text.removeFirst()
-                        } else {
-                            // Handle the case where the string is empty
-                            return
-                        }
-                        request.httpBody = text.data(using: .utf8)
-                        //request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-                            do {
-                                if let data = data {
-                                    if let jsonDictionary = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                                        DispatchQueue.main.async {
-                                            // Access your dictionary data here
-                                            print(jsonDictionary)
-                                            sharedState.output = jsonDictionary
-                                        }
-                                    }
-                                }
-                            } catch {
-                                // Handle the error here
-                                print("Error: \(error)")
-                            }
-                        }
-                        task.resume()
+                        runTransformation(transformationId: transformationId, sharedState: sharedState, store: store)
                     }) {
                         Text("Run transformation")
                     }
-                    .buttonStyle(BorderedButtonStyle())
                     .buttonStyle(BorderedButtonStyle())
                     Spacer()
                 }
@@ -216,6 +171,26 @@ struct RightView: View {
                         )).autocapitalization(.none)
                     }
                 }
+                HStack {
+                    Button(action: {
+                        let encoder = JSONEncoder()
+                        if let jsonData = try? encoder.encode(editedSchemaItem),
+                           let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+                        {
+                            let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", schemaItemId]
+                            store.send(.setValue(keyPath: keyPath, value: dictionary))
+                        }
+                        isSchemaItemEdited = false
+                        runTransformation(transformationId: transformationId, sharedState: sharedState, store: store)
+                    }) {
+                        Text("Save")
+                    }
+                    .disabled(!isSchemaItemEdited)
+                    .foregroundColor(.white)
+                    .background(isSchemaItemEdited ? Color.blue : Color.gray)
+                    .cornerRadius(24)
+                    .buttonStyle(BorderedButtonStyle())
+                }.padding(.horizontal, 24)
             }
             Spacer()
         }

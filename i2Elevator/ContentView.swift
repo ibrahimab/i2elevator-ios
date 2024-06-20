@@ -28,7 +28,7 @@ class SharedState: ObservableObject {
     @Published var selectedFunctionName: String? = nil
     @Published var viewStack: [ViewDropData] = []
     @Published var viewToDrop: ViewDropData? = nil
-    @Published var output: [String : Any]?
+    @Published var runTransformationReturn: [String : Any]?
     @Published var menu: SelectedMenuItem = .transformationList
     @Published var inputExpectedOutputPairInd: Int? = nil
 }
@@ -118,6 +118,7 @@ struct ContentView: View {
                                             Spacer()
                                         }
                                         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                        .padding()
                                         ForEach(cards.indices, id: \.self) { index in
                                             Button(action: {
                                                 if sharedState.viewStack.firstIndex(where: { viewDropData in
@@ -137,6 +138,7 @@ struct ContentView: View {
                                             .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                                         }
                                     }
+                                    .background(Color.init(white: 0.35))
                                 }
                                 if let cards = subTransformations[subTransformationId]?.outputs {
                                     Section() {
@@ -145,6 +147,7 @@ struct ContentView: View {
                                             Spacer()
                                         }
                                         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                        .padding()
                                         ForEach(cards.indices, id: \.self) { index in
                                             Button(action: {
                                                 if sharedState.viewStack.firstIndex(where: { viewDropData in
@@ -164,6 +167,7 @@ struct ContentView: View {
                                             .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                                         }
                                     }
+                                    .background(Color.init(white: 0.35))
                                 }
                             }
                             .listStyle(PlainListStyle())
@@ -373,8 +377,7 @@ struct ContentView: View {
                         {
                             HStack {
                                 Button(action: {
-                                    if sharedState.inputExpectedOutputPairInd != nil {
-                                        sharedState.inputExpectedOutputPairInd = nil
+                                    if sharedState.menu == .inputExpectedOutputPair || sharedState.menu == .tags {
                                         sharedState.menu = .transformation
                                     } else {
                                         sharedState.menu = .transformationList
@@ -436,7 +439,11 @@ struct ContentView: View {
                                                 HStack {
                                                     Text("\(index)")
                                                     Spacer()
-                                                    Image(systemName: "chevron.right")
+                                                    if index == sharedState.inputExpectedOutputPairInd {
+                                                        Image(systemName: "checkmark")
+                                                            .foregroundColor(.blue)
+                                                    }
+                                                    Image(systemName: "chevron.right").padding(.leading, 8)
                                                 }
                                             }
                                             .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
@@ -567,7 +574,7 @@ struct ContentView: View {
                             }
                             ScrollView {
                                 let availableWidth = geometry.size.width - 300 // Subtract width of other view
-                                let columnCount = max(Int(availableWidth / 150), 1) // Adjust item width as needed
+                                let columnCount = max(Int(availableWidth / 300), 1) // Adjust item width as needed
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: columnCount), spacing: 10) {
                                     ForEach(transformations.keys.sorted(), id: \.self) { transformationId in
                                         if let transformation = transformations[transformationId] {
@@ -575,18 +582,31 @@ struct ContentView: View {
                                                 self.sharedState.transformationId = transformationId
                                                 sharedState.menu = .transformation
                                             }) {
-                                                VStack {
-                                                    Text(transformation.name)
-                                                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 20)
-                                                    //if let tags = transformation.tags {
-                                                    Text(["itx", "tutorial"] .map { "#\($0)" }.joined(separator: " ")) //tags
-                                                        .font(.caption)
-                                                        .foregroundColor(.yellow)
-                                                    //}
+                                                HStack {
+                                                    Image(systemName: "circle.hexagonpath")
+                                                        .padding()
+                                                    VStack {
+                                                        Text(transformation.name)
+                                                            .font(.headline)
+                                                            .multilineTextAlignment(.leading)
+                                                            .lineLimit(2)
+                                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                                            .fixedSize(horizontal: false, vertical: true)
+                                                        //if let tags = transformation.tags {
+                                                        Text(["itx", "tutorial"] .map { "#\($0)" }.joined(separator: " ")) //tags
+                                                            .font(.caption)
+                                                            .foregroundColor(.yellow)
+                                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                                        //}
+                                                    }
+                                                    Spacer()
                                                 }
-                                                .frame(width: 150, height: 100)
+                                                .frame(width: 300, height: 50)
                                             }
-                                            .background(Color.gray)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .fill(Color.gray)
+                                            )
                                             .buttonBorderShape(.roundedRectangle(radius: 10))
                                         }
                                     }
