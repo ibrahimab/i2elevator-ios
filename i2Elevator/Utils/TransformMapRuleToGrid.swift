@@ -32,8 +32,6 @@ struct ExpressionColumn: Identifiable {
 func transformMapRuleToGrid(mapRule: MapRule?, schemaItems: [String: SchemaItem]?, rowInd: inout Int, transformation: Transformation?) -> [ExpressionRow] {
     if let subTransformationId = mapRule?.subTransformationId,
        let subTransformation = transformation?.subTransformations[subTransformationId]
-       //let lastReference = mapRule.objectrule?.reference?.last?.last,
-       //let displayName = schemaItems?[lastReference]?.displayName
     {
         var jj = ""
         var i = 0
@@ -90,7 +88,7 @@ func transformExpressionsToGrid(
         rowInd = rowInd + 1
         rows.append(zz)
         for (index, element) in functionProps.props.enumerated() {
-            let _rows = transformExpressionsToGrid(
+            var _rows = transformExpressionsToGrid(
                 expression: element,
                 indentation: indentation + 1,
                 keyPath: keyPath + ["function", "props", index],
@@ -99,6 +97,9 @@ func transformExpressionsToGrid(
                 rowInd: &rowInd,
                 functionPropIndex: index
             )
+            if index < functionProps.props.count - 1 {
+                _rows[_rows.count - 1].columns.append(ExpressionColumn(text: ",", index: _rows.count - 1, isBtnStyle: false, expressionKeypathSegment: keyPath))
+            }
             rows.append(contentsOf: _rows)
             rowInd = rowInd + 1
         }
@@ -107,13 +108,40 @@ func transformExpressionsToGrid(
             rows[3].columns.append(contentsOf: rows[4].columns)
             rows[3].columns[2].index = 3
             rows.remove(at: 4)
-        }
-        for (rowIndex, row) in rows.enumerated() {
-            if rowIndex >= 1 && rowIndex < rows.count - 1 {
-                rows[rowIndex].columns.append(ExpressionColumn(text: ",", index: rows[rowIndex].columns.count + 1, isBtnStyle: false, expressionKeypathSegment: keyPath))
-            }
+        } else if functionProps.name == "GROUP" {
+            var columns1: [ExpressionColumn] = []
+            columns1.append(ExpressionColumn(text: "Add reference or expression to the index", index: 1, isBtnStyle: true, expressionKeypathSegment: keyPath + ["function", "props", 1, "array"]))
+            let zz1 = ExpressionRow(index: rowInd, indentation: indentation + 1, columns: columns1)
+            rowInd = rowInd + 1
+            rows.append(zz1)
         }
         let vv2 = ExpressionColumn(text: ")", index: 3, isBtnStyle: false, expressionKeypathSegment: keyPath)
+        let zz3 = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv2])
+        rows.append(zz3)
+    } else if expression?.type == "array",
+              let arrayItems = expression?.array
+    {
+        columns.append(ExpressionColumn(text: "[", index: 1, isBtnStyle: false, expressionKeypathSegment: keyPath))
+        let zz = ExpressionRow(index: rowInd, indentation: indentation, columns: columns)
+        rowInd = rowInd + 1
+        rows.append(zz)
+        for (index, element) in arrayItems.enumerated() {
+            var _rows = transformExpressionsToGrid(
+                expression: element,
+                indentation: indentation + 1,
+                keyPath: keyPath + ["array", index],
+                schemaItems: schemaItems,
+                parentExpression: expression,
+                rowInd: &rowInd,
+                functionPropIndex: functionPropIndex
+            )
+            if index < arrayItems.count - 1 {
+                _rows[_rows.count - 1].columns.append(ExpressionColumn(text: ",", index: _rows.count - 1, isBtnStyle: false, expressionKeypathSegment: keyPath))
+            }
+            rows.append(contentsOf: _rows)
+            rowInd = rowInd + 1
+        }
+        let vv2 = ExpressionColumn(text: "]", index: 3, isBtnStyle: false, expressionKeypathSegment: keyPath)
         let zz3 = ExpressionRow(index: rowInd, indentation: indentation, columns: [vv2])
         rows.append(zz3)
     } else if expression?.type == "reference", let lastReference = expression?.reference?.last?.last {

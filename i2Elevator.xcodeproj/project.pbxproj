@@ -25,6 +25,7 @@
 		347351B82B8CB4C7005B949A /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347351B72B8CB4C7005B949A /* Models.swift */; };
 		347351BA2B8CC3E1005B949A /* UserDTO.plist in Resources */ = {isa = PBXBuildFile; fileRef = 347351B92B8CC3E1005B949A /* UserDTO.plist */; };
 		347F48282B99C83C00F73DF6 /* RightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347F48272B99C83C00F73DF6 /* RightView.swift */; };
+		347F6D4E2C3675A500F0332B /* GetLastFunctionSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347F6D4D2C3675A500F0332B /* GetLastFunctionSignature.swift */; };
 		349370E52BB1822300B19A79 /* GetAllExpressionChildren.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349370E42BB1822300B19A79 /* GetAllExpressionChildren.swift */; };
 		349370E72BB187C800B19A79 /* CardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349370E62BB187C800B19A79 /* CardSettingsView.swift */; };
 		34A2C0082BD13BF9008634DD /* UpdateServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A2C0072BD13BF9008634DD /* UpdateServer.swift */; };
@@ -56,6 +57,7 @@
 		347351B72B8CB4C7005B949A /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		347351B92B8CC3E1005B949A /* UserDTO.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = UserDTO.plist; sourceTree = "<group>"; };
 		347F48272B99C83C00F73DF6 /* RightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightView.swift; sourceTree = "<group>"; };
+		347F6D4D2C3675A500F0332B /* GetLastFunctionSignature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetLastFunctionSignature.swift; sourceTree = "<group>"; };
 		349370E42BB1822300B19A79 /* GetAllExpressionChildren.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAllExpressionChildren.swift; sourceTree = "<group>"; };
 		349370E62BB187C800B19A79 /* CardSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardSettingsView.swift; sourceTree = "<group>"; };
 		34A2C0072BD13BF9008634DD /* UpdateServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateServer.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */,
 				347293512B970A220033D38F /* TransformSchemaEntityTreeToList.swift */,
 				344802852B889424008E5551 /* UpdateClient.swift */,
+				347F6D4D2C3675A500F0332B /* GetLastFunctionSignature.swift */,
 				34A2C0072BD13BF9008634DD /* UpdateServer.swift */,
 				349370E42BB1822300B19A79 /* GetAllExpressionChildren.swift */,
 				346BA5592C242E400028A025 /* RunTransformation.swift */,
@@ -251,6 +254,7 @@
 				34BFA6562C104A180096D3AE /* ConstantTextField.swift in Sources */,
 				347293502B96D92D0033D38F /* CenterTopView.swift in Sources */,
 				344802862B889424008E5551 /* UpdateClient.swift in Sources */,
+				347F6D4E2C3675A500F0332B /* GetLastFunctionSignature.swift in Sources */,
 				346641422BA432D200D50E1D /* ResetDragProperties.swift in Sources */,
 				347293522B970A220033D38F /* TransformSchemaEntityTreeToList.swift in Sources */,
 				347351B82B8CB4C7005B949A /* Models.swift in Sources */,

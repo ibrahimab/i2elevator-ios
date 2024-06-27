@@ -58,7 +58,7 @@ func transformSchemaEntityTreeToList(
                 rightText = nextContainer
             }
         }
-        ret.append(IndentedSchemaItem(indentation: indentation, numOfChildren: child.children.count, schemaItemId: k, rangeMax: v.rangeMax, numOf1SWalkedBy: numOf1SWalkedBy, reference: newReference, rightText: rightText))
+        ret.append(IndentedSchemaItem(indentation: indentation, numOfChildren: child.children.count, schemaItemId: k, parentSchemaItemId: schemaItemId, rangeMax: v.rangeMax, numOf1SWalkedBy: numOf1SWalkedBy, reference: newReference, rightText: rightText))
         if v.rangeMax == "S" {
             newReference.append([])
         }

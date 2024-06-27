@@ -25,7 +25,7 @@ struct Transformation: Codable {
     var name: String
     var subTransformations: [String: SubTransformation]
     var schemaItems: [String: SchemaItem]
-    var inputExpectedOutputTextIdPairs: [InputExpectedOutputTextIdPair]?
+    var inputExpectedOutputTextIdPairs: [String: InputExpectedOutputTextIdPair]?
     var externalTypeTree: String?
     var externalTypeTreeUpdatedAt: String?
     var externalTransformation: String?
@@ -49,6 +49,7 @@ struct SchemaItem: Codable {
 
 public class SchemaItemRelationship: Codable {
     var rangeMax: String
+    var rowNum: Int?
 }
 
 struct SubTransformation: Codable {
@@ -73,6 +74,8 @@ struct Expression: Codable {
     var reference: [[String]]?
     var rangeMax: String?
     var constant: String?
+    var object: [String: Expression]?
+    var array: [Expression]?
 }
 
 struct Function: Codable  {
@@ -84,6 +87,7 @@ struct IndentedSchemaItem: Identifiable {
     var indentation: Int
     var numOfChildren: Int
     var schemaItemId: String
+    var parentSchemaItemId: String?
     var rangeMax: String?
     var id: String {
         schemaItemId
@@ -110,7 +114,7 @@ struct SignatureCategory: Codable {
     var name: String
     var description: String?
     var tabItemImage: String
-    var functions: [String: [[SignatureItemVariation]]]
+    var functions: [String: [SignatureProp]]
     var id: String {
         name
     }
@@ -119,6 +123,14 @@ struct SignatureCategory: Codable {
 struct SignatureItemVariation: Codable {
     var type: String
     var rangeMax: String?
+    var id: String {
+        type
+    }
+}
+
+struct SignatureProp: Codable {
+    var type: String
+    var variations: [SignatureItemVariation]
     var id: String {
         type
     }

@@ -19,10 +19,10 @@ func runTransformation(transformationId: String, sharedState: SharedState, store
     request.setValue("text/plain; charset=utf-8", forHTTPHeaderField: "Content-Type")
     
     // sharedState.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationInd]
-    guard let inputExpectedOutputPairInd = sharedState.inputExpectedOutputPairInd else {
+    guard let inputExpectedOutputPairId = sharedState.inputExpectedOutputPairId ?? store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.first?.key else {
         return
     }
-    guard let tid = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?[inputExpectedOutputPairInd].inputTextId else {
+    guard let tid = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?[inputExpectedOutputPairId]?.inputTextId else {
         return
     }
     guard var text = store.userDTO?.teams?["response"]?.texts?[tid] else {

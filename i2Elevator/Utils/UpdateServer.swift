@@ -18,7 +18,7 @@ func updateServer(value: Any?, keyPath: [Any], operation: String) {
         "value": value,
         "keyPath": keyPath,
         "operation": operation,
-        "version": 1
+        "version": 2
     ]
     guard let url = URL(string: "\(baseUrl)/update") else {
         print("Invalid URL")

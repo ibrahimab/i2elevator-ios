@@ -23,6 +23,9 @@ class SharedState: ObservableObject {
     @Published var schemaItemsOnScratchpad: [DraggedSchemaItem] = []
     @Published var functionCategoryIndex: Int = 0
     @Published var selectedSchemaItemId: String? = nil
+    @Published var selectedParentSchemaItemId: String? = nil
+    
+    // NOTE: Is this used?
     @Published var childSchemaItemId: String? = nil
     @Published var isFunctionCatalogCombined: Bool = true
     @Published var selectedFunctionName: String? = nil
@@ -30,7 +33,7 @@ class SharedState: ObservableObject {
     @Published var viewToDrop: ViewDropData? = nil
     @Published var runTransformationReturn: [String : Any]?
     @Published var menu: SelectedMenuItem = .transformationList
-    @Published var inputExpectedOutputPairInd: Int? = nil
+    @Published var inputExpectedOutputPairId: String? = nil
 }
 
 enum SelectedMenuItem {
@@ -431,15 +434,15 @@ struct ContentView: View {
                                     .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                                     .padding()
                                     if let inputExpectedOutputTextIdPairs = transformation.inputExpectedOutputTextIdPairs {
-                                        ForEach(Array(inputExpectedOutputTextIdPairs.enumerated()), id: \.element.inputTextId) { index, inputExpectedOutputTextIdPair in
+                                        ForEach(Array(inputExpectedOutputTextIdPairs.keys.sorted()), id: \.self) { key in
                                             Button(action: {
                                                 self.sharedState.menu = .inputExpectedOutputPair
-                                                self.sharedState.inputExpectedOutputPairInd = index
+                                                self.sharedState.inputExpectedOutputPairId = key
                                             }) {
                                                 HStack {
-                                                    Text("\(index)")
+                                                    Text("\(key)")
                                                     Spacer()
-                                                    if index == sharedState.inputExpectedOutputPairInd {
+                                                    if key == sharedState.inputExpectedOutputPairId {
                                                         Image(systemName: "checkmark")
                                                             .foregroundColor(.blue)
                                                     }
@@ -581,6 +584,7 @@ struct ContentView: View {
                                             Button(action: {
                                                 self.sharedState.transformationId = transformationId
                                                 sharedState.menu = .transformation
+                                                runTransformation(transformationId: transformationId, sharedState: sharedState, store: store)
                                             }) {
                                                 HStack {
                                                     Image(systemName: "circle.hexagonpath")
@@ -601,7 +605,7 @@ struct ContentView: View {
                                                     }
                                                     Spacer()
                                                 }
-                                                .frame(width: 300, height: 50)
+                                                .frame(width: 300, height: 64)
                                             }
                                             .background(
                                                 RoundedRectangle(cornerRadius: 10)
@@ -725,7 +729,8 @@ struct ContentView: View {
                 let url = URL(string: "\(baseUrl)/auth/me")! //https://datamapper.vercel.app/api/auth/me"
                 var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
                 components.queryItems = []
-                let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkrDoW5vcyIsInVzZXJJZCI6IjY2MmYzYWE2ZDdiYWEyZGY5MjExODJiNCIsImVtYWlsIjoia3Vrb2RhamFub3NAaWNsb3VkLmNvbSIsImlhdCI6MTcxODAwMTgyMiwiZXhwIjoxNzIwNTkzODIyfQ.jsxEJEyBILuqq3bOJg9mOdA5guchXj4iVXsuYUxLnJg"
+                /*let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkrDoW5vcyIsInVzZXJJZCI6IjY2MmYzYWE2ZDdiYWEyZGY5MjExODJiNCIsImVtYWlsIjoia3Vrb2RhamFub3NAaWNsb3VkLmNvbSIsImlhdCI6MTcxODAwMTgyMiwiZXhwIjoxNzIwNTkzODIyfQ.jsxEJEyBILuqq3bOJg9mOdA5guchXj4iVXsuYUxLnJg"*/
+                let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IkrDoW5vcyIsInVzZXJJZCI6IjY2MmYzYWE2ZDdiYWEyZGY5MjExODJiNCIsImVtYWlsIjoia3Vrb2RhamFub3NAaWNsb3VkLmNvbSIsImlhdCI6MTcyMDg0MTM0MCwiZXhwIjoxNzIzNDMzMzQwfQ.6Q5Hf0g9d1PB4xpm2HpVdXoy_u5aPrSQpQ6BPNwwl4o"
                 var request = URLRequest(url: components.url!)
                 request.httpMethod = "GET"
                 request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")

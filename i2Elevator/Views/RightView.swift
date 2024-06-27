@@ -22,6 +22,9 @@ struct RightView: View {
     @State private var editedSchemaItem: SchemaItem? = nil
     @State private var editedSchemaItemId: String? = nil
     @State private var isSchemaItemEdited: Bool = false
+    @State private var isSchemaItemRelationshipEdited: Bool = false
+    @State private var editedParentSchemaItemId: String? = nil
+    @State private var editedSchemaItemRelationship: SchemaItemRelationship? = nil
     
     var body: some View {
         VStack {
@@ -30,11 +33,11 @@ struct RightView: View {
             {
                 HStack {
                     Button(action: {
+                        let id = randomAlphaNumeric(length: 4)
                         let inputTextId = randomAlphaNumeric(length: 4)
                         let expectedOutputTextId = randomAlphaNumeric(length: 4)
                         let value: [String: Any] = ["inputTextId": inputTextId, "expectedOutputTextId": expectedOutputTextId]
-                        let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count ?? 0
-                        let keyPath: [Any] = ["response", "transformations", transformationId, "inputExpectedOutputTextIdPairs", c]
+                        let keyPath: [Any] = ["response", "transformations", transformationId, "inputExpectedOutputTextIdPairs", id]
                         store.send(.setValue(keyPath: keyPath, value: value))
                     }) {
                         Text("Create input - expected output pair")
@@ -86,6 +89,18 @@ struct RightView: View {
                     }
                     Spacer()
                 }
+                HStack {
+                    Button(action: {
+                        let keyPath: [Any] = ["response", "transformations", transformationId]
+                        store.send(.removeKey(keyPath: keyPath))
+                        sharedState.transformationId = nil
+                        sharedState.menu = .transformationList
+                    }) {
+                        Text("Delete transformation")
+                    }
+                    .buttonStyle(BorderedButtonStyle())
+                    Spacer()
+                }
             } else if let transformationId = sharedState.transformationId,
                       sharedState.menu == .inputExpectedOutputPair
             {
@@ -124,70 +139,131 @@ struct RightView: View {
                         }
                     }
                 }
-                List {
-                    Section(header: Text("Scheme Item Name")) {
-                        TextField("Scheme Item Name", text: Binding(
-                            get: { editedSchemaItem?.name ?? "" },
-                            set: {
-                                editedSchemaItem?.name = $0
-                                isSchemaItemEdited = true
+                VStack {
+                    HStack {
+                        Button(action: {
+                            guard let selectedSchemaItemId = sharedState.selectedSchemaItemId else {
+                                return
                             }
-                        )).autocapitalization(.none)
-                    }
-                    Section(header: Text("Initiator")) {
-                        TextField("Enter Initiator", text: Binding(
-                            get: { editedSchemaItem?.initiator ?? "" },
-                            set: {
-                                editedSchemaItem?.initiator = $0
-                                isSchemaItemEdited = true
+                            guard let schemaItem = transformation.schemaItems[selectedSchemaItemId] else {
+                                return
                             }
-                        )).autocapitalization(.none)
-                    }
-                    Section(header: Text("Terminator")) {
-                        TextField("Enter Initiator", text: Binding(
-                            get: { editedSchemaItem?.terminator ?? "" },
-                            set: {
-                                editedSchemaItem?.terminator = $0
-                                isSchemaItemEdited = true
-                            }
-                        )).autocapitalization(.none)
-                    }
-                    Section(header: Text("Delimiter")) {
-                        TextField("Enter Initiator", text: Binding(
-                            get: { editedSchemaItem?.delimiter ?? "" },
-                            set: {
-                                editedSchemaItem?.delimiter = $0
-                                isSchemaItemEdited = true
-                            }
-                        )).autocapitalization(.none)
-                    }
-                    Section(header: Text("Type")) {
-                        TextField("Enter Initiator", text: Binding(
-                            get: { editedSchemaItem?.type ?? "" },
-                            set: {
-                                editedSchemaItem?.type = $0
-                                isSchemaItemEdited = true
-                            }
-                        )).autocapitalization(.none)
+                            let schemaItemId = randomAlphaNumeric(length: 4)
+                            let value: [String: Any] = ["name": "New schema item",
+                                                        "children": [:]]
+                            let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", schemaItemId]
+                            store.send(.setValue(keyPath: keyPath, value: value))
+                            let value2: [String: Any] = ["rangeMax": "1", "rowNum": schemaItem.children.count + 1]
+                            let keyPath2: [Any] = ["response", "transformations", transformationId, "schemaItems", selectedSchemaItemId, "children", schemaItemId]
+                            store.send(.setValue(keyPath: keyPath2, value: value2))
+                            sharedState.selectedParentSchemaItemId = sharedState.selectedSchemaItemId
+                            sharedState.selectedSchemaItemId = schemaItemId
+                        }) {
+                            Text("Add child schema item")
+                        }
+                        .buttonStyle(BorderedButtonStyle())
+                        Spacer()
+                    }.padding()
+                    List {
+                        Section(header: Text("Scheme Item Name")) {
+                            TextField("Scheme Item Name", text: Binding(
+                                get: { editedSchemaItem?.name ?? "" },
+                                set: {
+                                    editedSchemaItem?.name = $0
+                                    isSchemaItemEdited = true
+                                }
+                            )).autocapitalization(.none)
+                        }
+                        Section(header: Text("Initiator")) {
+                            TextField("Enter Initiator", text: Binding(
+                                get: { editedSchemaItem?.initiator ?? "" },
+                                set: {
+                                    editedSchemaItem?.initiator = $0
+                                    isSchemaItemEdited = true
+                                }
+                            )).autocapitalization(.none)
+                        }
+                        Section(header: Text("Terminator")) {
+                            TextField("Enter Initiator", text: Binding(
+                                get: { editedSchemaItem?.terminator ?? "" },
+                                set: {
+                                    editedSchemaItem?.terminator = $0
+                                    isSchemaItemEdited = true
+                                }
+                            )).autocapitalization(.none)
+                        }
+                        Section(header: Text("Delimiter")) {
+                            TextField("Enter Initiator", text: Binding(
+                                get: { editedSchemaItem?.delimiter ?? "" },
+                                set: {
+                                    editedSchemaItem?.delimiter = $0
+                                    isSchemaItemEdited = true
+                                }
+                            )).autocapitalization(.none)
+                        }
+                        Section(header: Text("Type")) {
+                            TextField("Enter Initiator", text: Binding(
+                                get: { editedSchemaItem?.type ?? "" },
+                                set: {
+                                    editedSchemaItem?.type = $0
+                                    isSchemaItemEdited = true
+                                }
+                            )).autocapitalization(.none)
+                        }
+                        Section(header: Text("Cardinality")) {
+                            TextField("1 or S", text: Binding(
+                                get: { editedSchemaItemRelationship?.rangeMax ?? "1" },
+                                set: {
+                                    editedSchemaItemRelationship?.rangeMax = $0
+                                    isSchemaItemRelationshipEdited = true
+                                }
+                            )).autocapitalization(.none)
+                        }
+                        Section(header: Text("Row Number")) {
+                            TextField("1", text: Binding(
+                                get: { "\(editedSchemaItemRelationship?.rowNum ?? 1)"},
+                                set: {
+                                    if let ii = Int($0) {
+                                        editedSchemaItemRelationship?.rowNum = ii
+                                        isSchemaItemRelationshipEdited = true
+                                    } else {
+                                        print("Conversion failed")
+                                    }
+                                }
+                            )).autocapitalization(.none)
+                        }
                     }
                 }
                 HStack {
                     Button(action: {
                         let encoder = JSONEncoder()
-                        if let jsonData = try? encoder.encode(editedSchemaItem),
-                           let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-                        {
-                            let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", schemaItemId]
-                            store.send(.setValue(keyPath: keyPath, value: dictionary))
+                        if isSchemaItemEdited {
+                            if let jsonData = try? encoder.encode(editedSchemaItem),
+                               let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+                            {
+                                let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", schemaItemId]
+                                store.send(.setValue(keyPath: keyPath, value: dictionary))
+                            }
+                            isSchemaItemEdited = false
                         }
-                        isSchemaItemEdited = false
+                        if isSchemaItemRelationshipEdited,
+                           let selectedParentSchemaItemId = sharedState.selectedParentSchemaItemId
+                        {
+                            if let jsonData = try? encoder.encode(editedSchemaItemRelationship),
+                               let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+                            {
+                                let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", selectedParentSchemaItemId, "children", schemaItemId]
+                                store.send(.setValue(keyPath: keyPath, value: dictionary))
+                            }
+                            isSchemaItemRelationshipEdited = false
+                        }
                         runTransformation(transformationId: transformationId, sharedState: sharedState, store: store)
                     }) {
                         Text("Save")
                     }
-                    .disabled(!isSchemaItemEdited)
+                    .disabled(!isSchemaItemEdited && !isSchemaItemRelationshipEdited)
                     .foregroundColor(.white)
-                    .background(isSchemaItemEdited ? Color.blue : Color.gray)
+                    .background((isSchemaItemEdited || isSchemaItemRelationshipEdited) ? Color.blue : Color.gray)
                     .cornerRadius(24)
                     .buttonStyle(BorderedButtonStyle())
                 }.padding(.horizontal, 24)
@@ -203,6 +279,11 @@ struct RightView: View {
                let schemaItem = transformation.schemaItems[schemaItemId]
             {
                 editedSchemaItem = schemaItem
+                if let selectedParentSchemaItemId = sharedState.selectedParentSchemaItemId,
+                   let selectedParentSchemaItem = transformation.schemaItems[selectedParentSchemaItemId]
+                {
+                    editedSchemaItemRelationship = selectedParentSchemaItem.children[schemaItemId]
+                }
             }
         }
     }

@@ -23,13 +23,13 @@ struct CenterTopView: View {
     @State private var documentDataTransformation: Data? = nil
     @State private var transformationName: String = ""
     
-    func initializeTextViewVariables(inputExpectedOutputPairInd: Int?, transformationId: String) {
-        if let inputExpectedOutputPairInd = inputExpectedOutputPairInd,
-           let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
-           c > inputExpectedOutputPairInd,
+    func initializeTextViewVariables(inputExpectedOutputPairId: String?, transformationId: String) {
+        if let inputExpectedOutputPairId = inputExpectedOutputPairId,
+           //let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
+           //c > inputExpectedOutputPairId,
            let a = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs
         {
-            if let inputTextId = a[inputExpectedOutputPairInd].inputTextId
+            if let inputTextId = a[inputExpectedOutputPairId]?.inputTextId
             {
                 if let _inputText = store.userDTO?.teams?["response"]?.texts?[inputTextId] as? String {
                     inputText = String(_inputText.dropFirst())
@@ -37,7 +37,7 @@ struct CenterTopView: View {
                     inputText = ""
                 }
             }
-            if let expectedOutputTextId = a[inputExpectedOutputPairInd].expectedOutputTextId {
+            if let expectedOutputTextId = a[inputExpectedOutputPairId]?.expectedOutputTextId {
                 if let _expectedOutputText = store.userDTO?.teams?["response"]?.texts?[expectedOutputTextId] as? String {
                     expectedOutputText = String(_expectedOutputText.dropFirst())
                 } else {
@@ -113,6 +113,7 @@ struct CenterTopView: View {
                         HStack {
                             Spacer().frame(width: CGFloat(v.indentation) * 20.0)
                             ForEach(v.columns, id: \.id) { column in
+                                let lastFunctionSignature = getLastFunctionSignature(in: mapRule, withKeyPath: column.expressionKeypathSegment)
                                 if column.isBtnStyle == true {
                                     // If this parameter is const
                                     if v.indentation == v.indentation,
@@ -120,7 +121,7 @@ struct CenterTopView: View {
                                        let functionName = parentExpression.function?.name,
                                        let functionPropIndex = column.functionPropIndex,
                                        signatureCategories.first(where: { fp in
-                                           let ret = fp.functions[functionName]?[functionPropIndex].first(where: { signatureItemVariant in
+                                           let ret = fp.functions[functionName]?[functionPropIndex].variations.first(where: { signatureItemVariant in
                                                let ret = signatureItemVariant.type == "constant"
                                                return ret
                                            })
@@ -142,9 +143,11 @@ struct CenterTopView: View {
                                         .frame(width: 200)
                                         // Reference dropped onto a parameter of a function
                                     } else if let draggedSchemaItem = sharedState.draggedSchemaItem,
+                                              let mapRule = mapRule,
                                               let functionPropIndex = column.functionPropIndex,
-                                              let functionName = column.parentExpression?.function?.name,
-                                              signatureCategories[sharedState.functionCategoryIndex].functions[functionName]?[functionPropIndex].first(where: { propType in
+                                              let lastFunctionSignature = lastFunctionSignature,
+                                              functionPropIndex < lastFunctionSignature.count,
+                                              lastFunctionSignature[functionPropIndex].variations.first(where: { propType in
                                                   let ret = propType.type == "reference" && propType.rangeMax == draggedSchemaItem.rangeMax
                                                   return ret
                                               }) != nil
@@ -177,7 +180,7 @@ struct CenterTopView: View {
                                         
                                         // Function dropped
                                     } else if let newFunctionName = sharedState.draggedFunctionName,
-                                              let newFunctionType =  signatureCategories[sharedState.functionCategoryIndex].functions[newFunctionName],
+                                              let newFunctionTypeParams =  signatureCategories[sharedState.functionCategoryIndex].functions[newFunctionName],
                                               (column.functionPropIndex == nil || {
                                                   if let _ = column.functionPropIndex,
                                                      let _ = column.parentExpression?.function?.name/*,
@@ -214,9 +217,9 @@ struct CenterTopView: View {
                                                let prevFunctionPropCount =  column.expression?.function?.props.count
                                             {
                                                 // Copy elements from the original array to the resized array
-                                                for i in 0..<newFunctionType.count {
+                                                for i in 0..<newFunctionTypeParams.count {
                                                     if i < prevFunctionType.count,
-                                                       newFunctionType[i].first(where: { functionPropType in
+                                                       newFunctionTypeParams[i].variations.first(where: { functionPropType in
                                                            let ret = functionPropType.type == column.expression?.function?.props[i].type && functionPropType.rangeMax == column.expression?.function?.props[i].rangeMax
                                                            return ret
                                                        }) != nil,
@@ -224,13 +227,19 @@ struct CenterTopView: View {
                                                        let prevFunctionProp =  column.expression?.function?.props[i]
                                                     {
                                                         newProps.append(prevFunctionProp)
+                                                    } else if newFunctionTypeParams[i].type == "array" {
+                                                        newProps.append(Expression(type: "array", array: []))
                                                     } else {
                                                         newProps.append(Expression(type: "placeholder"))
                                                     }
                                                 }
                                             } else {
-                                                for _ in 0..<newFunctionType.count {
-                                                    newProps.append(Expression(type: "placeholder"))
+                                                for i in 0..<newFunctionTypeParams.count {
+                                                    if newFunctionTypeParams[i].type == "array" {
+                                                        newProps.append(Expression(type: "array", array: []))
+                                                    } else {
+                                                        newProps.append(Expression(type: "placeholder"))
+                                                    }
                                                 }
                                             }
                                             _expression?.function = Function(name: newFunctionName, props: newProps)
@@ -267,6 +276,15 @@ struct CenterTopView: View {
                                             /*expressionKeypathSegment = column.expressionKeypathSegment
                                              expressionColumn = column
                                              inputSchemaItemId = nil*/
+                                            
+                                            // TODO: Change later
+                                            if column.text == "Add reference or expression to the index" {
+                                                // Az array-hoz adjunk hozzá egy új expressiont, placeholder típussal
+                                                
+                                                let value: [String: Any] = ["type": "placeholder"]
+                                                let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", outputItemId, "objectrule"] +  column.expressionKeypathSegment
+                                                store.send(.push(keyPath: keyPath, value: value))
+                                            }
                                         }) {
                                             Text(column.text)
                                         }.onDrag {
@@ -335,14 +353,14 @@ struct CenterTopView: View {
             .padding()
         } else if let transformationId = sharedState.transformationId,
                   sharedState.menu == .inputExpectedOutputPair,
-                  let inputExpectedOutputPairInd = sharedState.inputExpectedOutputPairInd
+                  let inputExpectedOutputPairId = sharedState.inputExpectedOutputPairId
         {
             List {
-                if let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
-                   c > inputExpectedOutputPairInd,
-                   let a = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs
+                if //let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
+                   //c > inputExpectedOutputPairId,
+                   let inputExpectedOutputTextIdPairs = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs
                 {
-                    if let inputTextId = a[inputExpectedOutputPairInd].inputTextId {
+                    if let inputTextId = inputExpectedOutputTextIdPairs[inputExpectedOutputPairId]?.inputTextId {
                         Section(header: Text("Input")) {
                             TextEditor(text: $inputText)
                                 .frame(minHeight: 100)
@@ -353,7 +371,7 @@ struct CenterTopView: View {
                                 }
                         }
                     }
-                    if let expectedOutputTextId = a[inputExpectedOutputPairInd].expectedOutputTextId {
+                    if let expectedOutputTextId = inputExpectedOutputTextIdPairs[inputExpectedOutputPairId]?.expectedOutputTextId {
                         Section(header: Text("Expected output")) {
                             TextEditor(text: $expectedOutputText)
                                 .frame(minHeight: 100)
@@ -372,8 +390,8 @@ struct CenterTopView: View {
                 }
             }
             .padding()
-            .onChange(of: sharedState.inputExpectedOutputPairInd, initial: true) { old, inputExpectedOutputPairInd in
-                initializeTextViewVariables(inputExpectedOutputPairInd: inputExpectedOutputPairInd, transformationId: transformationId)
+            .onChange(of: sharedState.inputExpectedOutputPairId, initial: true) { old, inputExpectedOutputPairId in
+                initializeTextViewVariables(inputExpectedOutputPairId: inputExpectedOutputPairId, transformationId: transformationId)
             }
         } else if let transformationId = sharedState.transformationId,
                     self.sharedState.menu == .tags

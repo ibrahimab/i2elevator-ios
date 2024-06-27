@@ -37,12 +37,12 @@ struct CardView: View {
     
     func isIndentedItemEnabled(indentedSchemaItem: IndentedSchemaItem, outputItemId: String?, subTransformation: SubTransformation?) -> Bool {
         if let subTransformation = subTransformation {
-            if indentedSchemaItem.numOf1SWalkedBy < 1 {
+            if indentedSchemaItem.numOf1SWalkedBy < 100 { // TODO: Change it later, maybe to 1
                 return true
             } else if let outputItemId = outputItemId {
                 if let objectrule = subTransformation.outputs[0].mapRules?[outputItemId]?.objectrule,
                    objectrule.type == "function",
-                   objectrule.function?.name == "LOOKUP",
+                   (objectrule.function?.name == "LOOKUP" || objectrule.function?.name == "GROUP"),
                    indentedSchemaItem.numOf1SWalkedBy < 2
                 {
                     return true
@@ -209,10 +209,11 @@ struct CardView: View {
                         List {
                             ForEach(indentedSchemaItemList) { indentedSchemaItem in
                                 Button(action: {
-                                    if cardType == "out" && (indentedSchemaItem.numOf1SWalkedBy < 1) {
+                                    if cardType == "out" /*&& (indentedSchemaItem.numOf1SWalkedBy < 1)*/ {
                                         sharedState.cardType = cardType
                                         sharedState.cardIndex = cardIndex
                                         sharedState.selectedSchemaItemId = indentedSchemaItem.schemaItemId
+                                        sharedState.selectedParentSchemaItemId = indentedSchemaItem.parentSchemaItemId
                                     }
                                 }) {
                                     if cardType == "in",
@@ -229,11 +230,13 @@ struct CardView: View {
                                             }
                                             .onTapGesture {
                                                 sharedState.selectedSchemaItemId = indentedSchemaItem.schemaItemId
+                                                sharedState.selectedParentSchemaItemId = indentedSchemaItem.parentSchemaItemId
                                             }
                                     } else if cardType == "in" {
                                         inputCardItem(for: indentedSchemaItem, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
                                             .onTapGesture {
                                                 sharedState.selectedSchemaItemId = indentedSchemaItem.schemaItemId
+                                                sharedState.selectedParentSchemaItemId = indentedSchemaItem.parentSchemaItemId
                                             }
                                     } else if let _ = sharedState.draggedSchemaItem,
                                               cardType == "out",

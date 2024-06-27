@@ -18,6 +18,7 @@ struct UserFeature {
         case initialize(userDTO: UserDTO)
         case setValue(keyPath: [Any], value: Any?)
         case removeKey(keyPath: [Any])
+        case push(keyPath: [Any], value: Any?)
     }
     var body: some Reducer<State, Action> {
         Reduce { state, action in
@@ -30,6 +31,9 @@ struct UserFeature {
                 return .none
             case let .removeKey(keyPath):
                 state.userDTO = updateClient(userDTO: state.userDTO, value: nil, keyPath: keyPath, operation: "removeKey")
+                return .none
+            case let .push(keyPath, value):
+                state.userDTO = updateClient(userDTO: state.userDTO, value: value, keyPath: keyPath, operation: "push")
                 return .none
             }
         }
