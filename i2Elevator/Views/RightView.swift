@@ -175,7 +175,7 @@ struct RightView: View {
                             )).autocapitalization(.none)
                         }
                         Section(header: Text("Initiator")) {
-                            TextField("Enter Initiator", text: Binding(
+                            TextEditor(text: Binding(
                                 get: { editedSchemaItem?.initiator ?? "" },
                                 set: {
                                     editedSchemaItem?.initiator = $0
@@ -184,7 +184,7 @@ struct RightView: View {
                             )).autocapitalization(.none)
                         }
                         Section(header: Text("Terminator")) {
-                            TextField("Enter Initiator", text: Binding(
+                            TextField("Enter Terminator", text: Binding(
                                 get: { editedSchemaItem?.terminator ?? "" },
                                 set: {
                                     editedSchemaItem?.terminator = $0
@@ -193,7 +193,7 @@ struct RightView: View {
                             )).autocapitalization(.none)
                         }
                         Section(header: Text("Delimiter")) {
-                            TextField("Enter Initiator", text: Binding(
+                            TextField("Enter Delimiter", text: Binding(
                                 get: { editedSchemaItem?.delimiter ?? "" },
                                 set: {
                                     editedSchemaItem?.delimiter = $0
@@ -202,7 +202,7 @@ struct RightView: View {
                             )).autocapitalization(.none)
                         }
                         Section(header: Text("Type")) {
-                            TextField("Enter Initiator", text: Binding(
+                            TextField("Enter Type", text: Binding(
                                 get: { editedSchemaItem?.type ?? "" },
                                 set: {
                                     editedSchemaItem?.type = $0
@@ -233,6 +233,30 @@ struct RightView: View {
                             )).autocapitalization(.none)
                         }
                     }
+                    HStack {
+                        Button(action: {
+                            guard let selectedSchemaItemId = sharedState.selectedSchemaItemId else {
+                                return
+                            }
+                            guard let selectedParentSchemaItemId = sharedState.selectedParentSchemaItemId else {
+                                return
+                            }
+                            guard let schemaItem = transformation.schemaItems[selectedSchemaItemId] else {
+                                return
+                            }
+                            let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", selectedParentSchemaItemId, "children", selectedSchemaItemId]
+                            store.send(.removeKey(keyPath: keyPath))
+                            let keyPath2: [Any] = ["response", "transformations", transformationId, "schemaItems", selectedSchemaItemId]
+                            store.send(.removeKey(keyPath: keyPath2))
+                            // TODO: Navigate one up
+                            sharedState.selectedParentSchemaItemId = nil
+                            sharedState.selectedSchemaItemId = nil
+                        }) {
+                            Text("Remove child schema item")
+                        }
+                        .buttonStyle(BorderedButtonStyle())
+                        Spacer()
+                    }.padding()
                 }
                 HStack {
                     Button(action: {

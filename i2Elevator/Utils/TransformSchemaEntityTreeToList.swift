@@ -23,7 +23,11 @@ func transformSchemaEntityTreeToList(
         return []
     }
     var ret: [IndentedSchemaItem] = []
-    for (k, v) in schemaItem.children.sorted(by: { $0.key < $1.key }) {
+    for (k, v) in schemaItem.children.sorted(by: {
+        let a = $0.value.rowNum ?? 1 // TODO: Make default 1
+        let b = $1.value.rowNum ?? 1
+        return a < b
+    }) {
         guard let child = userDTO.teams?["response"]?.transformations[transformationId]?.schemaItems[k] else {
             continue
         }
@@ -51,11 +55,14 @@ func transformSchemaEntityTreeToList(
                         container = nextContainer
                     }
                 }
+                if i == 0, subReference.count == 0, let _c = container as? [String: Any] {
+                    container = _c.values.first
+                }
             }
             if let _container = container as? [String: Any],
                let nextContainer = _container[k] as? String
             {
-                rightText = nextContainer
+                rightText = String(nextContainer.prefix(10))
             }
         }
         ret.append(IndentedSchemaItem(indentation: indentation, numOfChildren: child.children.count, schemaItemId: k, parentSchemaItemId: schemaItemId, rangeMax: v.rangeMax, numOf1SWalkedBy: numOf1SWalkedBy, reference: newReference, rightText: rightText))
