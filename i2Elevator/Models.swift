@@ -50,12 +50,14 @@ struct SchemaItem: Codable {
 public class SchemaItemRelationship: Codable {
     var rangeMax: String
     var rowNum: Int?
+    var delimiter: String?
 }
 
 struct SubTransformation: Codable {
     var name: String
     var inputs: [Card]
     var outputs: [Card]
+    var url: String?
 }
 
 struct Card: Codable {

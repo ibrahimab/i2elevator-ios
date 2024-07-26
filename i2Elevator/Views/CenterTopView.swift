@@ -17,6 +17,7 @@ struct CenterTopView: View {
     let store: StoreOf<UserFeature>
     @State private var inputText: String = ""
     @State private var expectedOutputText: String = ""
+    @State private var url: String = ""
     @State private var showDocumentPicker = false
     @State private var filename: String?
     @State private var documentDataTypeTree: Data? = nil
@@ -25,8 +26,6 @@ struct CenterTopView: View {
     
     func initializeTextViewVariables(inputExpectedOutputPairId: String?, transformationId: String) {
         if let inputExpectedOutputPairId = inputExpectedOutputPairId,
-           //let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
-           //c > inputExpectedOutputPairId,
            let a = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs
         {
             if let inputTextId = a[inputExpectedOutputPairId]?.inputTextId
@@ -47,6 +46,18 @@ struct CenterTopView: View {
         }
     }
     
+    func initializeTextViewVariables(subTransformationId: String?, transformationId: String) {
+        if let subTransformationId = subTransformationId,
+           let subTransformation = store.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationId]
+        {
+            if let _url = subTransformation.url {
+                url = _url
+            } else {
+                url = ""
+            }
+        }
+    }
+    
     func initializeTransformationName(transformationId: String) {
         if let _transformationName = store.userDTO?.teams?["response"]?.transformations[transformationId]?.name
         {
@@ -56,7 +67,27 @@ struct CenterTopView: View {
     
     var body: some View {
         var rowInd = 0
-        if let _ = sharedState.subTransformationId,
+        if let transformationId = sharedState.transformationId,
+           let subTransformationId = sharedState.subTransformationId,
+           sharedState.menu == .subTransformationDetails
+        {
+            List {
+                Section(header: Text("URL")) {
+                    TextEditor(text: $url)
+                        .frame(minHeight: 100)
+                        .onChange(of: url) { old, new in
+                            // TODO: Add save button
+                            let value: String = new
+                            let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "url"]
+                            store.send(.setValue(keyPath: keyPath, value: value))
+                        }
+                }
+            }
+            .padding()
+            .onChange(of: sharedState.subTransformationId, initial: true) { old, subTransformationId in
+                initializeTextViewVariables(subTransformationId: subTransformationId, transformationId: transformationId)
+            }
+        } else if let _ = sharedState.subTransformationId,
            sharedState.menu == .subTransformation
         {
             VStack {

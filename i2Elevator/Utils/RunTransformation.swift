@@ -19,22 +19,24 @@ func runTransformation(transformationId: String, sharedState: SharedState, store
     request.setValue("text/plain; charset=utf-8", forHTTPHeaderField: "Content-Type")
     
     // sharedState.userDTO?.teams?["response"]?.transformations[transformationId]?.subTransformations[subTransformationInd]
-    guard let inputExpectedOutputPairId = sharedState.inputExpectedOutputPairId ?? store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.first?.key else {
-        return
+    let inputExpectedOutputPairId = sharedState.inputExpectedOutputPairId ?? store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.first?.key
+    
+    var text: String? = nil
+    if let inputExpectedOutputPairId = inputExpectedOutputPairId {
+        let tid = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?[inputExpectedOutputPairId]?.inputTextId
+        if let tid = tid {
+            text = store.userDTO?.teams?["response"]?.texts?[tid]
+        }
+        if var mutableText = text, !mutableText.isEmpty {
+            mutableText.removeFirst()
+            text = mutableText
+        }
     }
-    guard let tid = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?[inputExpectedOutputPairId]?.inputTextId else {
-        return
+    if let text = text {
+        request.httpBody = text.data(using: .utf8)
     }
-    guard var text = store.userDTO?.teams?["response"]?.texts?[tid] else {
-        return
-    }
-    if !text.isEmpty {
-        text.removeFirst()
-    } else {
-        // Handle the case where the string is empty
-        return
-    }
-    request.httpBody = text.data(using: .utf8)
+
+        
     //request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
         do {

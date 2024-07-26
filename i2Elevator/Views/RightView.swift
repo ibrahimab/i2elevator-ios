@@ -201,6 +201,17 @@ struct RightView: View {
                                 }
                             )).autocapitalization(.none)
                         }
+                        if editedSchemaItemRelationship?.rangeMax == "S" {
+                            Section(header: Text("1-S Delimiter")) {
+                                TextField("Enter Delimiter", text: Binding(
+                                    get: { editedSchemaItemRelationship?.delimiter ?? "" },
+                                    set: {
+                                        editedSchemaItemRelationship?.delimiter = $0
+                                        isSchemaItemRelationshipEdited = true
+                                    }
+                                )).autocapitalization(.none)
+                            }
+                        }
                         Section(header: Text("Type")) {
                             TextField("Enter Type", text: Binding(
                                 get: { editedSchemaItem?.type ?? "" },

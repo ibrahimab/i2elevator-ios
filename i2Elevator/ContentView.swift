@@ -40,6 +40,7 @@ enum SelectedMenuItem {
     case transformationList
     case transformation
     case subTransformation
+    case subTransformationDetails
     case schemaItemList
     case schemaItem
     case inputExpectedOutputPair
@@ -89,7 +90,7 @@ struct ContentView: View {
                     .tag(2)
                 HStack {
                     VStack {
-                        if sharedState.menu == .subTransformation,
+                        if (sharedState.menu == .subTransformation || sharedState.menu == .subTransformationDetails),
                            let transformations = store.userDTO?.teams?["response"]?.transformations,
                            let transformationId = sharedState.transformationId,
                            let subTransformations = transformations[transformationId]?.subTransformations,
@@ -107,7 +108,7 @@ struct ContentView: View {
                                 TextField("Search", text: $searchText)
                                 Spacer()
                                 Button(action: {
-                                    
+                                    sharedState.menu = .subTransformationDetails
                                 }) {
                                     Image(systemName: "gear")
                                 } .clipShape(Circle())
