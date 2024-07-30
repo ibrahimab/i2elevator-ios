@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		342EF8F22C58E52900C76CA9 /* TransformationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342EF8F12C58E52900C76CA9 /* TransformationListView.swift */; };
+		342EF8F62C58F83B00C76CA9 /* TransformationMenuSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342EF8F52C58F83B00C76CA9 /* TransformationMenuSections.swift */; };
+		3433BFF22C5BA30900FBD34C /* CardContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3433BFF12C5BA30900FBD34C /* CardContentView.swift */; };
+		3433BFF42C5BAA1300FBD34C /* GenerateIndentedSchemaItemList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3433BFF32C5BAA1300FBD34C /* GenerateIndentedSchemaItemList.swift */; };
 		343B92B72B83DE35007F78A8 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; platformFilters = (xros, ); productRef = 343B92B62B83DE35007F78A8 /* RealityKitContent */; };
 		343B92B92B83DE35007F78A8 /* i2ElevatorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343B92B82B83DE35007F78A8 /* i2ElevatorApp.swift */; };
 		343B92BB2B83DE35007F78A8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343B92BA2B83DE35007F78A8 /* ContentView.swift */; };
 		343B92BD2B83DE37007F78A8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 343B92BC2B83DE37007F78A8 /* Assets.xcassets */; };
 		343B92C02B83DE37007F78A8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 343B92BF2B83DE37007F78A8 /* Preview Assets.xcassets */; };
-		343B92C92B83DF34007F78A8 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343B92C82B83DF34007F78A8 /* CardView.swift */; };
+		343B92C92B83DF34007F78A8 /* CardContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343B92C82B83DF34007F78A8 /* CardContainerView.swift */; };
 		344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344802822B8684D5008E5551 /* TopColorGradient.swift */; };
 		344802862B889424008E5551 /* UpdateClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344802852B889424008E5551 /* UpdateClient.swift */; };
 		346593D92C08343D002FC118 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346593D82C08343D002FC118 /* DocumentPicker.swift */; };
@@ -34,9 +38,14 @@
 		34A6897F2BD264190031E636 /* UserReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6897E2BD264190031E636 /* UserReducer.swift */; };
 		34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */; };
 		34BFA6562C104A180096D3AE /* ConstantTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BFA6552C104A180096D3AE /* ConstantTextField.swift */; };
+		34C80B292C634AA70027E057 /* RightContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C80B282C634AA70027E057 /* RightContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		342EF8F12C58E52900C76CA9 /* TransformationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformationListView.swift; sourceTree = "<group>"; };
+		342EF8F52C58F83B00C76CA9 /* TransformationMenuSections.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransformationMenuSections.swift; sourceTree = "<group>"; };
+		3433BFF12C5BA30900FBD34C /* CardContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardContentView.swift; sourceTree = "<group>"; };
+		3433BFF32C5BAA1300FBD34C /* GenerateIndentedSchemaItemList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateIndentedSchemaItemList.swift; sourceTree = "<group>"; };
 		343B92B12B83DE35007F78A8 /* i2Elevator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = i2Elevator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		343B92B52B83DE35007F78A8 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		343B92B82B83DE35007F78A8 /* i2ElevatorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = i2ElevatorApp.swift; sourceTree = "<group>"; };
@@ -44,7 +53,7 @@
 		343B92BC2B83DE37007F78A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		343B92BF2B83DE37007F78A8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		343B92C12B83DE37007F78A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		343B92C82B83DF34007F78A8 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		343B92C82B83DF34007F78A8 /* CardContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardContainerView.swift; sourceTree = "<group>"; };
 		344802822B8684D5008E5551 /* TopColorGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopColorGradient.swift; sourceTree = "<group>"; };
 		344802852B889424008E5551 /* UpdateClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateClient.swift; sourceTree = "<group>"; };
 		346593D82C08343D002FC118 /* DocumentPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
@@ -64,6 +73,7 @@
 		34A6897E2BD264190031E636 /* UserReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserReducer.swift; sourceTree = "<group>"; };
 		34ADF53C2B9EC0730050490E /* TransformMapRuleToGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformMapRuleToGrid.swift; sourceTree = "<group>"; };
 		34BFA6552C104A180096D3AE /* ConstantTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstantTextField.swift; sourceTree = "<group>"; };
+		34C80B282C634AA70027E057 /* RightContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,11 +145,15 @@
 			isa = PBXGroup;
 			children = (
 				349370E62BB187C800B19A79 /* CardSettingsView.swift */,
-				343B92C82B83DF34007F78A8 /* CardView.swift */,
+				343B92C82B83DF34007F78A8 /* CardContainerView.swift */,
 				347F48272B99C83C00F73DF6 /* RightView.swift */,
+				342EF8F12C58E52900C76CA9 /* TransformationListView.swift */,
 				3472934F2B96D92D0033D38F /* CenterTopView.swift */,
+				342EF8F52C58F83B00C76CA9 /* TransformationMenuSections.swift */,
 				344802822B8684D5008E5551 /* TopColorGradient.swift */,
 				34BFA6552C104A180096D3AE /* ConstantTextField.swift */,
+				3433BFF12C5BA30900FBD34C /* CardContentView.swift */,
+				34C80B282C634AA70027E057 /* RightContentView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -157,6 +171,7 @@
 				34A2C0072BD13BF9008634DD /* UpdateServer.swift */,
 				349370E42BB1822300B19A79 /* GetAllExpressionChildren.swift */,
 				346BA5592C242E400028A025 /* RunTransformation.swift */,
+				3433BFF32C5BAA1300FBD34C /* GenerateIndentedSchemaItemList.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -242,23 +257,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				349370E52BB1822300B19A79 /* GetAllExpressionChildren.swift in Sources */,
+				34C80B292C634AA70027E057 /* RightContentView.swift in Sources */,
 				346BA55A2C242E410028A025 /* RunTransformation.swift in Sources */,
 				349370E72BB187C800B19A79 /* CardSettingsView.swift in Sources */,
 				34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */,
 				3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */,
 				346593D92C08343D002FC118 /* DocumentPicker.swift in Sources */,
 				343B92BB2B83DE35007F78A8 /* ContentView.swift in Sources */,
+				342EF8F22C58E52900C76CA9 /* TransformationListView.swift in Sources */,
 				34A6897F2BD264190031E636 /* UserReducer.swift in Sources */,
 				34A2C0082BD13BF9008634DD /* UpdateServer.swift in Sources */,
+				342EF8F62C58F83B00C76CA9 /* TransformationMenuSections.swift in Sources */,
 				344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */,
 				34BFA6562C104A180096D3AE /* ConstantTextField.swift in Sources */,
 				347293502B96D92D0033D38F /* CenterTopView.swift in Sources */,
 				344802862B889424008E5551 /* UpdateClient.swift in Sources */,
 				347F6D4E2C3675A500F0332B /* GetLastFunctionSignature.swift in Sources */,
+				3433BFF22C5BA30900FBD34C /* CardContentView.swift in Sources */,
+				3433BFF42C5BAA1300FBD34C /* GenerateIndentedSchemaItemList.swift in Sources */,
 				346641422BA432D200D50E1D /* ResetDragProperties.swift in Sources */,
 				347293522B970A220033D38F /* TransformSchemaEntityTreeToList.swift in Sources */,
 				347351B82B8CB4C7005B949A /* Models.swift in Sources */,
-				343B92C92B83DF34007F78A8 /* CardView.swift in Sources */,
+				343B92C92B83DF34007F78A8 /* CardContainerView.swift in Sources */,
 				343B92B92B83DE35007F78A8 /* i2ElevatorApp.swift in Sources */,
 				347F48282B99C83C00F73DF6 /* RightView.swift in Sources */,
 			);

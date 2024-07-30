@@ -23,6 +23,15 @@ struct CenterTopView: View {
     @State private var documentDataTypeTree: Data? = nil
     @State private var documentDataTransformation: Data? = nil
     @State private var transformationName: String = ""
+    @State private var editedSchemaItem: SchemaItem? = nil
+    @State private var editedSchemaItemId: String? = nil
+    @State private var isSchemaItemEdited: Bool = false
+    @State private var isSchemaItemRelationshipEdited: Bool = false
+    @State private var editedParentSchemaItemId: String? = nil
+    @State private var editedSchemaItemRelationship: SchemaItemRelationship? = nil
+    let geometry: GeometryProxy // TODO: Use same same text as in ContentView
+    
+    @State private var searchText: String = ""
     
     func initializeTextViewVariables(inputExpectedOutputPairId: String?, transformationId: String) {
         if let inputExpectedOutputPairId = inputExpectedOutputPairId,
@@ -88,9 +97,37 @@ struct CenterTopView: View {
                 initializeTextViewVariables(subTransformationId: subTransformationId, transformationId: transformationId)
             }
         } else if let _ = sharedState.subTransformationId,
-           sharedState.menu == .subTransformation
+                  sharedState.menu == .subTransformation
         {
-            VStack {
+            if geometry.size.width < 992,
+               let transformations = store.userDTO?.teams?["response"]?.transformations,
+               let transformationId = sharedState.transformationId,
+               let subTransformations = transformations[transformationId]?.subTransformations,
+               let subTransformationId = sharedState.subTransformationId,
+               let subTransfromation = subTransformations[subTransformationId]
+            {
+                HStack {
+                    Button(action: {
+                        sharedState.menu = .transformation
+                    }) {
+                        Image(systemName: "chevron.left")
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                    .padding(.trailing, 8)
+                    Text(subTransfromation.name)
+                        .font(.title)
+                        .bold()
+                    Spacer()
+                    Button(action: {
+                        sharedState.menu = .subTransformationDetails
+                    }) {
+                        Image(systemName: "gear")
+                    }.buttonStyle(BorderlessButtonStyle())
+                }
+                .padding(.vertical, 20)
+                .padding(.horizontal, 20)
+            }
+            List {
                 HStack {
                     Spacer()
                     Button(action: {
@@ -124,6 +161,57 @@ struct CenterTopView: View {
                         }
                         sharedState.draggedSchemaItem = nil
                         return true
+                    }
+                }
+                if geometry.size.width < 992,
+                   let transformations = store.userDTO?.teams?["response"]?.transformations,
+                   let transformationId = sharedState.transformationId,
+                   let subTransformations = transformations[transformationId]?.subTransformations,
+                   let subTransformationId = sharedState.subTransformationId
+                {
+                    if let cards = subTransformations[subTransformationId]?.inputs {
+                        Section(header: Text("Card in")) {
+                            ForEach(cards.indices, id: \.self) { index in
+                                Button(action: {
+                                    if sharedState.viewStack.firstIndex(where: { viewDropData in
+                                        viewDropData.cardIndex == index && viewDropData.cardType == "in"
+                                    }) == nil {
+                                        let viewDropData = ViewDropData(name: "SubTransformationView", cardType: "in", cardIndex: index)
+                                        sharedState.viewStack.append(viewDropData)
+                                    }
+                                }) {
+                                    HStack {
+                                        Text("Card") //cards[index].name
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
+                                }
+                                .padding()
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                            }
+                        }
+                    }
+                    if let cards = subTransformations[subTransformationId]?.outputs {
+                        Section(header: Text("Card out")) {
+                            ForEach(cards.indices, id: \.self) { index in
+                                Button(action: {
+                                    if sharedState.viewStack.firstIndex(where: { viewDropData in
+                                        viewDropData.cardIndex == index && viewDropData.cardType == "out"
+                                    }) == nil {
+                                        let viewDropData = ViewDropData(name: "SubTransformationView", cardType: "out", cardIndex: index)
+                                        sharedState.viewStack.append(viewDropData)
+                                    }
+                                }) {
+                                    HStack {
+                                        Text("Card") //cards[index].name
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
+                                }
+                                .padding()
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                            }
+                        }
                     }
                 }
                 if let userDTO = store.userDTO,
@@ -215,9 +303,9 @@ struct CenterTopView: View {
                                               (column.functionPropIndex == nil || {
                                                   if let _ = column.functionPropIndex,
                                                      let _ = column.parentExpression?.function?.name/*,
-                                                                                                                functionPropsTypes[sharedState.functionCategoryIndex].functions[functionName]?[functionPropIndex].first(where: { functionType in
-                                                                                                                return functionType.type == "function"
-                                                                                                                }) != nil*/
+                                                                                                     functionPropsTypes[sharedState.functionCategoryIndex].functions[functionName]?[functionPropIndex].first(where: { functionType in
+                                                                                                     return functionType.type == "function"
+                                                                                                     }) != nil*/
                                                   {
                                                       return true
                                                   } else {
@@ -334,52 +422,136 @@ struct CenterTopView: View {
                         .listRowSeparator(.hidden)
                     }
                 }
-                VStack {
-                    HStack {
-                        Spacer().frame(width: 20.0)
-                        Text("Scratchpad")
-                        Spacer()
-                    }
-                    ForEach(sharedState.schemaItemsOnScratchpad.indices, id: \.self) { index in
-                        let schemaItemOnScratchpad = sharedState.schemaItemsOnScratchpad[index]
+                if sharedState.schemaItemsOnScratchpad.count > 0 {
+                    
+                    VStack {
                         HStack {
-                            Button(action: {
-                                
-                            }) {
-                                if schemaItemOnScratchpad.numOfChildren == 0 {
-                                    Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
-                                } else {
-                                    Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
-                                }
-                                Spacer().frame(width: 20.0)
-                                if let transformations = store.userDTO?.teams?["response"]?.transformations,
-                                   let transformationId = sharedState.transformationId,
-                                   let schemaItem = transformations[transformationId]?.schemaItems[schemaItemOnScratchpad.schemaItemId],
-                                   let rangeMax = schemaItemOnScratchpad.rangeMax
-                                {
-                                    Text("\(schemaItem.name) 1:\(rangeMax)")
-                                }
-                            }.onDrag {
-                                resetDragProperties()
-                                sharedState.draggedSchemaItem = schemaItemOnScratchpad
-                                let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
-                                return itemProvider
-                            }
+                            Spacer().frame(width: 20.0)
+                            Text("Scratchpad")
                             Spacer()
                         }
+                        ForEach(sharedState.schemaItemsOnScratchpad.indices, id: \.self) { index in
+                            let schemaItemOnScratchpad = sharedState.schemaItemsOnScratchpad[index]
+                            HStack {
+                                Button(action: {
+                                    
+                                }) {
+                                    if schemaItemOnScratchpad.numOfChildren == 0 {
+                                        Image(systemName: "triangle.fill").frame(width: 8, height: 8).foregroundColor(Color.green)
+                                    } else {
+                                        Image(systemName: "circle.fill").frame(width: 8, height: 8).foregroundColor(Color.blue)
+                                    }
+                                    Spacer().frame(width: 20.0)
+                                    if let transformations = store.userDTO?.teams?["response"]?.transformations,
+                                       let transformationId = sharedState.transformationId,
+                                       let schemaItem = transformations[transformationId]?.schemaItems[schemaItemOnScratchpad.schemaItemId],
+                                       let rangeMax = schemaItemOnScratchpad.rangeMax
+                                    {
+                                        Text("\(schemaItem.name) 1:\(rangeMax)")
+                                    }
+                                }.onDrag {
+                                    resetDragProperties()
+                                    sharedState.draggedSchemaItem = schemaItemOnScratchpad
+                                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                    return itemProvider
+                                }
+                                Spacer()
+                            }
+                        }
+                    }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
+                        if let draggedSchemaItem = sharedState.draggedSchemaItem {
+                            if sharedState.schemaItemsOnScratchpad.first(where: { schemaItemOnScratchpad in
+                                schemaItemOnScratchpad.schemaItemId == draggedSchemaItem.schemaItemId
+                            }) == nil {
+                                sharedState.schemaItemsOnScratchpad.append(DraggedSchemaItem(schemaItemId: draggedSchemaItem.schemaItemId, rangeMax: draggedSchemaItem.rangeMax, numOfChildren: draggedSchemaItem.numOfChildren, reference: draggedSchemaItem.reference))
+                            }
+                        }
+                        sharedState.draggedSchemaItem = nil
+                        return true
                     }
-                }.onDrop(of:  [UTType.text], isTargeted: nil) { providers, location in
-                    if let draggedSchemaItem = sharedState.draggedSchemaItem {
-                        if sharedState.schemaItemsOnScratchpad.first(where: { schemaItemOnScratchpad in
-                            schemaItemOnScratchpad.schemaItemId == draggedSchemaItem.schemaItemId
-                        }) == nil {
-                            sharedState.schemaItemsOnScratchpad.append(DraggedSchemaItem(schemaItemId: draggedSchemaItem.schemaItemId, rangeMax: draggedSchemaItem.rangeMax, numOfChildren: draggedSchemaItem.numOfChildren, reference: draggedSchemaItem.reference))
+                }
+                if geometry.size.width < 992,
+                   let transformations = store.userDTO?.teams?["response"]?.transformations,
+                   let transformationId = sharedState.transformationId,
+                   let subTransformations = transformations[transformationId]?.subTransformations,
+                   let subTransformationId = sharedState.subTransformationId
+                {
+                    ForEach(sharedState.viewStack.indices, id: \.self) { stackItemIndex in
+                        let stackItem = sharedState.viewStack[stackItemIndex]
+                        if let cardType = stackItem.cardType,
+                           let cardIndex = stackItem.cardIndex,
+                           let subTransformationId = sharedState.subTransformationId,
+                           let transformations = store.userDTO?.teams?["response"]?.transformations,
+                           let transformationId = sharedState.transformationId,
+                           let transformation = transformations[transformationId],
+                           let cards = cardType == "in" ? transformation.subTransformations[subTransformationId]?.inputs : transformation.subTransformations[subTransformationId]?.outputs,
+                           cardIndex < cards.count
+                        {
+                            //CardContainerView(cardIndex: cardIndex, cardType: cardType, store: store)
+                            Section {
+                                CardContentView(cardType: cardType, cardIndex: cardIndex, store: store, transformation: transformation, cards: cards, subTransformationId: subTransformationId)
+                            }
                         }
                     }
-                    sharedState.draggedSchemaItem = nil
-                    return true
+                    ForEach(signatureCategories.indices, id: \.self) { index in
+                        Section(header: Text(signatureCategories[index].name)) {
+                            ForEach(Array(signatureCategories[index].functions.keys.sorted()), id: \.self) { key in
+                                Button(action: {
+                                    sharedState.selectedFunctionName = key
+                                }) {
+                                    Text(key)
+                                }.onDrag {
+                                    resetDragProperties()
+                                    sharedState.draggedFunctionName = key
+                                    let itemProvider = NSItemProvider(object: "YourDraggedData" as NSItemProviderWriting)
+                                    return itemProvider
+                                }
+                                .listRowSeparator(.hidden)
+                            }
+                        }
+                    }
+                    if let schemaItemId = sharedState.selectedSchemaItemId,
+                       let _ = store.state.userDTO?.teams?["response"]?.transformations[transformationId]?.schemaItems[schemaItemId]
+                    {
+                        RightViewContent(
+                            editedSchemaItem: $editedSchemaItem,
+                            isSchemaItemEdited: $isSchemaItemEdited,
+                            isSchemaItemRelationshipEdited: $isSchemaItemRelationshipEdited,
+                            editedSchemaItemRelationship: $editedSchemaItemRelationship,
+                            sharedState: sharedState,
+                            store: store,
+                            transformationId: transformationId,
+                            schemaItemId: schemaItemId
+                        )
+                        Button(action: {
+                            let encoder = JSONEncoder()
+                            if isSchemaItemEdited {
+                                if let jsonData = try? encoder.encode(editedSchemaItem),
+                                   let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+                                {
+                                    let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", schemaItemId]
+                                    store.send(.setValue(keyPath: keyPath, value: dictionary))
+                                }
+                                isSchemaItemEdited = false
+                            }
+                            if isSchemaItemRelationshipEdited,
+                               let selectedParentSchemaItemId = sharedState.selectedParentSchemaItemId
+                            {
+                                if let jsonData = try? encoder.encode(editedSchemaItemRelationship),
+                                   let dictionary = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+                                {
+                                    let keyPath: [Any] = ["response", "transformations", transformationId, "schemaItems", selectedParentSchemaItemId, "children", schemaItemId]
+                                    store.send(.setValue(keyPath: keyPath, value: dictionary))
+                                }
+                                isSchemaItemRelationshipEdited = false
+                            }
+                            runTransformation(transformationId: transformationId, sharedState: sharedState, store: store)
+                        }) {
+                            Text("Save")
+                        }
+                        .disabled(!isSchemaItemEdited && !isSchemaItemRelationshipEdited)
+                    }
                 }
-                Spacer()
             }
             .padding()
         } else if let transformationId = sharedState.transformationId,
@@ -388,8 +560,8 @@ struct CenterTopView: View {
         {
             List {
                 if //let c = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs?.count,
-                   //c > inputExpectedOutputPairId,
-                   let inputExpectedOutputTextIdPairs = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs
+                    //c > inputExpectedOutputPairId,
+                    let inputExpectedOutputTextIdPairs = store.userDTO?.teams?["response"]?.transformations[transformationId]?.inputExpectedOutputTextIdPairs
                 {
                     if let inputTextId = inputExpectedOutputTextIdPairs[inputExpectedOutputPairId]?.inputTextId {
                         Section(header: Text("Input")) {
@@ -425,100 +597,185 @@ struct CenterTopView: View {
                 initializeTextViewVariables(inputExpectedOutputPairId: inputExpectedOutputPairId, transformationId: transformationId)
             }
         } else if let transformationId = sharedState.transformationId,
-                    self.sharedState.menu == .tags
+                  self.sharedState.menu == .tags
         {
             List {
                 Text("Apple")
                 Text("Banana")
             }
             .padding()
-        } else if let transformationId = sharedState.transformationId
+        } else if let transformationId = sharedState.transformationId,
+                  let transformation = store.userDTO?.teams?["response"]?.transformations[transformationId]
         {
-            List {
-                Section(header: Text("Transformation Name")) {
-                    TextField("Enter Transformation Name", text: $transformationName)
-                        .onChange(of: transformationName) { old, new in
-                            let value: String = new
-                            let keyPath: [Any] = ["response", "transformations", transformationId, "name"]
-                            store.send(.setValue(keyPath: keyPath, value: value))
-                        }
-                }
-                Section(header: Text("External TypeTree updated at")) {
-                    if let externalTypeTreeUpdatedAt = store.userDTO?.teams?["response"]?.transformations[transformationId]?.externalTypeTreeUpdatedAt
-                    {
-                        Text(externalTypeTreeUpdatedAt)
-                    } else {
-                        Text("")
-                    }
-                    Button(action: {
-                        self.showDocumentPicker.toggle()
-                    }) {
-                        Text("Import external xml typetree")
-                    }
-                    .sheet(isPresented: $showDocumentPicker) {
-                        DocumentPickerViewController(isPresented: self.$showDocumentPicker, documentData: self.$documentDataTypeTree, filename: $filename)
-                    }.onReceive(Just(documentDataTypeTree)) { documentData in
-                        guard let documentData = documentData else { return }
-                        let value = String(data: documentData, encoding: .utf8) ?? ""
-                        let keyPath: [Any] = ["response", "transformations", transformationId, "externalTypeTree"]
-                        store.send(.setValue(keyPath: keyPath, value: value))
-                        let currentDate = Date()
-                        let isoFormatter = ISO8601DateFormatter()
-                        let value2 = isoFormatter.string(from: currentDate)
-                        let keyPath2: [Any] = ["response", "transformations", transformationId, "externalTypeTreeUpdatedAt"]
-                        store.send(.setValue(keyPath: keyPath2, value: value2))
-                    }
-                }
-                Section(header: Text("External Transformation updated at")) {
-                    if let externalTransformationUpdatedAt = store.userDTO?.teams?["response"]?.transformations[transformationId]?.externalTransformationUpdatedAt
-                    {
-                        Text(externalTransformationUpdatedAt)
-                    } else {
-                        Text("")
-                    }
-                    Button(action: {
-                        self.showDocumentPicker.toggle()
-                    }) {
-                        Text("Import external xml transformation")
-                    }
-                    .sheet(isPresented: $showDocumentPicker) {
-                        DocumentPickerViewController(isPresented: self.$showDocumentPicker, documentData: self.$documentDataTransformation, filename: $filename)
-                    }.onReceive(Just(documentDataTransformation)) { documentData in
-                        guard let documentData = documentData else { return }
-                        let value = String(data: documentData, encoding: .utf8) ?? ""
-                        let keyPath: [Any] = ["response", "transformations", transformationId, "externalTransformation"]
-                        store.send(.setValue(keyPath: keyPath, value: value))
-                        let currentDate = Date()
-                        let isoFormatter = ISO8601DateFormatter()
-                        let value2 = isoFormatter.string(from: currentDate)
-                        let keyPath2: [Any] = ["response", "transformations", transformationId, "externalTransformationUpdatedAt"]
-                        store.send(.setValue(keyPath: keyPath2, value: value2))
-                    }
-                }
-                Section(header: Text("Tags")) {
+            VStack(alignment: .leading, spacing: 0) {
+                if geometry.size.width < 992 {
                     HStack {
                         Button(action: {
+                            if sharedState.menu == .inputExpectedOutputPair || sharedState.menu == .tags {
+                                sharedState.menu = .transformation
+                            } else {
+                                sharedState.menu = .transformationList
+                            }
                         }) {
-                            Text("#itx")
+                            Image(systemName: "chevron.left")
+                        }
+                        .clipShape(Circle())
+                        .padding(.trailing, 8)
+                        Text(transformation.name)
+                            .font(.title)
+                            .bold()
+                        //Spacer()
+                    }
+                    .padding(.vertical, 20)
+                    .padding(.horizontal, 20)
+                }
+                List {
+                    if geometry.size.width < 992 {
+                        Section(header: Text("Sub Transformations")) {
+                            ForEach(transformation.subTransformations.keys.sorted(), id: \.self) { subTransformationId in
+                                if let subTransformation = transformation.subTransformations[subTransformationId] {
+                                    Button(action: {
+                                        sharedState.menu = .subTransformation
+                                        self.sharedState.subTransformationId = subTransformationId
+                                    }) {
+                                        HStack {
+                                            Text(subTransformation.name).fontWeight(.semibold)
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Section(header: Text("Transformation Name")) {
+                        TextField("Enter Transformation Name", text: $transformationName)
+                            .onChange(of: transformationName) { old, new in
+                                let value: String = new
+                                let keyPath: [Any] = ["response", "transformations", transformationId, "name"]
+                                store.send(.setValue(keyPath: keyPath, value: value))
+                            }
+                    }
+                    Section {
+                        Button(action: {
+                            let id = randomAlphaNumeric(length: 4)
+                            let inputTextId = randomAlphaNumeric(length: 4)
+                            let expectedOutputTextId = randomAlphaNumeric(length: 4)
+                            let value: [String: Any] = ["inputTextId": inputTextId, "expectedOutputTextId": expectedOutputTextId]
+                            let keyPath: [Any] = ["response", "transformations", transformationId, "inputExpectedOutputTextIdPairs", id]
+                            store.send(.setValue(keyPath: keyPath, value: value))
+                        }) {
+                            Text("Create input - expected output pair")
                         }
                         Button(action: {
-                            
+                            let keyPath: [Any] = ["response", "transformations", transformationId]
+                            //store.send(.removeKey(keyPath: keyPath))
+                            sharedState.transformationId = nil
+                            sharedState.menu = .transformationList
                         }) {
-                            Text("#tutorial")
+                            Text("Delete transformation")
                         }
-                        Spacer()
+                    }
+                    Section(header: Text("External TypeTree updated at")) {
+                        if let externalTypeTreeUpdatedAt = store.userDTO?.teams?["response"]?.transformations[transformationId]?.externalTypeTreeUpdatedAt
+                        {
+                            Text(externalTypeTreeUpdatedAt)
+                        } else {
+                            Text("")
+                        }
                         Button(action: {
-                            self.sharedState.menu = .tags
+                            self.showDocumentPicker.toggle()
                         }) {
-                            Image(systemName: "chevron.right")
+                            Text("Import external xml typetree")
+                        }
+                        .sheet(isPresented: $showDocumentPicker) {
+                            DocumentPickerViewController(isPresented: self.$showDocumentPicker, documentData: self.$documentDataTypeTree, filename: $filename)
+                        }.onReceive(Just(documentDataTypeTree)) { documentData in
+                            guard let documentData = documentData else { return }
+                            let value = String(data: documentData, encoding: .utf8) ?? ""
+                            let keyPath: [Any] = ["response", "transformations", transformationId, "externalTypeTree"]
+                            store.send(.setValue(keyPath: keyPath, value: value))
+                            let currentDate = Date()
+                            let isoFormatter = ISO8601DateFormatter()
+                            let value2 = isoFormatter.string(from: currentDate)
+                            let keyPath2: [Any] = ["response", "transformations", transformationId, "externalTypeTreeUpdatedAt"]
+                            store.send(.setValue(keyPath: keyPath2, value: value2))
+                        }
+                    }
+                    Section(header: Text("External Transformation updated at")) {
+                        if let externalTransformationUpdatedAt = store.userDTO?.teams?["response"]?.transformations[transformationId]?.externalTransformationUpdatedAt
+                        {
+                            Text(externalTransformationUpdatedAt)
+                        } else {
+                            Text("")
+                        }
+                        Button(action: {
+                            self.showDocumentPicker.toggle()
+                        }) {
+                            Text("Import external xml transformation")
+                        }
+                        .sheet(isPresented: $showDocumentPicker) {
+                            DocumentPickerViewController(isPresented: self.$showDocumentPicker, documentData: self.$documentDataTransformation, filename: $filename)
+                        }.onReceive(Just(documentDataTransformation)) { documentData in
+                            guard let documentData = documentData else { return }
+                            let value = String(data: documentData, encoding: .utf8) ?? ""
+                            let keyPath: [Any] = ["response", "transformations", transformationId, "externalTransformation"]
+                            store.send(.setValue(keyPath: keyPath, value: value))
+                            let currentDate = Date()
+                            let isoFormatter = ISO8601DateFormatter()
+                            let value2 = isoFormatter.string(from: currentDate)
+                            let keyPath2: [Any] = ["response", "transformations", transformationId, "externalTransformationUpdatedAt"]
+                            store.send(.setValue(keyPath: keyPath2, value: value2))
+                        }
+                    }
+                    Section(header: Text("Input - Expected Output Pairs")) {
+                        if let inputExpectedOutputTextIdPairs = transformation.inputExpectedOutputTextIdPairs {
+                            ForEach(Array(inputExpectedOutputTextIdPairs.keys.sorted()), id: \.self) { key in
+                                Button(action: {
+                                    self.sharedState.menu = .inputExpectedOutputPair
+                                    self.sharedState.inputExpectedOutputPairId = key
+                                }) {
+                                    HStack {
+                                        Text("\(key)")
+                                        Spacer()
+                                        if key == sharedState.inputExpectedOutputPairId {
+                                            Image(systemName: "checkmark")
+                                                .foregroundColor(.blue)
+                                        }
+                                        Image(systemName: "chevron.right").padding(.leading, 8)
+                                    }
+                                }
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                                .padding()
+                            }
+                        }
+                    }
+                    Section(header: Text("Tags")) {
+                        HStack {
+                            Button(action: {
+                            }) {
+                                Text("#itx")
+                            }
+                            Button(action: {
+                                
+                            }) {
+                                Text("#tutorial")
+                            }
+                            Spacer()
+                            Button(action: {
+                                self.sharedState.menu = .tags
+                            }) {
+                                Image(systemName: "chevron.right")
+                            }
                         }
                     }
                 }
+                //.padding()
+                .onChange(of: transformationId, initial: true) { old, new in
+                    initializeTransformationName(transformationId: new)
+                }
             }
-            .padding()
-            .onChange(of: transformationId, initial: true) { old, new in
-                initializeTransformationName(transformationId: new)
-            }
+            //Spacer()
         } else {
             List {
             }.padding()

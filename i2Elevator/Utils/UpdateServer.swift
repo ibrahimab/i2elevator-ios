@@ -8,9 +8,9 @@
 
 import Foundation
 
-let baseUrl = "https://datamapper.vercel.app/api"
+let baseUrl = "https://i2elevator.nl/api"
 
-//"https://datamapper.vercel.app/api"
+//"https://i2elevator.nl/api"
 //"http://localhost:3000/api"
 
 func updateServer(value: Any?, keyPath: [Any], operation: String) {
