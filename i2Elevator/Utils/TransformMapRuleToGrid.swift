@@ -104,6 +104,7 @@ func transformExpressionsToGrid(
             rowInd = rowInd + 1
         }
         if functionProps.name == "LOOKUP" {
+            rows[3].columns.remove(at: 1)
             rows[3].columns.append(ExpressionColumn(text: "=", index: 2, isBtnStyle: false, expressionKeypathSegment: keyPath))
             rows[3].columns.append(contentsOf: rows[4].columns)
             rows[3].columns[2].index = 3

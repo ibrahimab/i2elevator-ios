@@ -76,7 +76,57 @@ struct CenterTopView: View {
     
     var body: some View {
         var rowInd = 0
-        if let transformationId = sharedState.transformationId,
+        if sharedState.menu == .mapRuleTest,
+           let transformations = store.userDTO?.teams?["response"]?.transformations,
+           let transformationId = sharedState.transformationId,
+           let subTransformationId = sharedState.subTransformationId,
+           let subTransformations = transformations[transformationId]?.subTransformations,
+           let cards = subTransformations[subTransformationId]?.outputs,
+           let cardIndex = sharedState.cardIndex,
+           let outputItemId = sharedState.selectedSchemaItemId,
+           let mapRules = cards[cardIndex].mapRules,
+           let mapRule = mapRules[outputItemId]
+        {
+            List {
+                Button(action: {
+                    guard let subTransformationId = sharedState.subTransformationId else {
+                        return
+                    }
+                    let cardIndex = 0
+                    guard let selectedSchemaItemId = sharedState.selectedSchemaItemId else {
+                        return
+                    }
+                    let id = randomAlphaNumeric(length: 4)
+                    let value: [String: Any] = ["internalRepresentationId": "abcd", "expectedOutputText": "test"]
+                    let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "outputs", cardIndex, "mapRules", selectedSchemaItemId, "internalRepreseantationIdAndExpectedOutputTextPairs", id]
+                    store.send(.setValue(keyPath: keyPath, value: value))
+                }) {
+                    Text("Create map rule test case")
+                }
+                if let cards = subTransformations[subTransformationId]?.outputs {
+                    ForEach(mapRule.internalRepreseantationIdAndExpectedOutputTextPairs?.keys.sorted() ?? [], id: \.self) { internalRepreseantationId in
+                        Section() {
+                            if let kk = mapRule.internalRepreseantationIdAndExpectedOutputTextPairs?[internalRepreseantationId] {
+                                Text(kk.expectedOutputText ?? "")
+                                Text(kk.internalRepresentationId ?? "")
+                            }
+                            /*TextEditor(text: $url)
+                                .frame(minHeight: 100)
+                                .onChange(of: url) { old, new in
+                                    // TODO: Add save button
+                                    let value: String = new
+                                    let keyPath: [Any] = ["response", "transformations", transformationId, "subTransformations", subTransformationId, "url"]
+                                    store.send(.setValue(keyPath: keyPath, value: value))
+                                }*/
+                        }
+                    }
+                }
+            }
+            .padding()
+            .onChange(of: sharedState.subTransformationId, initial: true) { old, subTransformationId in
+                initializeTextViewVariables(subTransformationId: subTransformationId, transformationId: transformationId)
+            }
+        } else if let transformationId = sharedState.transformationId,
            let subTransformationId = sharedState.subTransformationId,
            sharedState.menu == .subTransformationDetails
         {

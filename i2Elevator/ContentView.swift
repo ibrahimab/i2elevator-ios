@@ -43,8 +43,9 @@ enum SelectedMenuItem {
     case subTransformationDetails
     case schemaItemList
     case schemaItem
-    case inputExpectedOutputPair
+    case inputExpectedOutputPair // TODO: Rename transformationTest
     case tags
+    case mapRuleTest
 }
 
 struct ViewDropData {
@@ -93,7 +94,7 @@ struct ContentView: View {
                     if geometry.size.width >= 992 {
                         HStack {
                             VStack {
-                                if (sharedState.menu == .subTransformation || sharedState.menu == .subTransformationDetails),
+                                if (sharedState.menu == .subTransformation || sharedState.menu == .subTransformationDetails || sharedState.menu == .mapRuleTest),
                                    let transformations = store.userDTO?.teams?["response"]?.transformations,
                                    let transformationId = sharedState.transformationId,
                                    let subTransformations = transformations[transformationId]?.subTransformations,

@@ -55,8 +55,10 @@ func transformSchemaEntityTreeToList(
                         container = nextContainer
                     }
                 }
-                if i == 0, subReference.count == 0, let _c = container as? [String: Any] {
+                if subReference.count == 0, let _c = container as? [String: Any] { //i == 0,
                     container = _c.values.first
+                } else if subReference.count == 0, let _c = container as? [Any], _c.count > 1 {
+                    container = _c[0]
                 }
             }
             if let _container = container as? [String: Any],

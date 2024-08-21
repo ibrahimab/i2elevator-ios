@@ -68,6 +68,12 @@ struct Card: Codable {
 struct MapRule: Codable {
     var objectrule: Expression?
     var subTransformationId: String?
+    var internalRepreseantationIdAndExpectedOutputTextPairs: [String: InternalRepresentationIdAndExpectedOutputTextPair]?
+}
+
+struct InternalRepresentationIdAndExpectedOutputTextPair: Codable {
+    var internalRepresentationId: String?
+    var expectedOutputText: String?
 }
 
 struct Expression: Codable {

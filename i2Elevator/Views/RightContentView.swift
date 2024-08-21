@@ -137,6 +137,11 @@ struct RightViewContent: View {
             }) {
                 Text("Remove child schema item")
             }
+            Button(action: {
+                sharedState.menu = .mapRuleTest
+            }) {
+                Text("Show map rule test cases")
+            }
         }
     }
 }
