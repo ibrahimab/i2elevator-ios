@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F6F424E2C98FB8800F498B5 /* RTransformationsPageFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6F424D2C98FB8800F498B5 /* RTransformationsPageFeature.swift */; };
+		0F6F42512C98FEA400F498B5 /* RTransformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6F42502C98FEA400F498B5 /* RTransformation.swift */; };
+		0F6F42532C99002A00F498B5 /* RTransformationsPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6F42522C99002A00F498B5 /* RTransformationsPageView.swift */; };
+		0F6F42552C9902F200F498B5 /* RModifyTransformationButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6F42542C9902F200F498B5 /* RModifyTransformationButtonView.swift */; };
+		0F6F42572C9903B200F498B5 /* RTransformationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6F42562C9903B200F498B5 /* RTransformationListView.swift */; };
+		0F6F42592C99041B00F498B5 /* TransformationListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6F42582C99041B00F498B5 /* TransformationListItemView.swift */; };
+		0F6F425B2C99085900F498B5 /* TransformationTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6F425A2C99085900F498B5 /* TransformationTagsView.swift */; };
+		0F6F425E2C99155700F498B5 /* RModifyTransformationFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6F425D2C99155700F498B5 /* RModifyTransformationFormView.swift */; };
+		0FAC87792CBF4D8600999B39 /* RTransformationListFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FAC87782CBF4D5400999B39 /* RTransformationListFeature.swift */; };
+		0FAC877C2CBF5E5000999B39 /* RModifyTransformationFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FAC877B2CBF5D7D00999B39 /* RModifyTransformationFeature.swift */; };
+		0FAC87832CBF750000999B39 /* RInputExpectedOutputPairView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FAC87822CBF74FE00999B39 /* RInputExpectedOutputPairView.swift */; };
+		0FAC87852CBF753700999B39 /* RInputExpectedOutputTextIdPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FAC87842CBF753300999B39 /* RInputExpectedOutputTextIdPair.swift */; };
 		342EF8F22C58E52900C76CA9 /* TransformationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342EF8F12C58E52900C76CA9 /* TransformationListView.swift */; };
 		342EF8F62C58F83B00C76CA9 /* TransformationMenuSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342EF8F52C58F83B00C76CA9 /* TransformationMenuSections.swift */; };
 		3433BFF22C5BA30900FBD34C /* CardContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3433BFF12C5BA30900FBD34C /* CardContentView.swift */; };
@@ -42,6 +54,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0F6F424D2C98FB8800F498B5 /* RTransformationsPageFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTransformationsPageFeature.swift; sourceTree = "<group>"; };
+		0F6F42502C98FEA400F498B5 /* RTransformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTransformation.swift; sourceTree = "<group>"; };
+		0F6F42522C99002A00F498B5 /* RTransformationsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTransformationsPageView.swift; sourceTree = "<group>"; };
+		0F6F42542C9902F200F498B5 /* RModifyTransformationButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RModifyTransformationButtonView.swift; sourceTree = "<group>"; };
+		0F6F42562C9903B200F498B5 /* RTransformationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTransformationListView.swift; sourceTree = "<group>"; };
+		0F6F42582C99041B00F498B5 /* TransformationListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformationListItemView.swift; sourceTree = "<group>"; };
+		0F6F425A2C99085900F498B5 /* TransformationTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformationTagsView.swift; sourceTree = "<group>"; };
+		0F6F425D2C99155700F498B5 /* RModifyTransformationFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RModifyTransformationFormView.swift; sourceTree = "<group>"; };
+		0FAC87782CBF4D5400999B39 /* RTransformationListFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTransformationListFeature.swift; sourceTree = "<group>"; };
+		0FAC877B2CBF5D7D00999B39 /* RModifyTransformationFeature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RModifyTransformationFeature.swift; sourceTree = "<group>"; };
+		0FAC87822CBF74FE00999B39 /* RInputExpectedOutputPairView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RInputExpectedOutputPairView.swift; sourceTree = "<group>"; };
+		0FAC87842CBF753300999B39 /* RInputExpectedOutputTextIdPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RInputExpectedOutputTextIdPair.swift; sourceTree = "<group>"; };
 		342EF8F12C58E52900C76CA9 /* TransformationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformationListView.swift; sourceTree = "<group>"; };
 		342EF8F52C58F83B00C76CA9 /* TransformationMenuSections.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransformationMenuSections.swift; sourceTree = "<group>"; };
 		3433BFF12C5BA30900FBD34C /* CardContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardContentView.swift; sourceTree = "<group>"; };
@@ -90,6 +114,65 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F6F42482C98FABA00F498B5 /* Refactored */ = {
+			isa = PBXGroup;
+			children = (
+				0F6F424B2C98FB2200F498B5 /* TransformationsPage */,
+			);
+			path = Refactored;
+			sourceTree = "<group>";
+		};
+		0F6F424B2C98FB2200F498B5 /* TransformationsPage */ = {
+			isa = PBXGroup;
+			children = (
+				0FAC87812CBF74C600999B39 /* RInputExpectedOutputTextPair */,
+				0FAC87772CBF4D4800999B39 /* TransformationList */,
+				0F6F425C2C99152000F498B5 /* ModifyTransformation */,
+				0F6F424F2C98FE9500F498B5 /* Transformation */,
+				0F6F424D2C98FB8800F498B5 /* RTransformationsPageFeature.swift */,
+				0F6F42522C99002A00F498B5 /* RTransformationsPageView.swift */,
+			);
+			path = TransformationsPage;
+			sourceTree = "<group>";
+		};
+		0F6F424F2C98FE9500F498B5 /* Transformation */ = {
+			isa = PBXGroup;
+			children = (
+				0F6F42502C98FEA400F498B5 /* RTransformation.swift */,
+				0F6F42582C99041B00F498B5 /* TransformationListItemView.swift */,
+				0F6F425A2C99085900F498B5 /* TransformationTagsView.swift */,
+			);
+			path = Transformation;
+			sourceTree = "<group>";
+		};
+		0F6F425C2C99152000F498B5 /* ModifyTransformation */ = {
+			isa = PBXGroup;
+			children = (
+				0FAC877B2CBF5D7D00999B39 /* RModifyTransformationFeature.swift */,
+				0F6F42542C9902F200F498B5 /* RModifyTransformationButtonView.swift */,
+				0F6F425D2C99155700F498B5 /* RModifyTransformationFormView.swift */,
+			);
+			path = ModifyTransformation;
+			sourceTree = "<group>";
+		};
+		0FAC87772CBF4D4800999B39 /* TransformationList */ = {
+			isa = PBXGroup;
+			children = (
+				0FAC87782CBF4D5400999B39 /* RTransformationListFeature.swift */,
+				0F6F42562C9903B200F498B5 /* RTransformationListView.swift */,
+			);
+			path = TransformationList;
+			sourceTree = "<group>";
+		};
+		0FAC87812CBF74C600999B39 /* RInputExpectedOutputTextPair */ = {
+			isa = PBXGroup;
+			children = (
+				0FAC87842CBF753300999B39 /* RInputExpectedOutputTextIdPair.swift */,
+				0FAC87822CBF74FE00999B39 /* RInputExpectedOutputPairView.swift */,
+			);
+			path = RInputExpectedOutputTextPair;
+			sourceTree = "<group>";
+		};
 		343B92A82B83DE35007F78A8 = {
 			isa = PBXGroup;
 			children = (
@@ -110,6 +193,7 @@
 		343B92B32B83DE35007F78A8 /* i2Elevator */ = {
 			isa = PBXGroup;
 			children = (
+				0F6F42482C98FABA00F498B5 /* Refactored */,
 				347351B72B8CB4C7005B949A /* Models.swift */,
 				344802842B889414008E5551 /* Utils */,
 				343B92C72B83DF28007F78A8 /* Views */,
@@ -257,30 +341,42 @@
 			buildActionMask = 2147483647;
 			files = (
 				349370E52BB1822300B19A79 /* GetAllExpressionChildren.swift in Sources */,
+				0FAC87832CBF750000999B39 /* RInputExpectedOutputPairView.swift in Sources */,
 				34C80B292C634AA70027E057 /* RightContentView.swift in Sources */,
 				346BA55A2C242E410028A025 /* RunTransformation.swift in Sources */,
 				349370E72BB187C800B19A79 /* CardSettingsView.swift in Sources */,
+				0F6F425B2C99085900F498B5 /* TransformationTagsView.swift in Sources */,
 				34ADF53D2B9EC0730050490E /* TransformMapRuleToGrid.swift in Sources */,
+				0F6F42552C9902F200F498B5 /* RModifyTransformationButtonView.swift in Sources */,
 				3472934E2B95B7320033D38F /* RandomAlphaNumeric.swift in Sources */,
 				346593D92C08343D002FC118 /* DocumentPicker.swift in Sources */,
 				343B92BB2B83DE35007F78A8 /* ContentView.swift in Sources */,
+				0F6F42512C98FEA400F498B5 /* RTransformation.swift in Sources */,
+				0FAC87792CBF4D8600999B39 /* RTransformationListFeature.swift in Sources */,
 				342EF8F22C58E52900C76CA9 /* TransformationListView.swift in Sources */,
 				34A6897F2BD264190031E636 /* UserReducer.swift in Sources */,
 				34A2C0082BD13BF9008634DD /* UpdateServer.swift in Sources */,
 				342EF8F62C58F83B00C76CA9 /* TransformationMenuSections.swift in Sources */,
+				0F6F425E2C99155700F498B5 /* RModifyTransformationFormView.swift in Sources */,
 				344802832B8684D6008E5551 /* TopColorGradient.swift in Sources */,
+				0FAC87852CBF753700999B39 /* RInputExpectedOutputTextIdPair.swift in Sources */,
 				34BFA6562C104A180096D3AE /* ConstantTextField.swift in Sources */,
 				347293502B96D92D0033D38F /* CenterTopView.swift in Sources */,
 				344802862B889424008E5551 /* UpdateClient.swift in Sources */,
 				347F6D4E2C3675A500F0332B /* GetLastFunctionSignature.swift in Sources */,
+				0F6F42532C99002A00F498B5 /* RTransformationsPageView.swift in Sources */,
 				3433BFF22C5BA30900FBD34C /* CardContentView.swift in Sources */,
 				3433BFF42C5BAA1300FBD34C /* GenerateIndentedSchemaItemList.swift in Sources */,
 				346641422BA432D200D50E1D /* ResetDragProperties.swift in Sources */,
+				0FAC877C2CBF5E5000999B39 /* RModifyTransformationFeature.swift in Sources */,
 				347293522B970A220033D38F /* TransformSchemaEntityTreeToList.swift in Sources */,
 				347351B82B8CB4C7005B949A /* Models.swift in Sources */,
+				0F6F42572C9903B200F498B5 /* RTransformationListView.swift in Sources */,
+				0F6F424E2C98FB8800F498B5 /* RTransformationsPageFeature.swift in Sources */,
 				343B92C92B83DF34007F78A8 /* CardContainerView.swift in Sources */,
 				343B92B92B83DE35007F78A8 /* i2ElevatorApp.swift in Sources */,
 				347F48282B99C83C00F73DF6 /* RightView.swift in Sources */,
+				0F6F42592C99041B00F498B5 /* TransformationListItemView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
